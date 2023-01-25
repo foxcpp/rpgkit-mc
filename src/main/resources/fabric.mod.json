@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "csmp",
+  "version": "${version}",
+  "name": "CryotherapySMP",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/SweetSnowyWitch/cryotherapy-smp"
+  },
+  "license": "MIT",
+  "icon": "assets/csmp/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "csmp.CsmpClient"
+    ],
+    "main": [
+      "csmp.CsmpMain"
+    ]
+  },
+  "mixins": [
+    "csmp.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.13",
+    "fabric": "*",
+    "minecraft": "1.19.3"
+  }
+}
