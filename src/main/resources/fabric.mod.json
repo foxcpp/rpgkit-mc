@@ -9,7 +9,7 @@
     "repo": "https://github.com/SweetSnowyWitch/cryotherapy-smp"
   },
   "license": "MIT",
-  "icon": "assets/csmp/icon.png",
+  "icon": "assets/csmprpgkit/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
