@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "csmp",
+  "id": "csmprpgkit",
   "version": "${version}",
-  "name": "CryotherapySMP",
+  "name": "CSMP RPG Kit",
   "description": "",
   "authors": [],
   "contact": {
@@ -13,11 +13,17 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "csmp.CsmpClient"
+      "com.github.sweetsnowywitch.csmprpgkit.client.ClientRPGKitMod"
     ],
     "main": [
-      "csmp.CsmpMain"
+      "com.github.sweetsnowywitch.csmprpgkit.RPGKitMod"
+    ],
+    "cardinal-components": [
+      "com.github.sweetsnowywitch.csmprpgkit.components.ModComponents"
     ]
+  },
+  "custom": {
+    "cardinal-components": []
   },
   "mixins": [
     "csmp.mixins.json"
@@ -25,6 +31,7 @@
   "depends": {
     "fabricloader": ">=0.14.13",
     "fabric": "*",
-    "minecraft": "1.19.3"
+    "minecraft": "1.19.3",
+    "geckolib": ">=4.0.3"
   }
 }
