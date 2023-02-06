@@ -1,15 +1,21 @@
 package com.github.sweetsnowywitch.csmprpgkit.components;
 
+import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
+import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
+import net.minecraft.util.Identifier;
 
 public final class ModComponents implements EntityComponentInitializer {
-    //public static final ComponentKey<DndAbilitiesComponent> DND_SHEET =
-    //   ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("fabricplayground", "dnd_sheet"), DndAbilitiesComponent.class);
+    public static final ComponentKey<AbilitiesComponent> ABILITIES =
+            ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(RPGKitMod.MOD_ID, "abilities"), AbilitiesComponent.class);
+
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         // XXX: Не забывай вписывать компоненты в fabric.mod.json.
-        //registry.registerForPlayers(DND_SHEET, DndAbilitiesComponent::new, RespawnCopyStrategy.CHARACTER);
+        registry.registerForPlayers(ABILITIES, AbilitiesComponent::new, RespawnCopyStrategy.CHARACTER);
     }
 }
