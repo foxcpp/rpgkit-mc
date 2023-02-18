@@ -23,7 +23,9 @@
     ]
   },
   "custom": {
-    "cardinal-components": []
+    "cardinal-components": [
+      "csmprpgkit:abilities"
+    ]
   },
   "mixins": [
     "csmp.mixins.json"
