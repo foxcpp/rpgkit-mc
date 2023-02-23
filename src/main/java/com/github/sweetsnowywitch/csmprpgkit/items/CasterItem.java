@@ -9,13 +9,16 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class CasterItem extends Item {
-    public CasterItem(Settings settings) {
+    private final int price;
+
+    public CasterItem(int price, Settings settings) {
         super(settings);
+        this.price = price;
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        user.getComponent(ModComponents.MANA).spendMana(5);
+        user.getComponent(ModComponents.MANA).spendMana(price);
         return super.use(world, user, hand);
     }
 }

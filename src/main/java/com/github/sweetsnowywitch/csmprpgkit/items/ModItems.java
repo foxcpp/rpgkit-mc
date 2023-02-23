@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public class ModItems {
     //public static final Item ITEM_CASTER = new CasterItem(new FabricItemSettings());
-    public static final Item TEST_ITEM = new CasterItem(new FabricItemSettings());
+    public static final Item TEST_ITEM = new CasterItem(5, new FabricItemSettings());
 
     public static void register() {
         // Registry.register(Registries.ITEM, new Identifier(RPGKitMod.MOD_ID, "caster"), ITEM_CASTER);

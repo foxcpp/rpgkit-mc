@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.components;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,7 +20,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
 
     public ManaComponent(LivingEntity provider) {
         this.provider = provider;
-        this.value = 0;
+        this.value = 20;
         this.maxValue = 20;
         this.regen = 1;
         this.regenSpeed = 0.005f;
@@ -63,6 +64,9 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         this.value -= cost;
         if (this.value < 0)
         {
+
+            var client = MinecraftClient.getInstance();
+
             this.value = 0;
             RPGKitMod.LOGGER.info("Not enough mana");
         }
