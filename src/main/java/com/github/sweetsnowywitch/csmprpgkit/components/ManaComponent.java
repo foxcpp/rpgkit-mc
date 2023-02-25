@@ -1,15 +1,14 @@
 package com.github.sweetsnowywitch.csmprpgkit.components;
 
-import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class ManaComponent implements AutoSyncedComponent, ServerTickingComponent {
     private final LivingEntity provider;
@@ -17,6 +16,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
     private int maxValue;
     private int regen;
     private float regenSpeed;
+    private float healthMultiplier;
 
     public ManaComponent(LivingEntity provider) {
         this.provider = provider;
@@ -24,6 +24,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         this.maxValue = 20;
         this.regen = 1;
         this.regenSpeed = 0.005f;
+        this.healthMultiplier = 1.0f;
     }
 
     @Override
@@ -37,6 +38,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         this.maxValue = tag.getInt("maxMana");
         this.regen = tag.getInt("manaReg");
         this.regenSpeed = tag.getFloat("manaSpeed");
+        this.healthMultiplier = tag.getFloat("manaMultiplier");
     }
 
     @Override
@@ -45,6 +47,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         tag.putInt("maxMana", this.maxValue);
         tag.putInt("manaReg", this.regen);
         tag.putFloat("manaSpeed", this.regenSpeed);
+        tag.putFloat("manaMultiplier", this.healthMultiplier);
     }
 
     @Override
@@ -64,11 +67,13 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         this.value -= cost;
         if (this.value < 0)
         {
-
-            var client = MinecraftClient.getInstance();
-
+            this.provider.damage(DamageSource.MAGIC, -this.value * healthMultiplier);
+            this.provider.world.addParticle(ParticleTypes.ELECTRIC_SPARK,
+                    this.provider.getX() + new Random().nextDouble(-0.5,0.5),
+                    this.provider.getY() + new Random().nextDouble(0.5,2),
+                    this.provider.getZ() + new Random().nextDouble(-0.5,0.5),
+                    0, 0, 0);
             this.value = 0;
-            RPGKitMod.LOGGER.info("Not enough mana");
         }
         ModComponents.MANA.sync(this.provider);
     }
@@ -106,6 +111,15 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
 
     public void setRegenSpeed(int regenSpeed) {
         this.regenSpeed = regenSpeed;
+        ModComponents.MANA.sync(this.provider);
+    }
+
+    public float getHealthMultiplier() {
+        return healthMultiplier;
+    }
+
+    public void setHealthMultiplier(float healthMultiplier) {
+        this.healthMultiplier = healthMultiplier;
         ModComponents.MANA.sync(this.provider);
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 
@@ -36,12 +37,13 @@ public class ManaHudOverlay implements HudRenderCallback {
         assert client.interactionManager != null;
         if (client.interactionManager.getCurrentGameMode().equals(GameMode.SURVIVAL) ||
                 client.interactionManager.getCurrentGameMode().equals(GameMode.ADVENTURE)) {
-            
+
             var width = client.getWindow().getScaledWidth();
             var height = client.getWindow().getScaledHeight();
             x = width / 2;
             y = height;
 
+            var manaComponent = client.player.getComponent(ModComponents.MANA);
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -49,8 +51,7 @@ public class ManaHudOverlay implements HudRenderCallback {
             DrawableHelper.drawTexture(matrixStack, x - 118, y - 60, 0, 0, 32, 64,
                     32, 64);
 
-            switch ((int)((float) client.player.getComponent(ModComponents.MANA).getValue() /
-                    client.player.getComponent(ModComponents.MANA).getMaxValue() * 10)) {
+            switch ((int)((float) manaComponent.getValue() / manaComponent.getMaxValue() * 10)) {
                 case 0 -> RenderSystem.setShaderTexture(0, ZERO_MANA);
                 case 1 -> RenderSystem.setShaderTexture(0, ONE_MANA);
                 case 2 -> RenderSystem.setShaderTexture(0, TWO_MANA);
@@ -64,9 +65,8 @@ public class ManaHudOverlay implements HudRenderCallback {
                 case 10 -> RenderSystem.setShaderTexture(0, TEN_MANA);
             }
 
-            if (client.player.getComponent(ModComponents.MANA).getValue() == 0)
+            if (manaComponent.getValue() == 0)
                 RenderSystem.setShaderTexture(0, EMPTY_MANA);
-
             DrawableHelper.drawTexture(matrixStack, x - 118, y - 60, 0, 0, 32, 64,
                     32, 64);
         }
