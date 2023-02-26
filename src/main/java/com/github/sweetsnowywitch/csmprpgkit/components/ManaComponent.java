@@ -68,11 +68,11 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         if (this.value < 0)
         {
             this.provider.damage(DamageSource.MAGIC, -this.value * healthMultiplier);
-            this.provider.world.addParticle(ParticleTypes.ELECTRIC_SPARK,
-                    this.provider.getX() + new Random().nextDouble(-0.5,0.5),
-                    this.provider.getY() + new Random().nextDouble(0.5,2),
-                    this.provider.getZ() + new Random().nextDouble(-0.5,0.5),
-                    0, 0, 0);
+            //this.provider.world.addParticle(ParticleTypes.ELECTRIC_SPARK,
+            //        this.provider.getX() + new Random().nextDouble(-0.5,0.5),
+            //        this.provider.getY() + new Random().nextDouble(0.5,2),
+            //        this.provider.getZ() + new Random().nextDouble(-0.5,0.5),
+            //        0, 0, 0);
             this.value = 0;
         }
         ModComponents.MANA.sync(this.provider);

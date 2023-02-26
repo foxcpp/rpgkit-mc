@@ -18,6 +18,8 @@ public class CasterItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        if (world.isClient)
+            return super.use(world, user, hand);
         user.getComponent(ModComponents.MANA).spendMana(price);
         return super.use(world, user, hand);
     }
