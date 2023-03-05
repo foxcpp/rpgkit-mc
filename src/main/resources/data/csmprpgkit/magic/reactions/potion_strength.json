@@ -1,0 +1,10 @@
+{
+  "recipe": [
+    {"aspect":  "csmprpgkit:pollentia"}
+  ],
+  "for_effect": "csmprpgkit:potion",
+  "amplifier": 1,
+  "costs": {
+    "magicae": {"mul": 2}
+  }
+}
