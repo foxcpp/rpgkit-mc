@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.client;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
@@ -14,11 +13,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
-import java.util.Map;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
 @Environment(EnvType.CLIENT)
 public class ClientRPGKitMod implements ClientModInitializer {
@@ -27,6 +25,7 @@ public class ClientRPGKitMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ModRenderers.register();
+        HudRenderCallback.EVENT.register(new ManaHudOverlay());
 
         ClientPlayNetworking.registerGlobalReceiver(RPGKitMod.SERVER_DATA_SYNC_PACKET_ID, (client, handler, buf, responseSender) -> {
             var jsonBlob = buf.readString(1024*1024);
