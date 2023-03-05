@@ -42,7 +42,8 @@ public class SpellBuilder {
         RPGKitMod.LOGGER.info("{} casting spell {} with form {} ({}) and effect reactions {} (elements: {})",
                 caster, this.spell, this.form, this.formReactions, this.effectReactions, this.fullRecipe);
         RPGKitMod.LOGGER.debug("Cast costs: {}", this.formedCosts);
-        return new SpellCast(this.form, this.spell, caster, this.formReactions, this.effectReactions);
+        return new SpellCast(this.form, this.spell, caster, this.formReactions, this.effectReactions,
+                this.formedCosts);
     }
 
     public SpellForm getForm() {
@@ -75,6 +76,7 @@ public class SpellBuilder {
                         this.spellAspectCosts.merge(key, element.getBaseCost(key), Float::sum);
                     }
                 }
+                this.updateFormedCosts();
                 this.pendingElements.clear();
             }
             return;

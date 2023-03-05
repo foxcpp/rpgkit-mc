@@ -52,7 +52,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
 
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {
-        return player == this.provider;
+        return player.equals(this.provider);
     }
 
     public void regenerate(int reg, float speed) {
