@@ -1,6 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.client;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.ReactionReloadListener;
@@ -29,9 +30,7 @@ public class ClientRPGKitMod implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(RPGKitMod.SERVER_DATA_SYNC_PACKET_ID, (client, handler, buf, responseSender) -> {
             var jsonBlob = buf.readString(1024*1024);
-            client.execute(() -> {
-                this.loadServerData(jsonBlob);
-            });
+            client.execute(() -> this.loadServerData(jsonBlob));
         });
     }
 
