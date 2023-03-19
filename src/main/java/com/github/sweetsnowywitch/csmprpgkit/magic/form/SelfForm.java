@@ -11,7 +11,16 @@ public class SelfForm extends SpellForm {
     }
 
     @Override
-    public void apply(SpellCast cast, SpellEffect effect) {
-        effect.onSelfHit(cast, cast.getEffectReactions());
+    public void startCast(SpellCast cast) {
+        for (var effect : cast.getSpell().getEffects()) {
+            effect.onSelfHit(cast, cast.getEffectReactions());
+        }
+    }
+
+    @Override
+    public void endCast(SpellCast cast) {
+        for (var effect : cast.getSpell().getEffects()) {
+            effect.endCast(cast, cast.getEffectReactions());
+        }
     }
 }
