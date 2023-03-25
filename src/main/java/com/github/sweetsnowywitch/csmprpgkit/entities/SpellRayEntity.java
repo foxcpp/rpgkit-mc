@@ -1,6 +1,13 @@
 package com.github.sweetsnowywitch.csmprpgkit.entities;
 
+import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -10,18 +17,31 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class SpellRayEntity extends Entity {
+    private SpellRayEntity parent = null;
+
     public SpellCast cast = null;
-    private int maxAge = 2*20;
+    private int maxAge = 10*20;
     private float growthSpeed = 2;
+    private int remainingBounces = 0;
     public static final TrackedData<Float> MAX_LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Float> LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Boolean> IS_GROWING = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -34,9 +54,31 @@ public class SpellRayEntity extends Entity {
         return new SpellRayEntity(type, world);
     }
 
+    private static SpellRayEntity nextSegment(SpellRayEntity previous, Vec3d origin, Vec3d dir) {
+        var seg = new SpellRayEntity(previous.getType(), previous.world);
+        seg.cast = previous.cast;
+        seg.growthSpeed = previous.growthSpeed;
+        seg.parent = previous.parent;
+        seg.setMaxLength(previous.getMaxLength() - previous.getLength());
+        seg.setPosition(origin);
+        seg.remainingBounces = previous.remainingBounces - 1;
+
+        seg.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, origin.add(dir));
+
+        return seg;
+    }
+
+    @Override
+    public boolean isPartOf(Entity entity) {
+        if (this.parent == null) {
+            return false;
+        }
+        return entity.equals(this.parent);
+    }
+
     @Override
     protected void initDataTracker() {
-        this.dataTracker.startTracking(MAX_LENGTH, 32f);
+        this.dataTracker.startTracking(MAX_LENGTH, 100f);
         this.dataTracker.startTracking(LENGTH, 1f);
         this.dataTracker.startTracking(IS_GROWING, true);
     }
@@ -56,6 +98,16 @@ public class SpellRayEntity extends Entity {
 
     public void setMaxLength(float maxLength) {
         this.dataTracker.set(MAX_LENGTH, maxLength);
+    }
+    public float getMaxLength() {
+        return this.dataTracker.get(MAX_LENGTH);
+    }
+
+    public void setRemainingBounces(int count) {
+        this.remainingBounces = count;
+    }
+    public int getRemainingBounces() {
+        return this.remainingBounces;
     }
 
     public float getLength() {
@@ -135,6 +187,21 @@ public class SpellRayEntity extends Entity {
         return false;
     }
 
+    private Vec3d bounceDirection(BlockHitResult bhr) {
+        var side = bhr.getSide();
+        var rotation = this.getRotationVector();
+
+        var factor = this.cast.getCost(SpellElement.COST_INTERITIO) * 0.3f + 0.1f;
+        var degreesDelta = RPGKitMod.RANDOM.nextFloat(factor) - factor/2;
+
+        var bounce = switch (side.getAxis()) {
+            case X -> rotation.rotateX(180+degreesDelta);
+            case Y -> rotation.rotateY(180+degreesDelta);
+            case Z -> rotation.rotateZ(180+degreesDelta);
+        };
+        return bounce.multiply(-1);
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -153,29 +220,40 @@ public class SpellRayEntity extends Entity {
         }
 
         if (length <= maxLength && this.dataTracker.get(IS_GROWING)) {
-            var raycastStart = this.getPos().add(this.getRotationVector().normalize().multiply(length - 0.1f));
-            var raycastEnd = this.getPos().add(this.getRotationVector().normalize().multiply(length + this.growthSpeed));
-            var hitResult = this.world.raycast(new RaycastContext(
+            var raycastStart = this.getPos().add(this.getRotationVector().multiply(length - 0.1f));
+            var raycastEnd = this.getPos().add(this.getRotationVector().multiply(length + this.growthSpeed));
+            BlockHitResult hitResult = this.world.raycast(new RaycastContext(
                     raycastStart, raycastEnd,
                     RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
                     this));
             if (hitResult.getType() != HitResult.Type.MISS) {
-                // TODO: Bounce check here.
-                this.dataTracker.set(LENGTH, (float)hitResult.getPos().distanceTo(this.getPos()));
-                this.dataTracker.set(IS_GROWING, false);
                 raycastEnd = hitResult.getPos();
             }
             var entHitResult = ProjectileUtil.getEntityCollision(world, this, raycastStart, raycastEnd,
                     new Box(raycastStart, raycastEnd), this::canHit);
             if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
                 if (!this.onEntityHit(entHitResult)) {
-                    // TODO: Bounce check here.
                     this.dataTracker.set(LENGTH, (float)entHitResult.getPos().distanceTo(this.getPos()));
                     this.dataTracker.set(IS_GROWING, false);
                 }
                 return;
             } else if (hitResult.getType() != HitResult.Type.MISS) {
-                this.onBlockHit(hitResult);
+                var block = this.world.getBlockState(hitResult.getBlockPos());
+                var glassBlocksTag = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", "glass_blocks"));
+                var glassPanesTag = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", "glass_panes"));
+                if (!block.isIn(glassBlocksTag) && !block.isIn(glassPanesTag)) {
+                    if (!this.onBlockHit(hitResult)) {
+                        if (this.remainingBounces > 0 && (maxLength - length) > 1f) {
+                            var dir = bounceDirection(hitResult);
+                            var ent = nextSegment(this, hitResult.getPos(), dir);
+                            this.world.spawnEntity(ent);
+                        }
+                        this.dataTracker.set(LENGTH, (float)hitResult.getPos().distanceTo(this.getPos()));
+                        this.dataTracker.set(IS_GROWING, false);
+                    }
+                    return;
+
+                }
             }
 
             length += this.growthSpeed;

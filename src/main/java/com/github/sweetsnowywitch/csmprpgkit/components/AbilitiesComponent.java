@@ -21,7 +21,7 @@ public class AbilitiesComponent implements ComponentV3 {
     public AbilitiesComponent(LivingEntity provider) {
         this.provider = provider;
         this.abilityValues = new HashMap<>();
-        this.proficiency = new HashSet();
+        this.proficiency = new HashSet<>();
         this.proficiencyModifier = 0;
     }
 

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class SpellCast {
@@ -86,6 +87,10 @@ public class SpellCast {
 
     public ImmutableList<SpellReaction> getFormReactions() {
         return formReactions;
+    }
+
+    public float getCost(String key) {
+        return Objects.requireNonNull(this.costs.getOrDefault(key, 0f));
     }
 
     public ImmutableList<SpellReaction> getEffectReactions() {

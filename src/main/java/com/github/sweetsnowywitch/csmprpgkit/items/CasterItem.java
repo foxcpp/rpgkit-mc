@@ -13,6 +13,7 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -34,6 +35,7 @@ public class CasterItem extends Item {
         var spellBuilder = new SpellBuilder(ModForms.RAY);
         spellBuilder.addElement(SpellElement.of(ModRegistries.ASPECTS.get(Identifier.of(RPGKitMod.MOD_ID, "aer"))));
         spellBuilder.addElement(SpellElement.of(ModRegistries.ASPECTS.get(Identifier.of(RPGKitMod.MOD_ID, "interitio"))));
+        spellBuilder.addElement(SpellElement.of(Items.SLIME_BALL));
         spellBuilder.complete();
 
         var cast = spellBuilder.toCast(user);
