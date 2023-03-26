@@ -7,17 +7,19 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class RayForm extends SpellForm {
     public static class Reaction extends SpellReaction {
         private final int addBounces;
 
-        public Reaction() {
-            this(0);
+        public Reaction(Identifier id) {
+            this(id, 0);
         }
 
-        public Reaction(int addBounces) {
+        public Reaction(Identifier id, int addBounces) {
+            super(id);
             this.addBounces = addBounces;
         }
 
@@ -32,7 +34,7 @@ public class RayForm extends SpellForm {
             if (jsonObject.has("bounces")) {
                 addBounces = jsonObject.get("bounces").getAsInt();
             }
-            return new Reaction(addBounces);
+            return new Reaction(this.id, addBounces);
         }
 
         @Override
@@ -48,8 +50,8 @@ public class RayForm extends SpellForm {
     }
 
     @Override
-    public @Nullable SpellReaction reactionType() {
-        return new Reaction();
+    public @Nullable SpellReaction reactionType(Identifier id) {
+        return new Reaction(id);
     }
 
     @Override

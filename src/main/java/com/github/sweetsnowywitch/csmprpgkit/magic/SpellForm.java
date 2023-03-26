@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -10,7 +11,7 @@ public abstract class SpellForm {
     private final ImmutableMap<String, Float> costMultipliers;
     private final ImmutableMap<String, Float> costTerms;
 
-    public @Nullable SpellReaction reactionType() {
+    public @Nullable SpellReaction reactionType(Identifier id) {
         return null;
     }
 

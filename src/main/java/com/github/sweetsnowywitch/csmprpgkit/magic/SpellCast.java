@@ -110,17 +110,13 @@ public class SpellCast {
 
         var formReactions = new NbtList();
         for (var reaction : this.formReactions) {
-            var reactionID = ModRegistries.REACTIONS.inverse().get(reaction);
-            if (reactionID == null) throw new IllegalStateException("writeToNbt called with unregistered reaction: %s".formatted(reaction));
-            formReactions.add(NbtString.of(reactionID.toString()));
+            formReactions.add(NbtString.of(reaction.id.toString()));
         }
         nbt.put("formReactions", formReactions);
 
         var effectReactions = new NbtList();
         for (var reaction : this.effectReactions) {
-            var reactionID = ModRegistries.REACTIONS.inverse().get(reaction);
-            if (reactionID == null) throw new IllegalStateException("writeToNbt called with unregistered reaction: %s".formatted(reaction));
-            effectReactions.add(NbtString.of(reactionID.toString()));
+            effectReactions.add(NbtString.of(reaction.id.toString()));
         }
         nbt.put("effectReactions", effectReactions);
 

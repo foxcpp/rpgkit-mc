@@ -4,6 +4,7 @@ import com.github.sweetsnowywitch.csmprpgkit.JSONParameters;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -20,7 +21,7 @@ public abstract class SpellEffect implements JSONParameters<SpellEffect> {
         return new JsonObject();
     }
 
-    public @Nullable SpellReaction reactionType() {
+    public @Nullable SpellReaction reactionType(Identifier id) {
         return null;
     }
 

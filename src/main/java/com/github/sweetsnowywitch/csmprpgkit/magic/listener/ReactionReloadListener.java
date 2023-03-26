@@ -48,14 +48,14 @@ public class ReactionReloadListener extends JsonDataLoader implements Identifiab
                     if (effect == null) {
                         throw new IllegalArgumentException("unknown effect: %s".formatted(id.toString()));
                     }
-                    reaction = effect.reactionType();
+                    reaction = effect.reactionType(ent.getKey());
                 } else if (model.has("for_form")) {
                     var id = new Identifier(model.get("for_form").getAsString());
                     var form = ModRegistries.SPELL_FORMS.get(id);
                     if (form == null) {
                         throw new IllegalArgumentException("unknown reaction: %s".formatted(id.toString()));
                     }
-                    reaction = form.reactionType();
+                    reaction = form.reactionType(ent.getKey());
                 } else {
                     throw new IllegalArgumentException("reaction definition must have for_form or for_effect");
                 }
