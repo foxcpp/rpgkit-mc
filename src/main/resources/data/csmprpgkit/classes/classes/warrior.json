@@ -1,0 +1,20 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "proficiency": [
+        "csmprpgkit:strength"
+      ],
+      "abilities": {
+        "csmprpgkit:strength": 1
+      },
+      "perks": [
+        {
+          "type": "csmprpgkit:status_effect",
+          "id": "minecraft:strength",
+          "amplifier": 1
+        }
+      ]
+    }
+  ]
+}

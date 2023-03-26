@@ -1,4 +1,4 @@
-package com.github.sweetsnowywitch.csmprpgkit.abilities;
+package com.github.sweetsnowywitch.csmprpgkit.classes;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import net.minecraft.util.math.random.Random;

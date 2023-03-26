@@ -1,2 +1,14 @@
 {
+  "command.csmprpgkit.exp.query": "Текущий уровень: %d (неиспользованных очков: %d), опыт сверх текущего уровня: %d.",
+  "commands.csmprpgkit.class.levelup.not_enough_levels": "Недостаточно очков прокачки для повышения уровня.",
+  "commands.csmprpgkit.class.levelup.success": "уровень увеличен до %s.",
+  "commands.csmprpgkit.class.list": "Классы игрока:",
+  "commands.csmprpgkit.class.reset.success": "Классы %s были сброшены.",
+  "commands.csmprpgkit.exp.add.success_multiple": "%d очков опыта выдано %d целям.",
+  "commands.csmprpgkit.exp.add.success_single": "%d очков опыта выдано %s.",
+  "commands.csmprpgkit.exp.reset.success_multiple": "Сброшены очки опыта у %d целей.",
+  "commands.csmprpgkit.exp.reset.success_single": "Очки опыта %s были сброшены.",
+  "commands.csmprpgkit.unknown_spell_element": "Unknown element (no such aspect or item)",
+  "csmprpgkit.class.csmprpgkit.warrior": "Warrior",
+  "csmprpgkit.class.csmprpgkit.wizard": "Wizard"
 }

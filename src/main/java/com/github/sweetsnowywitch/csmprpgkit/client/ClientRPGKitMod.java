@@ -1,6 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.client;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.classes.listener.ClassReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
@@ -34,43 +35,40 @@ public class ClientRPGKitMod implements ClientModInitializer {
         });
     }
 
+    private static HashMap<Identifier, JsonElement> fromJsonMap(JsonObject obj) {
+        var res = new HashMap<Identifier, JsonElement>();
+        for (var entry : obj.entrySet()) {
+            var id = Identifier.tryParse(entry.getKey());
+            if (id == null) {
+                throw new JsonSyntaxException("Invalid identifier: %s".formatted(entry.getKey()));
+            }
+            res.put(id, entry.getValue());
+        }
+        return res;
+    }
+
     public void loadServerData(String jsonBlob) {
         RPGKitMod.LOGGER.info("Loading server data...");
 
-        var aspects = new HashMap<Identifier, JsonElement>();
-        var spells = new HashMap<Identifier, JsonElement>();
-        var reactions = new HashMap<Identifier, JsonElement>();
+        HashMap<Identifier, JsonElement> classes;
+        HashMap<Identifier, JsonElement> aspects, spells, reactions;
 
         try {
             var json = GSON.fromJson(jsonBlob, JsonObject.class);
 
-            for (var entry : json.getAsJsonObject("aspects").entrySet()) {
-                var id = Identifier.tryParse(entry.getKey());
-                if (id == null) {
-                    throw new JsonSyntaxException("Invalid identifier: %s".formatted(entry.getKey()));
-                }
-                aspects.put(id, entry.getValue());
-            }
-            for (var entry : json.getAsJsonObject("spells").entrySet()) {
-                var id = Identifier.tryParse(entry.getKey());
-                if (id == null) {
-                    throw new JsonSyntaxException("Invalid identifier: %s".formatted(entry.getKey()));
-                }
-                spells.put(id, entry.getValue());
-            }
-            for (var entry : json.getAsJsonObject("reactions").entrySet()) {
-                var id = Identifier.tryParse(entry.getKey());
-                if (id == null) {
-                    throw new JsonSyntaxException("Invalid identifier: %s".formatted(entry.getKey()));
-                }
-                reactions.put(id, entry.getValue());
-            }
+            classes = fromJsonMap(json.getAsJsonObject("classes"));
+
+            aspects = fromJsonMap(json.getAsJsonObject("aspects"));
+            spells = fromJsonMap(json.getAsJsonObject("spells"));
+            reactions = fromJsonMap(json.getAsJsonObject("reactions"));
         } catch (JsonSyntaxException ex) {
             RPGKitMod.LOGGER.error("Error occurred while decoding JSON data from server: {}", ex.toString());
             return;
         }
 
         try {
+            ClassReloadListener.load(classes);
+
             AspectReloadListener.load(aspects);
             SpellReloadListener.load(spells);
             ReactionReloadListener.load(reactions);

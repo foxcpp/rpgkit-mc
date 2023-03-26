@@ -14,10 +14,14 @@ public final class ModComponents implements EntityComponentInitializer {
     public static final ComponentKey<ManaComponent> MANA =
             ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(RPGKitMod.MOD_ID, "mana"), ManaComponent.class);
 
+    public static final ComponentKey<ClassComponent> CLASS =
+            ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(RPGKitMod.MOD_ID, "class"), ClassComponent.class);
+
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         // XXX: Не забывай вписывать компоненты в fabric.mod.json.
         registry.registerForPlayers(ABILITIES, AbilitiesComponent::new, RespawnCopyStrategy.CHARACTER);
-        registry.registerForPlayers(MANA, ManaComponent::new, RespawnCopyStrategy.NEVER_COPY);
+        registry.registerForPlayers(MANA, ManaComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerForPlayers(CLASS, ClassComponent::new, RespawnCopyStrategy.CHARACTER);
     }
 }
