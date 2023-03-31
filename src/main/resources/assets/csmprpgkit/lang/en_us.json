@@ -1,2 +1,14 @@
 {
+  "command.csmprpgkit.exp.query": "Current level: %d (unused: %d), current level experience: %d.",
+  "commands.csmprpgkit.class.levelup.not_enough_levels": "Not enough unused levels to levelup class.",
+  "commands.csmprpgkit.class.levelup.success": "level has been increased to %s.",
+  "commands.csmprpgkit.class.list": "Player classes:",
+  "commands.csmprpgkit.class.reset.success": "%s's classes has been reset.",
+  "commands.csmprpgkit.exp.add.success_multiple": "%d experience points given to %d targets.",
+  "commands.csmprpgkit.exp.add.success_single": "%d experience points given to %s.",
+  "commands.csmprpgkit.exp.reset.success_multiple": "Reset experience points of %d targets.",
+  "commands.csmprpgkit.exp.reset.success_single": "%s's experience points reset.",
+  "commands.csmprpgkit.unknown_spell_element": "Unknown element (no such aspect or item)",
+  "csmprpgkit.class.csmprpgkit.warrior": "Warrior",
+  "csmprpgkit.class.csmprpgkit.wizard": "Wizard"
 }

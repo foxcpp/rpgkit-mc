@@ -25,7 +25,8 @@
   "custom": {
     "cardinal-components": [
       "csmprpgkit:abilities",
-      "csmprpgkit:mana"
+      "csmprpgkit:mana",
+      "csmprpgkit:class"
     ]
   },
   "mixins": [

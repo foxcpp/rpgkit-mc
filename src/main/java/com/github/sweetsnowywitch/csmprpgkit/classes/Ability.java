@@ -1,19 +1,22 @@
-package com.github.sweetsnowywitch.csmprpgkit.abilities;
+package com.github.sweetsnowywitch.csmprpgkit.classes;
 
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Identifier;
+
+import java.util.Objects;
 
 public class Ability {
-    public final String id;
-    public final String baseId;
+    public final Identifier id;
+    public final Identifier baseId;
 
     public static int DEFAULT_ABILITY_VALUE = 10;
 
-    public Ability(String id) {
+    public Ability(Identifier id) {
         this(id, null);
     }
 
-    public Ability(String id, Ability base) {
+    public Ability(Identifier id, Ability base) {
         this.id = id;
         this.baseId = (base != null) ? base.id : id;
     }
@@ -38,5 +41,23 @@ public class Ability {
             modifier += comp.getProficiencyModifier();
         }
         return modifier;
+    }
+
+    @Override
+    public String toString() {
+        return "Ability{"+this.id.toString()+"}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ability ability = (Ability) o;
+        return id.equals(ability.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

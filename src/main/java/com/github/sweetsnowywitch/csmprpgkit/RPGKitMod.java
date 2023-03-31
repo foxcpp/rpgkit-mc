@@ -1,5 +1,10 @@
 package com.github.sweetsnowywitch.csmprpgkit;
 
+import com.github.sweetsnowywitch.csmprpgkit.classes.abilities.ModAbilities;
+import com.github.sweetsnowywitch.csmprpgkit.classes.listener.ClassReloadListener;
+import com.github.sweetsnowywitch.csmprpgkit.classes.perks.ModPerks;
+import com.github.sweetsnowywitch.csmprpgkit.commands.AbilityArgument;
+import com.github.sweetsnowywitch.csmprpgkit.commands.CharacterClassArgument;
 import com.github.sweetsnowywitch.csmprpgkit.commands.ModCommands;
 import com.github.sweetsnowywitch.csmprpgkit.commands.SpellFormArgument;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
@@ -10,6 +15,7 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.ReactionReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.SpellReloadListener;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -28,6 +34,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class RPGKitMod implements ModInitializer  {
     public static final Gson GSON = new Gson();
     public static final String MOD_ID = "csmprpgkit";
@@ -36,47 +44,53 @@ public class RPGKitMod implements ModInitializer  {
 
     @Override
     public void onInitialize() {
-        ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "spell_form"), SpellFormArgument.class,
-                ConstantArgumentSerializer.of(SpellFormArgument::spellForm));
-
+        // Core
         ModItems.register();
         ModEntities.register();
         CommandRegistrationCallback.EVENT.register(ModCommands::register);
 
+        // Classes
+        ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "class"), CharacterClassArgument.class,
+                ConstantArgumentSerializer.of(CharacterClassArgument::characterClass));
+        ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "ability"), AbilityArgument.class,
+                ConstantArgumentSerializer.of(AbilityArgument::ability));
+        ModAbilities.register();
+        ModPerks.register();
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ClassReloadListener());
+
+        // Magic
+        ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "spell_form"), SpellFormArgument.class,
+                ConstantArgumentSerializer.of(SpellFormArgument::spellForm));
         ModEffects.register();
         ModForms.register();
-
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new AspectReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SpellReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ReactionReloadListener());
 
-        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-            this.sendServerData(server, null);
-        });
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            this.sendServerData(server, handler.player);
-        });
+        // Datapack sync
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> this.sendServerData(server, null));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> this.sendServerData(server, handler.player));
+    }
+
+    private static JsonObject asJsonMap(Map<Identifier, JsonElement> lastLoadedData) {
+        var data = new JsonObject();
+        for (var entry : lastLoadedData.entrySet()) {
+            data.add(entry.getKey().toString(), entry.getValue());
+        }
+        return data;
     }
 
     public void sendServerData(MinecraftServer server, @Nullable ServerPlayerEntity player) {
         var dataObject = new JsonObject();
         // XXX: Keep model in sync with ClientRPGKitMod.loadServerData.
-        var dataAspects = new JsonObject();
-        for (var entry : AspectReloadListener.lastLoadedData.entrySet()) {
-            dataAspects.add(entry.getKey().toString(), entry.getValue());
-        }
-        var dataSpells = new JsonObject();
-        for (var entry : SpellReloadListener.lastLoadedData.entrySet()) {
-            dataSpells.add(entry.getKey().toString(), entry.getValue());
-        }
-        var dataReactions = new JsonObject();
-        for (var entry : ReactionReloadListener.lastLoadedData.entrySet()) {
-            dataReactions.add(entry.getKey().toString(), entry.getValue());
-        }
 
-        dataObject.add("aspects", dataAspects);
-        dataObject.add("spells", dataSpells);
-        dataObject.add("reactions", dataReactions);
+        // Classes
+        dataObject.add("classes", asJsonMap(ClassReloadListener.lastLoadedData));
+
+        // Magic
+        dataObject.add("aspects", asJsonMap(AspectReloadListener.lastLoadedData));
+        dataObject.add("spells", asJsonMap(SpellReloadListener.lastLoadedData));
+        dataObject.add("reactions", asJsonMap(ReactionReloadListener.lastLoadedData));
 
         var jsonBlob = dataObject.toString();
 
