@@ -2,16 +2,16 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 
 public abstract class SpellForm {
     private final ImmutableMap<String, Float> costMultipliers;
     private final ImmutableMap<String, Float> costTerms;
 
-    public @Nullable SpellReaction reactionType() {
+    public @Nullable SpellReaction reactionType(Identifier id) {
         return null;
     }
 
@@ -32,7 +32,24 @@ public abstract class SpellForm {
         return val * this.getCostMultiplier(key) + this.getCostTerm(key);
     }
 
-    public abstract void apply(SpellCast cast, SpellEffect effect);
+    /**
+     * Вызывается при начале каста заклинания.
+     */
+    public void startCast(SpellCast cast) {
+        for (var effect : cast.getSpell().getEffects()) {
+            effect.startCast(cast, cast.getEffectReactions());
+        }
+    }
+
+    /**
+     * Вызывается, если действие заклинания прерывается каким-то воздействием,
+     * например, заклинание развеивания магии и т.д.
+     */
+    public void endCast(SpellCast cast) {
+        for (var effect : cast.getSpell().getEffects()) {
+            effect.endCast(cast, cast.getEffectReactions());
+        }
+    }
 
     public String toString() {
         var id = ModRegistries.SPELL_FORMS.getId(this);

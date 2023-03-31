@@ -97,7 +97,7 @@ public class SpellRecipeMap<T> {
                         matched = false;
                         break;
                     }
-                    if (comboElement.item.test(new ItemStack(ise.getItem()))) {
+                    if (!comboElement.item.test(new ItemStack(ise.getItem()))) {
                         matched = false;
                         break;
                     }

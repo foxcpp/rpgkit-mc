@@ -28,7 +28,7 @@ public class ModRegistries {
     // loaded from data packs
     public static final BiMap<Identifier, Aspect> ASPECTS = HashBiMap.create();
     public static final BiMap<Identifier, Spell> SPELLS = HashBiMap.create();
-    public static final Map<Identifier, SpellReaction> REACTIONS = new HashMap<>();
+    public static final BiMap<Identifier, SpellReaction> REACTIONS = HashBiMap.create();
     public static final SpellRecipeMap<SpellReaction> REACTION_RECIPES = new SpellRecipeMap<>();
     public static final SpellRecipeMap<Spell> SPELL_RECIPES = new SpellRecipeMap<>();
     public static final Map<Identifier, Map<String, Float>> ITEM_COSTS = new HashMap<>();

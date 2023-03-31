@@ -3,11 +3,25 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 import com.github.sweetsnowywitch.csmprpgkit.JSONParameters;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * SpellReaction is a base class for spell "reaction". Reaction
+ * is a spell cast element that changes how its form or effect works, typically
+ * by changing its parameters.
+ *
+ * <p>
+ *     Inheritors should call {@link SpellReaction#populateFromJson(JsonObject) populateFromJson}
+ *     method in their {@link JSONParameters#withParametersFromJSON(JsonObject) withParmetersFromJson} implementation
+ *     in order to populate costMultiplers and costTerms fields of SpellReaction class. Same goes for
+ *     {@link SpellReaction#writeToJson(JsonObject) writeToJson} and {@link JSONParameters#parametersToJSON() parmaetersToJSON}.
+ * </p>
+ */
 public abstract class SpellReaction implements JSONParameters<SpellReaction> {
+    public final Identifier id;
     private ImmutableMap<String, Float> costMultipliers;
     private ImmutableMap<String, Float> costTerms;
 
@@ -18,12 +32,14 @@ public abstract class SpellReaction implements JSONParameters<SpellReaction> {
         return false;
     }
 
-    public SpellReaction() {
+    public SpellReaction(Identifier id) {
+        this.id = id;
         this.costMultipliers = ImmutableMap.of();
         this.costTerms = ImmutableMap.of();
     }
 
-    public SpellReaction(ImmutableMap<String, Float> costMultipliers, ImmutableMap<String, Float> costTerms) {
+    public SpellReaction(Identifier id, ImmutableMap<String, Float> costMultipliers, ImmutableMap<String, Float> costTerms) {
+        this.id = id;
         this.costMultipliers = costMultipliers;
         this.costTerms = costTerms;
     }

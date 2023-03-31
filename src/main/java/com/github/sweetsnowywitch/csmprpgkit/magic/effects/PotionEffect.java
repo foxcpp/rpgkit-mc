@@ -13,6 +13,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,11 +24,12 @@ public class PotionEffect extends SpellEffect {
         private final int amplifier;
         private final int durationTicks;
 
-        protected Reaction() {
-            this(0, 0);
+        protected Reaction(Identifier id) {
+            this(id, 0, 0);
         }
 
-        protected Reaction(int amplifier, int durationTicks) {
+        protected Reaction(Identifier id, int amplifier, int durationTicks) {
+            super(id);
             this.amplifier = amplifier;
             this.durationTicks = durationTicks;
         }
@@ -47,7 +49,7 @@ public class PotionEffect extends SpellEffect {
             if (jsonObject.has("duration")) {
                 durationTicks = jsonObject.get("duration").getAsInt();
             }
-            var r = new Reaction(amplifier, durationTicks);
+            var r = new Reaction(this.id, amplifier, durationTicks);
             r.populateFromJson(jsonObject);
             return r;
         }
@@ -98,8 +100,8 @@ public class PotionEffect extends SpellEffect {
     }
 
     @Override
-    public @Nullable SpellReaction reactionType() {
-        return new Reaction();
+    public @Nullable SpellReaction reactionType(Identifier id) {
+        return new Reaction(id);
     }
 
     @Override
@@ -130,7 +132,7 @@ public class PotionEffect extends SpellEffect {
     }
 
     @Override
-    public void onSingleBlockHit(SpellCast cast, BlockPos pos, ImmutableList<SpellReaction> reactions) {
+    public void onSingleBlockHit(SpellCast cast, BlockPos pos, Direction dir, ImmutableList<SpellReaction> reactions) {
 
     }
 

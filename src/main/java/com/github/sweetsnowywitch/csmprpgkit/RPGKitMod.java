@@ -35,9 +35,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Random;
 
 public class RPGKitMod implements ModInitializer  {
     public static final Gson GSON = new Gson();
+    public static final Random RANDOM = new Random();
     public static final String MOD_ID = "csmprpgkit";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final Identifier SERVER_DATA_SYNC_PACKET_ID = new Identifier(MOD_ID, "server_data_sync");

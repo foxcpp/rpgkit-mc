@@ -1,0 +1,10 @@
+{
+  "recipe": [
+    {"item":  "minecraft:slime_ball"}
+  ],
+  "for_form": "csmprpgkit:ray",
+  "bounces": 3,
+  "costs": {
+    "magicae": {"mul": 1.5}
+  }
+}
