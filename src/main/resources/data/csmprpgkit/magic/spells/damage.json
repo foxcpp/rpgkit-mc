@@ -1,0 +1,11 @@
+{
+  "recipe": [
+    {"aspect": "csmprpgkit:interitio"}
+  ],
+  "effects": [
+    {
+      "type": "csmprpgkit:damage",
+      "damage_dealt": -100
+    }
+  ]
+}

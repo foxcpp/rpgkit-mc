@@ -8,8 +8,10 @@ import net.minecraft.util.Identifier;
 
 public class ModEffects {
     public static SpellEffect POTION = new PotionEffect();
+    public static SpellEffect DAMAGE = new DamageEffect();
 
     public static void register() {
         Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "potion"), POTION);
+        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "damage"), DAMAGE);
     }
 }
