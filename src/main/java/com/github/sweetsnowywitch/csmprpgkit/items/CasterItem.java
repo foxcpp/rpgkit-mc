@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -34,7 +35,7 @@ public class CasterItem extends Item {
         spellBuilder.complete();
 
         var cast = spellBuilder.toCast(user);
-        cast.perform();
+        cast.perform((ServerWorld)world);
 
         return TypedActionResult.success(user.getStackInHand(hand));
     }

@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -28,39 +29,33 @@ public class Spell {
         return id.toString();
     }
 
-    public void startCast(SpellCast cast, ImmutableList<SpellReaction> reactions) {
+    public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {
         for (var effect : this.effects) {
-            effect.startCast(cast, reactions);
+            effect.startCast(cast, world, caster);
         }
     }
 
-    public void endCast(SpellCast cast, ImmutableList<SpellReaction> reactions) {
+    public void endCast(ServerSpellCast cast, ServerWorld world) {
         for (var effect : this.effects) {
-            effect.endCast(cast, reactions);
+            effect.endCast(cast, world);
         }
     }
 
-    public void onSingleEntityHit(SpellCast cast, Entity entity, ImmutableList<SpellReaction> reactions) {
+    public void onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         for (var effect : this.effects) {
-            effect.onSingleEntityHit(cast, entity, reactions);
+            effect.onSingleEntityHit(cast, entity);
         }
     }
 
-    public void onSingleBlockHit(SpellCast cast, BlockPos pos, Direction dir, ImmutableList<SpellReaction> reactions) {
+    public void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
         for (var effect : this.effects) {
-            effect.onSingleBlockHit(cast, pos, dir, reactions);
+            effect.onSingleBlockHit(cast, world, pos, dir);
         }
     }
 
-    public void onAreaHit(SpellCast cast, Vec3d position, ImmutableList<SpellReaction> reactions) {
+    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position) {
         for (var effect : this.effects) {
-            effect.onAreaHit(cast, position, reactions);
-        }
-    }
-
-    public void onSelfHit(SpellCast cast, ImmutableList<SpellReaction> reactions) {
-        for (var effect : this.effects) {
-            effect.onSelfHit(cast, reactions);
+            effect.onAreaHit(cast, world, position);
         }
     }
 }

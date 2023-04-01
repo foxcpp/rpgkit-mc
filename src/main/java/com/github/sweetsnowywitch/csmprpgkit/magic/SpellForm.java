@@ -2,7 +2,10 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -33,21 +36,28 @@ public abstract class SpellForm {
     }
 
     /**
-     * Вызывается при начале каста заклинания.
+     * startCast is called when spell is just cast. It should call startCast
+     * on all effects (e.g. super.startCast) and do other necessary initialization.
+     *
+     * @param cast   SpellCast object containing all info about how spell is cast.
+     * @param world  Logical server world where cast is happening.
+     * @param caster Entity that performs the cast, does not have to be LivingEntity.
      */
-    public void startCast(SpellCast cast) {
+    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         for (var effect : cast.getSpell().getEffects()) {
-            effect.startCast(cast, cast.getEffectReactions());
+            effect.startCast(cast, world, caster);
         }
     }
 
     /**
-     * Вызывается, если действие заклинания прерывается каким-то воздействием,
-     * например, заклинание развеивания магии и т.д.
+     * Called when spell is interrupted/dissolved via external means.
+     *
+     * @param cast   SpellCast object containing all info about how spell is cast.
+     * @param world  Logical server world where cast is happening.
      */
-    public void endCast(SpellCast cast) {
+    public void endCast(ServerSpellCast cast, ServerWorld world) {
         for (var effect : cast.getSpell().getEffects()) {
-            effect.endCast(cast, cast.getEffectReactions());
+            effect.endCast(cast, world);
         }
     }
 

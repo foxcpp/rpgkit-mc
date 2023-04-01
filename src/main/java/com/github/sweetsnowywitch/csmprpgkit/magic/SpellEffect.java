@@ -4,6 +4,7 @@ import com.github.sweetsnowywitch.csmprpgkit.JSONParameters;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -25,12 +26,9 @@ public abstract class SpellEffect implements JSONParameters<SpellEffect> {
         return null;
     }
 
-    public void startCast(SpellCast cast, ImmutableList<SpellReaction> reactions) {}
-    public void endCast(SpellCast cast, ImmutableList<SpellReaction> reactions) {}
-    public abstract void onSingleEntityHit(SpellCast cast, Entity entity, ImmutableList<SpellReaction> reactions);
-    public abstract void onSingleBlockHit(SpellCast cast, BlockPos pos, Direction dir, ImmutableList<SpellReaction> reactions);
-    public abstract void onAreaHit(SpellCast cast, Vec3d position, ImmutableList<SpellReaction> reactions);
-    public void onSelfHit(SpellCast cast, ImmutableList<SpellReaction> reactions) {
-        this.onSingleEntityHit(cast, cast.getCaster(), reactions);
-    }
+    public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {}
+    public void endCast(ServerSpellCast cast, ServerWorld world) {}
+    public abstract void onSingleEntityHit(ServerSpellCast cast, Entity entity);
+    public abstract void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir);
+    public abstract void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position);
 }

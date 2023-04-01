@@ -9,6 +9,7 @@ import com.github.sweetsnowywitch.csmprpgkit.commands.ModCommands;
 import com.github.sweetsnowywitch.csmprpgkit.commands.SpellFormArgument;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.effects.ModEffects;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
@@ -26,6 +27,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -63,6 +65,7 @@ public class RPGKitMod implements ModInitializer  {
         // Magic
         ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "spell_form"), SpellFormArgument.class,
                 ConstantArgumentSerializer.of(SpellFormArgument::spellForm));
+        TrackedDataHandlerRegistry.register(SpellCast.TRACKED_HANDLER);
         ModEffects.register();
         ModForms.register();
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new AspectReloadListener());

@@ -3,6 +3,8 @@ package com.github.sweetsnowywitch.csmprpgkit.client.overlays;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -12,6 +14,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 
+@Environment(EnvType.CLIENT)
 public class ManaHudOverlay implements HudRenderCallback {
     private static final Identifier EMPTY_MANA = new Identifier(RPGKitMod.MOD_ID, "textures/hud/mana/mana_bar.png");
     private static final Identifier ZERO_MANA = new Identifier(RPGKitMod.MOD_ID, "textures/hud/mana/mana_0.png");

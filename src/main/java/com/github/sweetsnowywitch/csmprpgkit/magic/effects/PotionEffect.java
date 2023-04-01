@@ -1,7 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.google.common.collect.ImmutableList;
@@ -11,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -105,7 +106,7 @@ public class PotionEffect extends SpellEffect {
     }
 
     @Override
-    public void onSingleEntityHit(SpellCast cast, Entity entity, ImmutableList<SpellReaction> reactions) {
+    public void onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         if (this.statusEffect == null) {
             RPGKitMod.LOGGER.warn("Cast {} with empty status effect", cast);
             return;
@@ -117,7 +118,7 @@ public class PotionEffect extends SpellEffect {
         var amplifier = this.baseAmplifier;
         var duration = this.baseDuration;
 
-        for (var reaction : reactions) {
+        for (var reaction : cast.getEffectReactions()) {
             if (reaction.appliesTo(this)) {
                 var peReaction = (Reaction)reaction;
                 amplifier += peReaction.amplifier;
@@ -125,19 +126,21 @@ public class PotionEffect extends SpellEffect {
             }
         }
 
+        var caster = ((ServerWorld)entity.getWorld()).getEntity(cast.getCasterUuid());
+
         le.addStatusEffect(
                 new StatusEffectInstance(this.statusEffect, duration, amplifier, false, false),
-                cast.getCaster()
+                caster
         );
     }
 
     @Override
-    public void onSingleBlockHit(SpellCast cast, BlockPos pos, Direction dir, ImmutableList<SpellReaction> reactions) {
+    public void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
 
     }
 
     @Override
-    public void onAreaHit(SpellCast cast, Vec3d position, ImmutableList<SpellReaction> reactions) {
+    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position) {
 
     }
 
