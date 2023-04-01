@@ -25,6 +25,10 @@ public class ItemElement implements SpellElement {
         return costs.getOrDefault(key, 0f);
     }
 
+    public int getColor() {
+        return 0xFFFFFFFF;
+    }
+
     public Item getItem() {
         return this.item;
     }

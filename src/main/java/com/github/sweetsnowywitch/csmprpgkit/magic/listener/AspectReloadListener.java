@@ -50,7 +50,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                     }
                 }
 
-                int color = 0x99D9EA /* light blue, kinda */;
+                int color = Aspect.DEFAULT_COLOR;
                 if (model.has("color")) {
                     color = model.get("color").getAsInt();
                 }

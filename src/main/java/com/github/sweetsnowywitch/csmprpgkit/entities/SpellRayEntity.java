@@ -1,12 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.entities;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -17,34 +14,39 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SpellRayEntity extends Entity {
-    private SpellRayEntity parent = null;
+    // Populated only on logical server side.
+    private @Nullable SpellRayEntity parent = null;
 
-    public SpellCast cast = null;
+    // Populated only on logical server side.
+    public ServerSpellCast cast = null;
     private int maxAge = 10*20;
     private float growthSpeed = 2;
+    private int totalBounces = 0;
     private int remainingBounces = 0;
     public static final TrackedData<Float> MAX_LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Float> LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Boolean> IS_GROWING = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<SpellCast> CAST = DataTracker.registerData(SpellRayEntity.class, SpellCast.TRACKED_HANDLER);
+
+    public int rayBaseColor = 0x88FFFFFF;
+
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);
         this.ignoreCameraFrustum = true;
@@ -56,12 +58,13 @@ public class SpellRayEntity extends Entity {
 
     private static SpellRayEntity nextSegment(SpellRayEntity previous, Vec3d origin, Vec3d dir) {
         var seg = new SpellRayEntity(previous.getType(), previous.world);
-        seg.cast = previous.cast;
+        seg.setCast(previous.cast);
         seg.growthSpeed = previous.growthSpeed;
         seg.parent = previous.parent;
         seg.setMaxLength(previous.getMaxLength() - previous.getLength());
         seg.setPosition(origin);
         seg.remainingBounces = previous.remainingBounces - 1;
+        seg.totalBounces = previous.totalBounces;
 
         seg.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, origin.add(dir));
 
@@ -81,11 +84,33 @@ public class SpellRayEntity extends Entity {
         this.dataTracker.startTracking(MAX_LENGTH, 100f);
         this.dataTracker.startTracking(LENGTH, 1f);
         this.dataTracker.startTracking(IS_GROWING, true);
+        this.dataTracker.startTracking(CAST, SpellCast.EMPTY);
     }
 
-    public void setCast(SpellCast cast) {
-        this.cast = cast;
+    @Override
+    public void onTrackedDataSet(TrackedData<?> data) {
+        super.onTrackedDataSet(data);
+
+        if (CAST.equals(data)) {
+            this.rayBaseColor = 0xFFFFFFFF;
+            for (var element : cast.getFullRecipe()) {
+                this.rayBaseColor = ColorHelper.Argb.mixColor(0, element.getColor());
+            }
+        }
     }
+
+    public void setCast(@NotNull ServerSpellCast cast) {
+        this.cast = cast;
+        this.dataTracker.set(CAST, cast);
+    }
+
+    public SpellCast getCast() {
+        if (this.cast != null) {
+            return this.cast;
+        }
+        return this.dataTracker.get(CAST);
+    }
+
     public void setMaxAge(int maxAge) {
         this.maxAge = maxAge;
     }
@@ -103,12 +128,17 @@ public class SpellRayEntity extends Entity {
         return this.dataTracker.get(MAX_LENGTH);
     }
 
-    public void setRemainingBounces(int count) {
+    public void setTotalBounces(int count) {
         this.remainingBounces = count;
+        this.totalBounces = count;
     }
     public int getRemainingBounces() {
         return this.remainingBounces;
     }
+    public int getTotalBounces() {
+        return this.totalBounces;
+    }
+
 
     public float getLength() {
         return this.dataTracker.get(LENGTH);
@@ -122,6 +152,10 @@ public class SpellRayEntity extends Entity {
         return MathHelper.lerp(tickDelta, length-growthSpeed, length);
     }
 
+    public @Nullable SpellRayEntity getParent() {
+        return this.parent;
+    }
+
     @Override
     protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return dimensions.height * 0.5F;
@@ -129,29 +163,43 @@ public class SpellRayEntity extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.dataTracker.set(MAX_LENGTH, nbt.getFloat("maxLength"));
-        this.dataTracker.set(LENGTH, nbt.getFloat("length"));
-        this.dataTracker.set(IS_GROWING, nbt.getBoolean("isGrowing"));
-        this.cast = SpellCast.readFromNbt(nbt.getCompound("cast"), this.world);
+        this.dataTracker.set(MAX_LENGTH, nbt.getFloat("MaxLength"));
+        this.dataTracker.set(LENGTH, nbt.getFloat("Length"));
+        this.dataTracker.set(IS_GROWING, nbt.getBoolean("IsGrowing"));
+        this.cast = ServerSpellCast.readFromNbt(nbt.getCompound("Cast")); // full data for server
+        this.dataTracker.set(CAST, this.cast); // sync some spell data to client
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putFloat("maxLength", this.dataTracker.get(MAX_LENGTH));
-        nbt.putFloat("length", this.dataTracker.get(LENGTH));
-        nbt.putBoolean("isGrowing", this.dataTracker.get(IS_GROWING));
+        nbt.putFloat("MaxLength", this.dataTracker.get(MAX_LENGTH));
+        nbt.putFloat("Length", this.dataTracker.get(LENGTH));
+        nbt.putBoolean("IsGrowing", this.dataTracker.get(IS_GROWING));
 
         var castNBT = new NbtCompound();
-        this.cast.writeToNbt(castNBT);
-        nbt.put("cast", castNBT);
+        if (this.cast != null) {
+            // Server with full data.
+            this.cast.writeToNbt(castNBT);
+        } else {
+            // Client with partial data.
+            this.dataTracker.get(CAST).writeToNbt(castNBT);
+        }
+        nbt.put("Cast", castNBT);
     }
 
     protected boolean canHit(Entity entity) {
         if (entity.isSpectator() || !entity.isAlive() || !entity.canHit()) {
             return false;
         }
-        Entity entity2 = /*this.getOwner()*/ this;
-        return entity2 == null || !entity2.isConnectedThroughVehicle(entity);
+
+        // Bounced rays can hit caster.
+        if (this.parent != null) {
+            return true;
+        }
+
+        // Prevent first ray segment from accidentally colliding with caster.
+        Entity owner = ((ServerWorld)this.world).getEntity(this.cast.getCasterUuid());
+        return owner == null || !owner.isConnectedThroughVehicle(entity);
     }
 
     @Override
@@ -169,7 +217,10 @@ public class SpellRayEntity extends Entity {
      * @return Должен ли луч продолжить распространяться, проходя сковзь блок.
      */
     protected boolean onBlockHit(BlockHitResult bhr) {
-        this.cast.getSpell().onSingleBlockHit(this.cast, bhr.getBlockPos(), bhr.getSide(), this.cast.getEffectReactions());
+        if (this.cast == null) {
+            return false;
+        }
+        this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld)this.world, bhr.getBlockPos(), bhr.getSide());
         return false;
     }
 
@@ -183,7 +234,7 @@ public class SpellRayEntity extends Entity {
      * @return Должен ли луч продолжить распространяться, проходя сковзь entity.
      */
     protected boolean onEntityHit(EntityHitResult ehr) {
-        this.cast.getSpell().onSingleEntityHit(this.cast, ehr.getEntity(), this.cast.getEffectReactions());
+        this.cast.getSpell().onSingleEntityHit(this.cast, ehr.getEntity());
         return false;
     }
 

@@ -36,14 +36,17 @@ public class SpellBuilder {
 
     public void complete() {
         // TODO: add dummy effects if incomplete spell is cast (no spell itself, incomplete reaction, etc).
+        if (this.spell == null) {
+            this.spell = Spell.EMPTY;
+        }
     }
 
-    public SpellCast toCast(LivingEntity caster) {
+    public ServerSpellCast toCast(LivingEntity caster) {
         RPGKitMod.LOGGER.info("{} casting spell {} with form {} ({}) and effect reactions {} (elements: {})",
                 caster, this.spell, this.form, this.formReactions, this.effectReactions, this.fullRecipe);
         RPGKitMod.LOGGER.debug("Cast costs: {}", this.formedCosts);
-        return new SpellCast(this.form, this.spell, caster, this.formReactions, this.effectReactions,
-                this.formedCosts);
+        return new ServerSpellCast(this.form, this.spell, caster, this.formReactions, this.effectReactions,
+                this.formedCosts, this.fullRecipe);
     }
 
     public SpellForm getForm() {

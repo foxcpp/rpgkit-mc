@@ -2,18 +2,14 @@ package com.github.sweetsnowywitch.csmprpgkit.items;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
-import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
-import com.github.sweetsnowywitch.csmprpgkit.entities.SpellRayEntity;
-import com.github.sweetsnowywitch.csmprpgkit.magic.Spell;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellBuilder;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -39,7 +35,7 @@ public class CasterItem extends Item {
         spellBuilder.complete();
 
         var cast = spellBuilder.toCast(user);
-        cast.perform();
+        cast.perform((ServerWorld)world);
 
         return TypedActionResult.success(user.getStackInHand(hand));
     }

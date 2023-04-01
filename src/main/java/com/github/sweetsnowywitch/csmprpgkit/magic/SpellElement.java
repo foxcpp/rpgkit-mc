@@ -17,6 +17,8 @@ public interface SpellElement {
 
     float getBaseCost(String key);
 
+    int getColor();
+
     static SpellElement of(Aspect asp) {
         return asp;
     }

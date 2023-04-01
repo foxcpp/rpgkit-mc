@@ -67,7 +67,7 @@ public class ModCommands {
         }
 
         builder.complete();
-        builder.toCast(player).perform();
+        builder.toCast(player).perform(source.getWorld());
 
         return 1;
     }

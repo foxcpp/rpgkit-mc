@@ -2,12 +2,15 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.form;
 
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.entities.SpellRayEntity;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RayForm extends SpellForm {
@@ -55,13 +58,13 @@ public class RayForm extends SpellForm {
     }
 
     @Override
-    public void startCast(SpellCast cast) {
-        var ray = new SpellRayEntity(ModEntities.SPELL_RAY, cast.getWorld());
+    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+        var ray = new SpellRayEntity(ModEntities.SPELL_RAY, world);
         ray.setCast(cast);
         ray.setGrowthSpeed(2f);
-        ray.setPosition(cast.getCaster().getCameraPosVec(0));
-        ray.setYaw(cast.getCaster().getHeadYaw());
-        ray.setPitch(cast.getCaster().getPitch());
+        ray.setPosition(caster.getCameraPosVec(0));
+        ray.setYaw(caster.getHeadYaw());
+        ray.setPitch(caster.getPitch());
 
         var bounces = 0;
         for (var reaction : cast.getFormReactions()) {
@@ -69,10 +72,10 @@ public class RayForm extends SpellForm {
                 bounces += r.addBounces;
             }
         }
-        ray.setRemainingBounces(bounces);
+        ray.setTotalBounces(bounces);
 
-        cast.getWorld().spawnEntity(ray);
+        world.spawnEntity(ray);
 
-        super.startCast(cast);
+        super.startCast(cast, world, caster);
     }
 }

@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -12,6 +13,8 @@ public class Aspect implements SpellElement {
         EFFECT,
         REACTION,
     }
+
+    public static final int DEFAULT_COLOR = ColorHelper.Argb.getArgb(0xFF, 0x99, 0xD9, 0xEA); /* light blue, kinda */
 
     public final Identifier id;
 
