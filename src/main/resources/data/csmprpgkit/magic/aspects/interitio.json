@@ -2,5 +2,6 @@
   "kind": "effect",
   "costs": {
     "magicae": "11"
-  }
+  },
+  "color": 2631720
 }

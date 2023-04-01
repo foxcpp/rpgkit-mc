@@ -3,7 +3,7 @@
     {"item":  "minecraft:slime_ball"}
   ],
   "for_form": "csmprpgkit:ray",
-  "bounces": 3,
+  "bounces": 1,
   "costs": {
     "magicae": {"mul": 1.5}
   }

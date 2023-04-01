@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
@@ -8,6 +9,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -72,14 +74,14 @@ public class DamageEffect extends SpellEffect {
     }
 
     @Override
-    public void onSingleEntityHit(SpellCast cast, Entity entity, ImmutableList<SpellReaction> reactions) {
+    public void onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         if (!(entity instanceof LivingEntity le)) {
             return;
         }
 
         var damageDealt = this.damageDealt;
 
-        for (var reaction : reactions) {
+        for (var reaction : cast.getEffectReactions()) {
             if (reaction.appliesTo(this)) {
                 var deReaction = (DamageEffect.Reaction) reaction;
                 damageDealt += deReaction.damageDealt;
@@ -90,12 +92,12 @@ public class DamageEffect extends SpellEffect {
     }
 
     @Override
-    public void onSingleBlockHit(SpellCast cast, BlockPos pos, Direction dir, ImmutableList<SpellReaction> reactions) {
+    public void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
 
     }
 
     @Override
-    public void onAreaHit(SpellCast cast, Vec3d position, ImmutableList<SpellReaction> reactions) {
+    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position) {
 
     }
 

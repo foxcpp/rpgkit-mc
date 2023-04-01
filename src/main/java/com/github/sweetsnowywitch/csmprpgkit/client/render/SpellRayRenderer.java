@@ -2,6 +2,8 @@ package com.github.sweetsnowywitch.csmprpgkit.client.render;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.entities.SpellRayEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -10,10 +12,12 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
+@Environment(EnvType.CLIENT)
 public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
     public SpellRayRenderer(EntityRendererFactory.Context context) {
         super(context);
@@ -25,38 +29,63 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
         var height = entity.getLength(tickDelta);
 
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
 
+        // Align Y axis with rotation direction.
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(entity.getYaw(tickDelta)));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.getPitch(tickDelta)));
-        //matrices.translate(0, entity.getDimensions(entity.getPose()).height * 0.5F, 0);
-
-        //var ageFactor = 1 - ((float)entity.age) / entity.maxAge;
-        var ageFactor = 1;
 
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(entity)));
 
-        var entry = matrices.peek();
-        var position = entry.getPositionMatrix();
-        var normal = entry.getNormalMatrix();
+        var startFactor = entity.getStartFadeFactor();
+        var endFactor = entity.getEndFadeFactor(tickDelta);
 
-        renderBeamFace(position, normal, buffer, height, 0, 128*ageFactor, -radius, -radius, -radius, radius);
-        renderBeamFace(position, normal, buffer, height, 0, 128*ageFactor, -radius, radius, radius, radius);
-        renderBeamFace(position, normal, buffer, height, 0, 128*ageFactor, radius, radius, radius, -radius);
-        renderBeamFace(position, normal, buffer, height, 0, 128*ageFactor, radius, -radius, -radius, -radius);
+        var argbStart = entity.rayBaseColor | (int)(128 - 128*startFactor) << 24;
+        var argbEnd =   entity.rayBaseColor | (int)(128 - 128*endFactor) << 24;
+
+        renderBeam(matrices, buffer, argbStart, argbEnd,
+                height, 0, 0,
+                radius - 0.01f*startFactor);
+
+        if (endFactor == 0f) {
+            argbStart |= 0xFF000000;
+            argbStart |= 0xFF000000;
+
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(15));
+
+            renderBeam(matrices, buffer, argbStart, argbEnd,
+                    height, 0, 0, radius / 2);
+
+        }
 
         matrices.pop();
 
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
+    private void renderBeam(MatrixStack matrices, VertexConsumer buffer, int argbStart, int argbEnd,
+                            float height, float centerX, float centerZ, float radius) {
+        var entry = matrices.peek();
+        var position = entry.getPositionMatrix();
+        var normal = entry.getNormalMatrix();
+
+        renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
+                centerX-radius, centerZ-radius, centerX-radius, centerZ+radius);
+        renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
+                centerX-radius, centerZ+radius, centerX+radius, centerZ+radius);
+        renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
+                centerX+radius, centerZ+radius, centerX+radius, centerZ-radius);
+        renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
+                centerX+radius, centerZ-radius, centerX-radius, centerZ-radius);
+    }
+
     private void renderBeamFace(Matrix4f position, Matrix3f normal, VertexConsumer buffer,
-                                float height, float yOffset, float alpha,
+                                float height, float yOffset, int argbStart, int argbEnd,
                                 float x1, float z1,
                                 float x2, float z2) {
         buffer.
                 vertex(position, x1, yOffset, z1).
-                color(255, 255, 255, 128).
+                color(argbStart).
                 texture(0, 1).
                 overlay(OverlayTexture.DEFAULT_UV).
                 light(15728880).
@@ -64,7 +93,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
                 next();
         buffer.
                 vertex(position, x1, yOffset+height, z1).
-                color(255, 255, 255, 128).
+                color(argbEnd).
                 texture(0, 1).
                 overlay(OverlayTexture.DEFAULT_UV).
                 light(15728880).
@@ -72,7 +101,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
                 next();
         buffer.
                 vertex(position, x2, yOffset+height, z2).
-                color(255, 255, 255, 128).
+                color(argbEnd).
                 texture(0, 1).
                 overlay(OverlayTexture.DEFAULT_UV).
                 light(15728880).
@@ -80,13 +109,12 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
                 next();
         buffer.
                 vertex(position, x2, yOffset, z2).
-                color(255, 255, 255, 128).
+                color(argbStart).
                 texture(0, 1).
                 overlay(OverlayTexture.DEFAULT_UV).
                 light(15728880).
                 normal(normal, 0, 1, 0).
                 next();
-
     }
 
     @Override

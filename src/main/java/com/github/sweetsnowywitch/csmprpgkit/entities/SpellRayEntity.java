@@ -32,24 +32,27 @@ import org.jetbrains.annotations.Nullable;
 
 public class SpellRayEntity extends Entity {
     // Populated only on logical server side.
-    private @Nullable SpellRayEntity parent = null;
+    private SpellRayEntity parent = null;
 
     // Populated only on logical server side.
     public ServerSpellCast cast = null;
-    private int maxAge = 10*20;
+    private int maxAge = 3*20;
     private float growthSpeed = 2;
-    private int totalBounces = 0;
-    private int remainingBounces = 0;
+    public static final TrackedData<Integer> REMAINING_BOUNCES = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public static final TrackedData<Float> MAX_LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Float> LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Boolean> IS_GROWING = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Float> FADING_MAX_LEN = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    public static final TrackedData<Float> FADING_LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
+
     public static final TrackedData<SpellCast> CAST = DataTracker.registerData(SpellRayEntity.class, SpellCast.TRACKED_HANDLER);
 
-    public int rayBaseColor = 0x88FFFFFF;
+    public int rayBaseColor = 0x00FFFFFF; // ARGB
 
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);
         this.ignoreCameraFrustum = true;
+        this.parent = this;
     }
 
     public static SpellRayEntity empty(EntityType<?> type, World world) {
@@ -61,10 +64,22 @@ public class SpellRayEntity extends Entity {
         seg.setCast(previous.cast);
         seg.growthSpeed = previous.growthSpeed;
         seg.parent = previous.parent;
-        seg.setMaxLength(previous.getMaxLength() - previous.getLength());
         seg.setPosition(origin);
-        seg.remainingBounces = previous.remainingBounces - 1;
-        seg.totalBounces = previous.totalBounces;
+        seg.dataTracker.set(REMAINING_BOUNCES, previous.dataTracker.get(REMAINING_BOUNCES) - 1);
+        seg.parent = previous.parent;
+
+        var maxLength = previous.getMaxLength() - previous.getLength();
+        if (seg.shouldFadeOut()) {
+            if (!previous.shouldFadeOut()) {
+                maxLength = maxLength >= 5 ? 5 : maxLength;
+                seg.growthSpeed /= 2;
+                seg.dataTracker.set(FADING_MAX_LEN, maxLength);
+                seg.dataTracker.set(FADING_LENGTH, 0f);
+            } else {
+                seg.dataTracker.set(FADING_LENGTH, previous.dataTracker.get(FADING_LENGTH) + previous.getLength());
+            }
+        }
+        seg.setMaxLength(maxLength);
 
         seg.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, origin.add(dir));
 
@@ -73,18 +88,49 @@ public class SpellRayEntity extends Entity {
 
     @Override
     public boolean isPartOf(Entity entity) {
-        if (this.parent == null) {
-            return false;
-        }
         return entity.equals(this.parent);
     }
 
     @Override
     protected void initDataTracker() {
+        this.dataTracker.startTracking(REMAINING_BOUNCES, 0);
         this.dataTracker.startTracking(MAX_LENGTH, 100f);
         this.dataTracker.startTracking(LENGTH, 1f);
         this.dataTracker.startTracking(IS_GROWING, true);
         this.dataTracker.startTracking(CAST, SpellCast.EMPTY);
+        this.dataTracker.startTracking(FADING_MAX_LEN, -1f);
+        this.dataTracker.startTracking(FADING_LENGTH, -1f);
+    }
+
+    @Override
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        this.dataTracker.set(MAX_LENGTH, nbt.getFloat("MaxLength"));
+        this.dataTracker.set(LENGTH, nbt.getFloat("Length"));
+        this.dataTracker.set(IS_GROWING, nbt.getBoolean("IsGrowing"));
+        this.cast = ServerSpellCast.readFromNbt(nbt.getCompound("Cast")); // full data for server
+        this.dataTracker.set(CAST, this.cast); // sync some spell data to client
+        this.dataTracker.set(FADING_MAX_LEN, nbt.getFloat("FadingMaxLen"));
+        this.dataTracker.set(FADING_LENGTH, nbt.getFloat("FadingLength"));
+    }
+
+    @Override
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putFloat("MaxLength", this.dataTracker.get(MAX_LENGTH));
+        nbt.putFloat("Length", this.dataTracker.get(LENGTH));
+        nbt.putBoolean("IsGrowing", this.dataTracker.get(IS_GROWING));
+
+        var castNBT = new NbtCompound();
+        if (this.cast != null) {
+            // Server with full data.
+            this.cast.writeToNbt(castNBT);
+        } else {
+            // Client with partial data.
+            this.dataTracker.get(CAST).writeToNbt(castNBT);
+        }
+        nbt.put("Cast", castNBT);
+
+        nbt.putFloat("FadingMaxLen", this.dataTracker.get(FADING_MAX_LEN));
+        nbt.putFloat("FadingLength", this.dataTracker.get(FADING_LENGTH));
     }
 
     @Override
@@ -93,8 +139,8 @@ public class SpellRayEntity extends Entity {
 
         if (CAST.equals(data)) {
             this.rayBaseColor = 0xFFFFFFFF;
-            for (var element : cast.getFullRecipe()) {
-                this.rayBaseColor = ColorHelper.Argb.mixColor(0, element.getColor());
+            for (var element : this.dataTracker.get(CAST).getFullRecipe()) {
+                this.rayBaseColor = ColorHelper.Argb.mixColor(this.rayBaseColor, element.getColor());
             }
         }
     }
@@ -129,17 +175,11 @@ public class SpellRayEntity extends Entity {
     }
 
     public void setTotalBounces(int count) {
-        this.remainingBounces = count;
-        this.totalBounces = count;
+        this.dataTracker.set(REMAINING_BOUNCES, count);
     }
     public int getRemainingBounces() {
-        return this.remainingBounces;
+        return this.dataTracker.get(REMAINING_BOUNCES);
     }
-    public int getTotalBounces() {
-        return this.totalBounces;
-    }
-
-
     public float getLength() {
         return this.dataTracker.get(LENGTH);
     }
@@ -152,6 +192,35 @@ public class SpellRayEntity extends Entity {
         return MathHelper.lerp(tickDelta, length-growthSpeed, length);
     }
 
+    public float getStartFadeFactor() {
+        var maxLen = this.dataTracker.get(FADING_MAX_LEN);
+        if (maxLen == -1f) {
+            return 0f;
+        }
+        var length = this.dataTracker.get(FADING_LENGTH);
+        return length / maxLen;
+    }
+
+    public float getEndFadeFactor() {
+        var maxLen = this.dataTracker.get(FADING_MAX_LEN);
+        if (maxLen == -1f) {
+            return 0f;
+        }
+        var startFadeLength = this.dataTracker.get(FADING_LENGTH);
+        var segmentLength = this.dataTracker.get(LENGTH);
+        return (startFadeLength + segmentLength) / maxLen;
+    }
+
+    public float getEndFadeFactor(float tickDelta) {
+        var maxLen = this.dataTracker.get(FADING_MAX_LEN);
+        if (maxLen == -1f) {
+            return 0f;
+        }
+        var startFadeLength = this.dataTracker.get(FADING_LENGTH);
+        var segmentLength = this.getLength(tickDelta);
+        return (startFadeLength + segmentLength) / maxLen;
+    }
+
     public @Nullable SpellRayEntity getParent() {
         return this.parent;
     }
@@ -159,32 +228,6 @@ public class SpellRayEntity extends Entity {
     @Override
     protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return dimensions.height * 0.5F;
-    }
-
-    @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.dataTracker.set(MAX_LENGTH, nbt.getFloat("MaxLength"));
-        this.dataTracker.set(LENGTH, nbt.getFloat("Length"));
-        this.dataTracker.set(IS_GROWING, nbt.getBoolean("IsGrowing"));
-        this.cast = ServerSpellCast.readFromNbt(nbt.getCompound("Cast")); // full data for server
-        this.dataTracker.set(CAST, this.cast); // sync some spell data to client
-    }
-
-    @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putFloat("MaxLength", this.dataTracker.get(MAX_LENGTH));
-        nbt.putFloat("Length", this.dataTracker.get(LENGTH));
-        nbt.putBoolean("IsGrowing", this.dataTracker.get(IS_GROWING));
-
-        var castNBT = new NbtCompound();
-        if (this.cast != null) {
-            // Server with full data.
-            this.cast.writeToNbt(castNBT);
-        } else {
-            // Client with partial data.
-            this.dataTracker.get(CAST).writeToNbt(castNBT);
-        }
-        nbt.put("Cast", castNBT);
     }
 
     protected boolean canHit(Entity entity) {
@@ -253,6 +296,17 @@ public class SpellRayEntity extends Entity {
         return bounce.multiply(-1);
     }
 
+    private boolean shouldFadeOut() {
+        if (this.parent == this) {
+            return false;
+        }
+        return switch (this.parent.getRemainingBounces()) {
+            case 0 -> true;
+            case 1, 2, 3 -> this.getRemainingBounces() == 0;
+            default -> this.getRemainingBounces() < 2;
+        };
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -294,7 +348,7 @@ public class SpellRayEntity extends Entity {
                 var glassPanesTag = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", "glass_panes"));
                 if (!block.isIn(glassBlocksTag) && !block.isIn(glassPanesTag)) {
                     if (!this.onBlockHit(hitResult)) {
-                        if (this.remainingBounces > 0 && (maxLength - length) > 1f) {
+                        if (this.dataTracker.get(REMAINING_BOUNCES) > 0 && (maxLength - length) > 1f) {
                             var dir = bounceDirection(hitResult);
                             var ent = nextSegment(this, hitResult.getPos(), dir);
                             this.world.spawnEntity(ent);
