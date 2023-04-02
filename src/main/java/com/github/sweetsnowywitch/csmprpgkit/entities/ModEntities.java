@@ -5,9 +5,8 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class ModEntities {
     public static final EntityType<SpellRayEntity> SPELL_RAY = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
@@ -15,6 +14,6 @@ public class ModEntities {
             dimensions(EntityDimensions.changing(0.42f, 0.42f)).build();
 
     public static void register() {
-        Registry.register(Registries.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "spell_ray"), SPELL_RAY);
+        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "spell_ray"), SPELL_RAY);
     }
 }

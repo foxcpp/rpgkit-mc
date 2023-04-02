@@ -8,18 +8,17 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.SpellBuilder;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.registry.Registry;
 
 import java.util.Collection;
 import java.util.List;
@@ -212,8 +211,8 @@ public class ModCommands {
             if (asp != null) {
                 builder.addElement(SpellElement.of(asp));
             } else {
-                var item = Registries.ITEM.get(id);
-                if (!item.equals(Registries.ITEM.get(Registries.ITEM.getDefaultId()))) {
+                var item = Registry.ITEM.get(id);
+                if (!item.equals(Registry.ITEM.get(Registry.ITEM.getDefaultId()))) {
                     builder.addElement(SpellElement.of(item));
                 } else {
                     throw new SimpleCommandExceptionType(Text.literal("Unknown element identifier (no such aspect or item)")).create();

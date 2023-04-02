@@ -3,8 +3,8 @@ package com.github.sweetsnowywitch.csmprpgkit.classes.abilities;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.classes.Ability;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class ModAbilities {
     // Base abilities.

@@ -6,9 +6,9 @@ import com.github.sweetsnowywitch.csmprpgkit.classes.ServerTickablePerk;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class StatusEffectPerk extends Perk implements ServerTickablePerk {
@@ -37,7 +37,7 @@ public class StatusEffectPerk extends Perk implements ServerTickablePerk {
         StatusEffect effect = this.statusEffect;
         if (obj.has("id")) {
             var id = new Identifier(obj.get("id").getAsString());
-            effect = Registries.STATUS_EFFECT.get(id);
+            effect = Registry.STATUS_EFFECT.get(id);
             RPGKitMod.LOGGER.debug("StatusEffectPerk populated with potion effect {}", id);
             if (effect == null) {
                 throw new IllegalStateException("unknown potion effect");
@@ -58,7 +58,7 @@ public class StatusEffectPerk extends Perk implements ServerTickablePerk {
     public JsonObject parametersToJSON() {
         var obj = new JsonObject();
         if (this.statusEffect != null) {
-            var id = Registries.STATUS_EFFECT.getId(this.statusEffect);
+            var id = Registry.STATUS_EFFECT.getId(this.statusEffect);
             if (id == null) {
                 throw new IllegalStateException("status effect perk with unregistered effect");
             }

@@ -7,8 +7,8 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;

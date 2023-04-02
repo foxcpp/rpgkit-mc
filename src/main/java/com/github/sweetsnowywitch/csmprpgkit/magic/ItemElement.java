@@ -2,7 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class ItemElement implements SpellElement {
     private final Item item;
@@ -13,8 +13,8 @@ public class ItemElement implements SpellElement {
 
     @Override
     public float getBaseCost(String key) {
-        var itemId = Registries.ITEM.getId(this.item);
-        if (itemId.equals(Registries.ITEM.getDefaultId())) {
+        var itemId = Registry.ITEM.getId(this.item);
+        if (itemId.equals(Registry.ITEM.getDefaultId())) {
             return 0;
         }
 
@@ -34,6 +34,6 @@ public class ItemElement implements SpellElement {
     }
 
     public String toString() {
-        return Registries.ITEM.getId(this.item).toString();
+        return Registry.ITEM.getId(this.item).toString();
     }
 }

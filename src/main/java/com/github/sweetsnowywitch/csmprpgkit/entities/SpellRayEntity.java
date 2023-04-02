@@ -14,9 +14,10 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -25,6 +26,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -230,6 +233,11 @@ public class SpellRayEntity extends Entity {
         return dimensions.height * 0.5F;
     }
 
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return new EntitySpawnS2CPacket(this);
+    }
+
     protected boolean canHit(Entity entity) {
         if (entity.isSpectator() || !entity.isAlive() || !entity.canHit()) {
             return false;
@@ -344,8 +352,8 @@ public class SpellRayEntity extends Entity {
                 return;
             } else if (hitResult.getType() != HitResult.Type.MISS) {
                 var block = this.world.getBlockState(hitResult.getBlockPos());
-                var glassBlocksTag = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", "glass_blocks"));
-                var glassPanesTag = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", "glass_panes"));
+                var glassBlocksTag = TagKey.of(Registry.BLOCK_KEY, Identifier.of("c", "glass_blocks"));
+                var glassPanesTag = TagKey.of(Registry.BLOCK_KEY, Identifier.of("c", "glass_panes"));
                 if (!block.isIn(glassBlocksTag) && !block.isIn(glassPanesTag)) {
                     if (!this.onBlockHit(hitResult)) {
                         if (this.dataTracker.get(REMAINING_BOUNCES) > 0 && (maxLength - length) > 1f) {

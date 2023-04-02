@@ -4,18 +4,17 @@ import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -96,7 +95,7 @@ public class PotionEffect extends SpellEffect {
             return "PotionEffect[]";
         }
         return "PotionEffect[%s,amp=%d,dur=%s]".formatted(
-                Objects.requireNonNull(Registries.STATUS_EFFECT.getId(this.statusEffect)).toString(),
+                Objects.requireNonNull(Registry.STATUS_EFFECT.getId(this.statusEffect)).toString(),
                 this.baseAmplifier, this.baseDuration);
     }
 
@@ -149,7 +148,7 @@ public class PotionEffect extends SpellEffect {
         StatusEffect effect = this.statusEffect;
         if (obj.has("id")) {
             var id = new Identifier(obj.get("id").getAsString());
-            effect = Registries.STATUS_EFFECT.get(id);
+            effect = Registry.STATUS_EFFECT.get(id);
             RPGKitMod.LOGGER.debug("PotionEffect populated with potion effect {}", id);
             if (effect == null) {
                 throw new IllegalStateException("unknown potion effect");
@@ -170,7 +169,7 @@ public class PotionEffect extends SpellEffect {
     public JsonObject parametersToJSON() {
         var obj = new JsonObject();
         if (this.statusEffect != null) {
-            var id = Registries.STATUS_EFFECT.getId(this.statusEffect);
+            var id = Registry.STATUS_EFFECT.getId(this.statusEffect);
             if (id == null) {
                 throw new IllegalStateException("potion effect with unregistered effect");
             }

@@ -5,7 +5,6 @@ import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -13,15 +12,12 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.util.registry.Registry;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * ClientSpellCast is a limited data object representing what both client
@@ -133,7 +129,7 @@ public class SpellCast {
             } else if (elementNBT.contains("Item")) {
                 var itemID = Identifier.tryParse(elementNBT.getString("Item"));
                 if (itemID == null) throw new IllegalArgumentException("malformed item identifier in NBT: %s".formatted(elementNBT.asString()));
-                var item = Registries.ITEM.get(itemID);
+                var item = Registry.ITEM.get(itemID);
                 if (item.equals(Items.AIR)) {
                     RPGKitMod.LOGGER.warn("Unknown item in spell cast recipe, ignoring: {}", itemID);
                     continue;
@@ -187,7 +183,7 @@ public class SpellCast {
             if (element instanceof Aspect asp) {
                 elementNBT.putString("Aspect", asp.id.toString());
             } else if (element instanceof ItemElement ie) {
-                elementNBT.putString("Item", Registries.ITEM.getId(ie.getItem()).toString());
+                elementNBT.putString("Item", Registry.ITEM.getId(ie.getItem()).toString());
             }
             fullRecipe.add(elementNBT);
         }

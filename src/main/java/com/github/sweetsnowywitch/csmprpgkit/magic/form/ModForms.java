@@ -3,8 +3,8 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.form;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class ModForms {
     public static final SpellForm SELF = new SelfForm();
