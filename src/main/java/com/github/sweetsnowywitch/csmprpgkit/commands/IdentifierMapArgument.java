@@ -1,7 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.commands;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
-import com.github.sweetsnowywitch.csmprpgkit.classes.CharacterClass;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -12,8 +10,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;

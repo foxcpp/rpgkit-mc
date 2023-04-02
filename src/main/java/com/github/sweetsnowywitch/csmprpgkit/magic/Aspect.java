@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;

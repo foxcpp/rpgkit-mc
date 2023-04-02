@@ -2,7 +2,6 @@ package com.github.sweetsnowywitch.csmprpgkit.commands;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.classes.Ability;
-import com.github.sweetsnowywitch.csmprpgkit.classes.CharacterClass;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
