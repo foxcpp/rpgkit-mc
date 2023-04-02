@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -30,5 +31,5 @@ public abstract class SpellEffect implements JSONParameters<SpellEffect> {
     public void endCast(ServerSpellCast cast, ServerWorld world) {}
     public abstract void onSingleEntityHit(ServerSpellCast cast, Entity entity);
     public abstract void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir);
-    public abstract void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position);
+    public abstract void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box);
 }

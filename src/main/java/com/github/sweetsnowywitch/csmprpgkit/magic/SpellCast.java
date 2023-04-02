@@ -13,6 +13,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.registry.Registry;
 
 import java.util.List;
@@ -211,5 +212,14 @@ public class SpellCast {
 
     public ImmutableList<SpellElement> getFullRecipe() {
         return this.fullRecipe;
+    }
+
+    public int calculateBaseColor() {
+        var baseColor = 0xFFFFFFFF;
+        for (var element : this.getFullRecipe()) {
+            baseColor = ColorHelper.Argb.mixColor(baseColor, element.getColor());
+        }
+
+        return baseColor;
     }
 }

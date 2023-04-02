@@ -141,10 +141,7 @@ public class SpellRayEntity extends Entity {
         super.onTrackedDataSet(data);
 
         if (CAST.equals(data)) {
-            this.rayBaseColor = 0xFFFFFFFF;
-            for (var element : this.dataTracker.get(CAST).getFullRecipe()) {
-                this.rayBaseColor = ColorHelper.Argb.mixColor(this.rayBaseColor, element.getColor());
-            }
+            this.rayBaseColor = this.dataTracker.get(CAST).calculateBaseColor();
         }
     }
 

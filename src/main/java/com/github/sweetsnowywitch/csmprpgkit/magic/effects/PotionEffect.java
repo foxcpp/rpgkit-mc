@@ -12,8 +12,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -139,7 +139,7 @@ public class PotionEffect extends SpellEffect {
     }
 
     @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position) {
+    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
 
     }
 

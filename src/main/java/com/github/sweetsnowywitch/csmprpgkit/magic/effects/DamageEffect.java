@@ -1,10 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -12,8 +10,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class DamageEffect extends SpellEffect {
@@ -97,7 +95,7 @@ public class DamageEffect extends SpellEffect {
     }
 
     @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position) {
+    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
 
     }
 

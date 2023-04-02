@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
@@ -53,9 +54,9 @@ public class Spell {
         }
     }
 
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Vec3d position) {
+    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
         for (var effect : this.effects) {
-            effect.onAreaHit(cast, world, position);
+            effect.onAreaHit(cast, world, box);
         }
     }
 }
