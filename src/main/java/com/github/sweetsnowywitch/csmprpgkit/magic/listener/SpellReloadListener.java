@@ -58,7 +58,7 @@ public class SpellReloadListener extends JsonDataLoader implements IdentifiableR
                     recipe.add(SpellRecipeMap.Element.fromJson(obj));
                 }
 
-                var spell = new Spell(effects.build());
+                var spell = new Spell(ent.getKey(), effects.build());
 
                 RPGKitMod.LOGGER.debug("Loaded spell {} with effects={}", ent.getKey(), spell.getEffects());
                 spells.put(ent.getKey(), spell);
@@ -68,6 +68,7 @@ public class SpellReloadListener extends JsonDataLoader implements IdentifiableR
             }
         }
         ModRegistries.SPELLS.clear();
+        ModRegistries.SPELLS.put(Spell.EMPTY.id, Spell.EMPTY);
         ModRegistries.SPELLS.putAll(spells);
         ModRegistries.SPELL_RECIPES.clear();
         ModRegistries.SPELL_RECIPES.copyFrom(spellRecipes);

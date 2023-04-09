@@ -156,9 +156,7 @@ public class SpellCast {
         if (formID == null) throw new IllegalStateException("writeToNbt called with unregistered spell form: %s".formatted(this.form));
         nbt.putString("Form", formID.toString());
 
-        var spellID = ModRegistries.SPELLS.inverse().get(this.spell);
-        if (spellID == null) throw new IllegalStateException("writeToNbt called with unregistered spell: %s".formatted(this.spell));
-        nbt.putString("Spell", spellID.toString());
+        nbt.putString("Spell", this.spell.id.toString());
 
         var formReactions = new NbtList();
         for (var reaction : this.formReactions) {
