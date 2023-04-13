@@ -34,7 +34,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(entity.getYaw(tickDelta)));
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion((entity.getPitch(tickDelta))));
 
-        var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(entity)));
+        var buffer = vertexConsumers.getBuffer(RenderLayer.getLightning());
 
         var startFactor = entity.getStartFadeFactor();
         var endFactor = entity.getEndFadeFactor(tickDelta);
