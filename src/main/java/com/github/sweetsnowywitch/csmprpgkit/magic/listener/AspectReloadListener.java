@@ -48,7 +48,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
 
                 int color = Aspect.DEFAULT_COLOR;
                 if (model.has("color")) {
-                    color = model.get("color").getAsInt();
+                    color = Integer.parseInt(model.get("color").getAsString(), 16);
                 }
 
                 var costsRes = costs.build();

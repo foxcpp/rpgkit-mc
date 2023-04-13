@@ -16,9 +16,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.registry.Registry;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * ClientSpellCast is a limited data object representing what both client
@@ -215,11 +214,21 @@ public class SpellCast {
     }
 
     public int calculateBaseColor() {
-        var baseColor = 0xFFFFFFFF;
-        for (var element : this.getFullRecipe()) {
-            baseColor = ColorHelper.Argb.mixColor(baseColor, element.getColor());
-        }
+        int[] elementColors = new int[3];
+        int i = 0;
 
-        return baseColor;
+        for (var element : this.getFullRecipe()) {
+            if (element instanceof Aspect) {
+                elementColors[i] = element.getColor() + 0x10000000;
+                i++;
+                while (i >= 2) {
+                    var calculatedColor = ColorHelper.Argb.mixColor(elementColors[0], elementColors[1]);
+                    elementColors[1] = 0;
+                    i = 1;
+                    elementColors[0] = calculatedColor;
+                }
+            }
+        }
+        return elementColors[0];
     }
 }
