@@ -7,6 +7,7 @@ import com.github.sweetsnowywitch.csmprpgkit.commands.AbilityArgument;
 import com.github.sweetsnowywitch.csmprpgkit.commands.CharacterClassArgument;
 import com.github.sweetsnowywitch.csmprpgkit.commands.ModCommands;
 import com.github.sweetsnowywitch.csmprpgkit.commands.SpellFormArgument;
+import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
@@ -15,6 +16,7 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.ReactionReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.SpellReloadListener;
+import com.github.sweetsnowywitch.csmprpgkit.particle.ModParticles;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -80,6 +82,7 @@ public class RPGKitMod implements ModInitializer  {
         // Core
         ModItems.register();
         ModEntities.register();
+        ModParticles.register();
         CommandRegistrationCallback.EVENT.register(ModCommands::register);
         TrackedDataHandlerRegistry.register(BOX_TRACKED_HANDLER);
 
@@ -98,6 +101,7 @@ public class RPGKitMod implements ModInitializer  {
         TrackedDataHandlerRegistry.register(SpellCast.TRACKED_HANDLER);
         ModEffects.register();
         ModForms.register();
+        ModStatusEffects.register();
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new AspectReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SpellReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ReactionReloadListener());

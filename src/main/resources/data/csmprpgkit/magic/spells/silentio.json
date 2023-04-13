@@ -1,0 +1,12 @@
+{
+  "recipe": [
+    {"aspect": "csmprpgkit:aer"},
+    {"aspect": "csmprpgkit:ordino"},
+    {"aspect": "csmprpgkit:interitio"}
+  ],
+  "effects": [
+    {
+      "type": "csmprpgkit:mute"
+    }
+  ]
+}

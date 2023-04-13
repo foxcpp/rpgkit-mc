@@ -1,11 +1,21 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "csmp.csmp.mixin",
+  "package": "com.github.sweetsnowywitch.csmprpgkit.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "EntityMixin",
+    "PlayerEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "VibrationListenerAccessor",
+    "VibrationListenerMixin"
   ],
   "client": [
+    "ClientPlayerEntityMixin",
+    "ClientWorldMixin",
+    "SoundManagerMixin"
+  ],
+  "server": [
   ],
   "injectors": {
     "defaultRequire": 1
