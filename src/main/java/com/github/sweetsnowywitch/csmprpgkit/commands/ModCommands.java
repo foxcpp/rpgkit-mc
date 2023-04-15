@@ -198,7 +198,7 @@ public class ModCommands {
         final String[] parts = elements.split(",");
         final PlayerEntity player = source.getPlayerOrThrow();
 
-        final var builder = new SpellBuilder(form);
+        final var builder = new SpellBuilder();
 
         for (String part : parts) {
             Identifier id;
@@ -221,8 +221,10 @@ public class ModCommands {
             }
         }
 
-        builder.complete();
-        builder.toCast(player).perform(source.getWorld());
+        builder.finishSpell();
+        // TODO: Add ability to apply reactions.
+
+        builder.toCast(player, form).perform(source.getWorld());
 
         return 1;
     }

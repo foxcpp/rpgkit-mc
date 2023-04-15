@@ -14,85 +14,45 @@ import java.util.Map;
 public class SpellBuilder {
     private final List<SpellElement> fullRecipe = new ArrayList<>();
     private final List<SpellElement> pendingElements = new ArrayList<>();
-    private final SpellForm form;
     private Spell spell;
     private final List<SpellReaction> formReactions = new ArrayList<>();
     private final List<SpellReaction> effectReactions = new ArrayList<>();
-
     private final Map<String, Float> spellAspectCosts = new HashMap<>();
 
-    private final Map<String, Float> formedCosts = new HashMap<>();
-
-    public SpellBuilder(SpellForm form) {
-        this.form = form;
-    }
+    public SpellBuilder() {}
 
     public void addElement(@NotNull SpellElement element) {
         this.pendingElements.add(element);
         this.fullRecipe.add(element);
 
-        this.buildRecipe();
+        RPGKitMod.LOGGER.debug("SpellBuilder.addElement: {}", element);
+
+        // TODO: Check elements merging.
     }
 
-    public void complete() {
-        // TODO: add dummy effects if incomplete spell is cast (no spell itself, incomplete reaction, etc).
-        if (this.spell == null) {
+    public void finishSpell() {
+        if (this.spell != null) {
+            throw new IllegalStateException("Spell is already finished");
+        }
+
+        var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
+        if (spell != null) {
+            this.spell = spell;
+            for (var element : this.pendingElements) {
+                for (var key : Aspect.COST_ALL) {
+                    this.spellAspectCosts.merge(key, element.getBaseCost(key), Float::sum);
+                }
+            }
+            this.pendingElements.clear();
+        } else {
+            // TODO: Construct generic spell.
             this.spell = Spell.EMPTY;
         }
+
+        RPGKitMod.LOGGER.debug("SpellBuilder.finishSpell: {}", this.spell);
     }
 
-    public ServerSpellCast toCast(LivingEntity caster) {
-        RPGKitMod.LOGGER.info("{} casting spell {} with form {} ({}) and effect reactions {} (elements: {})",
-                caster, this.spell, this.form, this.formReactions, this.effectReactions, this.fullRecipe);
-        RPGKitMod.LOGGER.debug("Cast costs: {}", this.formedCosts);
-        return new ServerSpellCast(this.form, this.spell, caster, this.formReactions, this.effectReactions,
-                this.formedCosts, this.fullRecipe);
-    }
-
-    public SpellForm getForm() {
-        return this.form;
-    }
-
-    public @Nullable Spell getSpell() {
-        return this.spell;
-    }
-
-    public List<SpellReaction> getFormReactions() {
-        return this.formReactions;
-    }
-
-    public List<SpellReaction> getEffectReactions() {
-        return this.effectReactions;
-    }
-
-    public List<SpellElement> fullRecipe() {
-        return this.fullRecipe;
-    }
-
-    private void buildRecipe() {
-        if (this.spell == null) {
-            var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
-            if (spell != null) {
-                this.spell = spell;
-                for (var element : this.pendingElements) {
-                    for (var key : Aspect.COST_ALL) {
-                        this.spellAspectCosts.merge(key, element.getBaseCost(key), Float::sum);
-                    }
-                }
-                this.updateFormedCosts();
-                this.pendingElements.clear();
-            }
-            return;
-        }
-
-        var formReaction = ModRegistries.REACTION_RECIPES.tryMatch(this.pendingElements, reaction -> reaction.appliesTo(this.form));
-        if (formReaction != null) {
-            this.formReactions.add(formReaction);
-            this.pendingElements.clear();
-            this.updateFormedCosts();
-            return;
-        }
-
+    public void finishReaction() {
         var reactionFound = false;
         for (SpellEffect effect : this.spell.getEffects()) {
             var effectReaction = ModRegistries.REACTION_RECIPES.tryMatch(this.pendingElements, reaction -> reaction.appliesTo(effect));
@@ -105,24 +65,44 @@ public class SpellBuilder {
                 reactionFound = true;
             }
         }
+
+        var formReaction = ModRegistries.REACTION_RECIPES.tryMatchMultiple(this.pendingElements);
+        if (formReaction != null) {
+            this.formReactions.addAll(formReaction);
+            reactionFound = true;
+        }
+
         if (reactionFound) {
             this.pendingElements.clear();
-            this.updateFormedCosts();
         }
     }
 
-    private void updateFormedCosts() {
-        this.formedCosts.clear();
+    public ServerSpellCast toCast(LivingEntity caster, SpellForm form) {
+        var formReactions = this.formReactions.stream().filter((r) -> r.appliesTo(form)).toList();
+        var costs = this.calculateFormedCosts(form, formReactions);
+
+        RPGKitMod.LOGGER.info("{} casting spell {} with form {} ({}) and effect reactions {} (elements: {})",
+                caster, this.spell, form, this.formReactions, this.effectReactions, this.fullRecipe);
+        RPGKitMod.LOGGER.debug("Cast costs: {}", costs);
+        return new ServerSpellCast(form, this.spell, caster, formReactions, this.effectReactions,
+                costs, this.fullRecipe);
+    }
+
+    private Map<String, Float> calculateFormedCosts(SpellForm form, List<SpellReaction> formReactions) {
+        var formedCosts = new HashMap<String, Float>();
+
         for (var element : this.spellAspectCosts.entrySet()) {
             var cost = element.getValue();
 
-            cost = this.form.applyCost(element.getKey(), cost);
+            cost = form.applyCost(element.getKey(), cost);
 
-            for (var reaction : this.formReactions) {
+            for (var reaction : formReactions) {
                 cost = reaction.applyCost(element.getKey(), cost);
             }
 
-            this.formedCosts.put(element.getKey(), cost);
+            formedCosts.put(element.getKey(), cost);
         }
+
+        return formedCosts;
     }
 }

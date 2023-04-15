@@ -28,13 +28,16 @@ public class CasterItem extends Item {
         if (world.isClient)
             return super.use(world, user, hand);
 
-        var spellBuilder = new SpellBuilder(ModForms.RAY);
-        spellBuilder.addElement(SpellElement.of(ModRegistries.ASPECTS.get(Identifier.of(RPGKitMod.MOD_ID, "aer"))));
-        spellBuilder.addElement(SpellElement.of(ModRegistries.ASPECTS.get(Identifier.of(RPGKitMod.MOD_ID, "interitio"))));
-        spellBuilder.addElement(SpellElement.of(Items.SLIME_BALL));
-        spellBuilder.complete();
+        var spellBuilder = new SpellBuilder();
 
-        var cast = spellBuilder.toCast(user);
+        spellBuilder.addElement(ModRegistries.ASPECTS.get(Identifier.of(RPGKitMod.MOD_ID, "aer")));
+        spellBuilder.addElement(ModRegistries.ASPECTS.get(Identifier.of(RPGKitMod.MOD_ID, "interitio")));
+        spellBuilder.finishSpell();
+
+        spellBuilder.addElement(SpellElement.of(Items.SLIME_BALL));
+        spellBuilder.finishReaction();
+
+        var cast = spellBuilder.toCast(user, ModForms.RAY);
         cast.perform((ServerWorld)world);
 
         return TypedActionResult.success(user.getStackInHand(hand));

@@ -69,6 +69,21 @@ public class SpellRecipeMap<T> {
     }
 
     public T tryMatch(List<SpellElement> elements, Predicate<T> includeOnly) {
+        var res = this.tryMatchInner(elements, includeOnly, false);
+        if (res.size() == 0) return null;
+        return res.get(0);
+    }
+
+    public List<T> tryMatchMultiple(List<SpellElement> elements, Predicate<T> includeOnly) {
+        return this.tryMatchInner(elements, includeOnly, true);
+    }
+
+    public List<T> tryMatchMultiple(List<SpellElement> elements) {
+        return this.tryMatchInner(elements, null, true);
+    }
+
+    private List<T> tryMatchInner(List<SpellElement> elements, Predicate<T> includeOnly, boolean multiple) {
+        var res = new ArrayList<T>();
         for (Recipe<T> recipe : recipes) {
             if (includeOnly != null && !includeOnly.test(recipe.result)) {
                 continue;
@@ -106,8 +121,11 @@ public class SpellRecipeMap<T> {
                 continue;
             }
 
-            return recipe.result;
+            if (!multiple) {
+                return List.of(recipe.result);
+            }
+            res.add(recipe.result);
         }
-        return null;
+        return res;
     }
 }
