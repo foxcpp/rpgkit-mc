@@ -10,5 +10,6 @@
   "commands.csmprpgkit.exp.reset.success_single": "%s's experience points reset.",
   "commands.csmprpgkit.unknown_spell_element": "Unknown element (no such aspect or item)",
   "csmprpgkit.class.csmprpgkit.warrior": "Warrior",
-  "csmprpgkit.class.csmprpgkit.wizard": "Wizard"
+  "csmprpgkit.class.csmprpgkit.wizard": "Wizard",
+  "item.csmprpgkit.catalyst_bag": "Catalyst Bag"
 }

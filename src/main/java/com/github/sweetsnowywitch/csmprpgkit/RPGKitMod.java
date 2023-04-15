@@ -17,6 +17,7 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.ReactionReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.SpellReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.particle.ModParticles;
+import com.github.sweetsnowywitch.csmprpgkit.screen.CatalystBagScreenHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,10 +38,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +80,9 @@ public class RPGKitMod implements ModInitializer  {
         }
     };
 
+    public static final ScreenHandlerType<CatalystBagScreenHandler> CATALYST_BAG_SCREEN_HANDLER =
+            new ScreenHandlerType<>(CatalystBagScreenHandler::new);
+
     @Override
     public void onInitialize() {
         // Core
@@ -105,6 +111,7 @@ public class RPGKitMod implements ModInitializer  {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new AspectReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SpellReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ReactionReloadListener());
+        Registry.register(Registry.SCREEN_HANDLER, Identifier.of(RPGKitMod.MOD_ID, "catalyst_bag"), CATALYST_BAG_SCREEN_HANDLER);
 
         // Datapack sync
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> this.sendServerData(server, null));

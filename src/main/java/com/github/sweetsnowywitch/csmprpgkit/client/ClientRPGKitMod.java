@@ -19,6 +19,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.minecraft.client.gui.screen.ingame.Generic3x3ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.util.Identifier;
@@ -38,6 +40,8 @@ public class ClientRPGKitMod implements ClientModInitializer {
             registry.register(new Identifier(RPGKitMod.MOD_ID, "particle/generic_spell_0"));
         })));
         ParticleFactoryRegistry.getInstance().register(ModParticles.GENERIC_SPELL, GenericSpellParticle.Factory::new);
+
+        HandledScreens.register(RPGKitMod.CATALYST_BAG_SCREEN_HANDLER, Generic3x3ContainerScreen::new);
 
         ClientPlayNetworking.registerGlobalReceiver(RPGKitMod.SERVER_DATA_SYNC_PACKET_ID, (client, handler, buf, responseSender) -> {
             var jsonBlob = buf.readString(1024*1024);
