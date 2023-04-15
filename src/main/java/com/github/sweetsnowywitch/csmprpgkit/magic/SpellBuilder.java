@@ -27,7 +27,24 @@ public class SpellBuilder {
 
         RPGKitMod.LOGGER.debug("SpellBuilder.addElement: {}", element);
 
-        // TODO: Check elements merging.
+        if (this.pendingElements.size() >= 2) {
+            var lastIndex = this.pendingElements.size()-1;
+            var res = ModRegistries.ASPECT_RECIPES.tryMatch(List.of(
+                    this.pendingElements.get(lastIndex-1),
+                    this.pendingElements.get(lastIndex)
+            ));
+            if (res != null) {
+                RPGKitMod.LOGGER.debug("SpellBuilder.addElement: Aspects {}, {} merged into {}",
+                        this.pendingElements.get(lastIndex-1), this.pendingElements.get(lastIndex), res);
+                this.pendingElements.remove(this.pendingElements.size()-1);
+                this.pendingElements.remove(this.pendingElements.size()-1);
+                this.pendingElements.add(res);
+
+                this.fullRecipe.remove(this.fullRecipe.size()-1);
+                this.fullRecipe.remove(this.fullRecipe.size()-1);
+                this.fullRecipe.add(res);
+            }
+        }
     }
 
     public void finishSpell() {

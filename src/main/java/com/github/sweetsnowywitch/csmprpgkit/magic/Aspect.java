@@ -44,4 +44,17 @@ public class Aspect implements SpellElement {
     public String toString() {
         return "Aspect[id=" + id + ']';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Aspect aspect = (Aspect) o;
+        return id.equals(aspect.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
