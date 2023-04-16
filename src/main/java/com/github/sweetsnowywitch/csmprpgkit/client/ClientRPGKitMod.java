@@ -6,7 +6,9 @@ import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.overlays.SpellBuilderOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.particle.GenericSpellParticle;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
+import com.github.sweetsnowywitch.csmprpgkit.client.render.SpellItemRenderer;
 import com.github.sweetsnowywitch.csmprpgkit.events.DataRegistryReloadCallback;
+import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.SelfForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
@@ -33,6 +35,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
+import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 
 import java.util.HashMap;
 
@@ -56,6 +59,8 @@ public class ClientRPGKitMod implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(ACTIVATE_SPELL_BUILD_KEY);
         ClientTickEvents.END_CLIENT_TICK.register(SPELL_BUILD_HANDLER);
         DataRegistryReloadCallback.EVENT.register(SPELL_BUILD_HANDLER);
+
+        GeoItemRenderer.registerItemRenderer(ModItems.SPELL_ITEM, new SpellItemRenderer());
 
         ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((((atlasTexture, registry) -> {
             registry.register(new Identifier(RPGKitMod.MOD_ID, "particle/generic_spell_0"));

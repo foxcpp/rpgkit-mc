@@ -14,10 +14,33 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class SpellItem extends Item {
+public class SpellItem extends Item implements IAnimatable {
+    public AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
     public SpellItem(Settings settings) {
         super(settings);
+    }
+
+    private <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+        return PlayState.CONTINUE;
+    }
+
+    @Override
+    public void registerControllers(AnimationData data) {
+        data.addAnimationController(new AnimationController<>(this, "controller", 20, this::predicate));
+    }
+
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
     }
 
     @Environment(EnvType.CLIENT)

@@ -2,12 +2,14 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.form;
 
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.entities.SpellRayEntity;
+import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +64,13 @@ public class RayForm extends SpellForm {
         var ray = new SpellRayEntity(ModEntities.SPELL_RAY, world);
         ray.setCast(cast);
         ray.setGrowthSpeed(2f);
-        ray.setPosition(caster.getCameraPosVec(0));
+
+        var pos = caster.getPos();
+        if (caster instanceof PlayerEntity pe) {
+            pos = pos.add(pe.getHandPosOffset(ModItems.SPELL_ITEM));
+            pos = pos.add(0, 0.7, 0);
+        }
+        ray.setPosition(pos);
         ray.setYaw(caster.getHeadYaw());
         ray.setPitch(caster.getPitch());
 
