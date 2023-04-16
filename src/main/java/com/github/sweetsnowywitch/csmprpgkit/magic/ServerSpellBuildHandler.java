@@ -4,7 +4,6 @@ import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.items.CatalystBagItem;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
-import com.github.sweetsnowywitch.csmprpgkit.items.SpellItem;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -12,6 +11,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtInt;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -81,6 +81,10 @@ public class ServerSpellBuildHandler implements ServerLivingEntityEvents.AfterDe
             if (builder == null) {
                 RPGKitMod.LOGGER.error("onAddAspect called for player {} that is not building a spell", player);
                 return;
+            }
+
+            if (player.getMainHandStack().getItem().equals(ModItems.SPELL_ITEM)) {
+                player.getMainHandStack().setSubNbt("Color", NbtInt.of(SpellElement.calculateBaseColor(builder.getFullRecipe())));
             }
 
             builder.addElement(aspect);

@@ -193,23 +193,4 @@ public class SpellCast {
     public ImmutableList<SpellElement> getFullRecipe() {
         return this.fullRecipe;
     }
-
-    public int calculateBaseColor() {
-        int[] elementColors = new int[3];
-        int i = 0;
-
-        for (var element : this.getFullRecipe()) {
-            if (element instanceof Aspect) {
-                elementColors[i] = element.getColor() + 0x10000000;
-                i++;
-                while (i >= 2) {
-                    var calculatedColor = ColorHelper.Argb.mixColor(elementColors[0], elementColors[1]);
-                    elementColors[1] = 0;
-                    i = 1;
-                    elementColors[0] = calculatedColor;
-                }
-            }
-        }
-        return elementColors[0];
-    }
 }

@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.entities;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
 import com.github.sweetsnowywitch.csmprpgkit.particle.GenericSpellParticleEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -70,7 +71,7 @@ public abstract class MagicAreaEntity extends Entity {
         super.onTrackedDataSet(data);
 
         if (CAST.equals(data)) {
-            this.particleColor = this.dataTracker.get(CAST).calculateBaseColor();
+            this.particleColor = SpellElement.calculateBaseColor(this.dataTracker.get(CAST).getFullRecipe());
         }
     }
 

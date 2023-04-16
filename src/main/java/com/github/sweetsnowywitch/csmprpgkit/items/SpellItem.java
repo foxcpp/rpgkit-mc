@@ -6,6 +6,7 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -16,6 +17,8 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -30,12 +33,14 @@ public class SpellItem extends Item implements IAnimatable {
     }
 
     private <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.model.idle", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController<>(this, "controller", 20, this::predicate));
+        var cont = new AnimationController<>(this, "controller", 20, this::predicate);
+        data.addAnimationController(cont);
     }
 
     @Override
@@ -81,6 +86,6 @@ public class SpellItem extends Item implements IAnimatable {
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return true;
+        return false;
     }
 }

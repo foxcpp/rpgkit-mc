@@ -4,9 +4,12 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface SpellElement {
     String COST_REGENERATIO = "regeneratio";
@@ -48,4 +51,23 @@ public interface SpellElement {
     }
 
     void writeToNbt(NbtCompound comp);
+
+    static int calculateBaseColor(List<SpellElement> elements) {
+        int[] elementColors = new int[3];
+        int i = 0;
+
+        for (var element : elements) {
+            if (element instanceof Aspect) {
+                elementColors[i] = element.getColor() + 0x10000000;
+                i++;
+                while (i >= 2) {
+                    var calculatedColor = ColorHelper.Argb.mixColor(elementColors[0], elementColors[1]);
+                    elementColors[1] = 0;
+                    i = 1;
+                    elementColors[0] = calculatedColor;
+                }
+            }
+        }
+        return elementColors[0];
+    }
 }
