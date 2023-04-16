@@ -1,6 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
+import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
@@ -74,5 +76,19 @@ public class Aspect implements SpellElement, Comparable<Aspect> {
     @Override
     public int compareTo(@NotNull Aspect o) {
         return this.id.compareTo(o.id);
+    }
+
+    public static Aspect fromNbt(NbtCompound comp) {
+        var id = Identifier.tryParse(comp.getString("Id"));
+        if (id == null) {
+            throw new IllegalStateException("Malformed aspect ID in NBT: %s".formatted(comp.getString("Id")));
+        }
+        return ModRegistries.ASPECTS.get(id);
+    }
+
+    @Override
+    public void writeToNbt(NbtCompound comp) {
+        comp.putString("Type", "Aspect");
+        comp.putString("Id", this.id.toString());
     }
 }

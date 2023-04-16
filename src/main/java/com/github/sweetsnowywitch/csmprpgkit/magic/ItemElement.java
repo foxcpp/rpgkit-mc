@@ -6,6 +6,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ItemElement implements SpellElement {
@@ -76,5 +78,19 @@ public class ItemElement implements SpellElement {
 
     public String toString() {
         return Registry.ITEM.getId(this.item).toString();
+    }
+
+    public static ItemElement fromNbt(NbtCompound comp) {
+        var id = Identifier.tryParse(comp.getString("Id"));
+        if (id == null) {
+            throw new IllegalStateException("Malformed item ID in NBT: %s".formatted(comp.getString("Id")));
+        }
+        return new ItemElement(Registry.ITEM.get(id));
+    }
+
+    @Override
+    public void writeToNbt(NbtCompound comp) {
+        comp.putString("Type", "Item");
+        comp.putString("Id", Registry.ITEM.getId(this.item).toString());
     }
 }

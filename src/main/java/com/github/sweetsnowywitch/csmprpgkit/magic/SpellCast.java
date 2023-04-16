@@ -70,11 +70,11 @@ public class SpellCast {
             form = ModForms.SELF;
         }
 
-        var spellID = Identifier.tryParse(nbt.getString("Spell"));
-        if (spellID == null) throw new IllegalArgumentException("malformed spell identifier in NBT: %s".formatted(nbt.getString("spell")));
-        var spell = ModRegistries.SPELLS.get(spellID);
-        if (spell == null) {
-            RPGKitMod.LOGGER.warn("Unknown spell ID in NBT, replacing with EMPTY: {}", spellID);
+        Spell spell;
+        try {
+            spell = Spell.readFromNbt(nbt.getCompound("Spell"));
+        } catch (IllegalArgumentException e) {
+            RPGKitMod.LOGGER.warn("Unknown spell ID in NBT, replacing with EMPTY: {}", nbt.get("Spell"));
             spell = Spell.EMPTY;
         }
 
@@ -116,25 +116,10 @@ public class SpellCast {
         ImmutableList.Builder<SpellElement> fullRecipe = ImmutableList.builder();
         var fullRecipeNbt = nbt.getList("Recipe", NbtElement.COMPOUND_TYPE);
         for (var element : fullRecipeNbt) {
-            var elementNBT = (NbtCompound)element;
-            if (elementNBT.contains("Aspect")) {
-                var aspectID = Identifier.tryParse(elementNBT.getString("Aspect"));
-                if (aspectID == null) throw new IllegalArgumentException("malformed aspect identifier in NBT: %s".formatted(elementNBT.asString()));
-                var aspect = ModRegistries.ASPECTS.get(aspectID);
-                if (aspect == null) {
-                    RPGKitMod.LOGGER.warn("Unknown aspect in spell cast recipe, ignoring: {}", aspectID);
-                    continue;
-                }
-                fullRecipe.add(aspect);
-            } else if (elementNBT.contains("Item")) {
-                var itemID = Identifier.tryParse(elementNBT.getString("Item"));
-                if (itemID == null) throw new IllegalArgumentException("malformed item identifier in NBT: %s".formatted(elementNBT.asString()));
-                var item = Registry.ITEM.get(itemID);
-                if (item.equals(Items.AIR)) {
-                    RPGKitMod.LOGGER.warn("Unknown item in spell cast recipe, ignoring: {}", itemID);
-                    continue;
-                }
-                fullRecipe.add(SpellElement.of(item));
+            try {
+                fullRecipe.add(SpellElement.readFromNbt((NbtCompound) element));
+            } catch (IllegalArgumentException e) {
+                RPGKitMod.LOGGER.warn("Failed to load full recipe item, ignoring", e);
             }
         }
 
@@ -155,7 +140,9 @@ public class SpellCast {
         if (formID == null) throw new IllegalStateException("writeToNbt called with unregistered spell form: %s".formatted(this.form));
         nbt.putString("Form", formID.toString());
 
-        nbt.putString("Spell", this.spell.id.toString());
+        var spellNBT = new NbtCompound();
+        this.spell.writeToNbt(spellNBT);
+        nbt.put("Spell", spellNBT);
 
         var formReactions = new NbtList();
         for (var reaction : this.formReactions) {
@@ -178,11 +165,7 @@ public class SpellCast {
         var fullRecipe = new NbtList();
         for (var element : this.fullRecipe) {
             var elementNBT = new NbtCompound();
-            if (element instanceof Aspect asp) {
-                elementNBT.putString("Aspect", asp.id.toString());
-            } else if (element instanceof ItemElement ie) {
-                elementNBT.putString("Item", Registry.ITEM.getId(ie.getItem()).toString());
-            }
+            element.writeToNbt(elementNBT);
             fullRecipe.add(elementNBT);
         }
         nbt.put("Recipe", fullRecipe);

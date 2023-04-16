@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,4 +38,14 @@ public interface SpellElement {
     static @NotNull SpellElement of(Item item) {
         return new ItemElement(item);
     }
+
+    static SpellElement readFromNbt(NbtCompound comp) {
+        return switch (comp.getString("Type")) {
+            case "Aspect" -> Aspect.fromNbt(comp);
+            case "Item" -> ItemElement.fromNbt(comp);
+            default -> throw new IllegalArgumentException("Unknown SpellElement type: %s".formatted(comp.getString("Type")));
+        };
+    }
+
+    void writeToNbt(NbtCompound comp);
 }
