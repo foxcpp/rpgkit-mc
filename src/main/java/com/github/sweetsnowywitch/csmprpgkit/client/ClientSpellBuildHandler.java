@@ -52,6 +52,7 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
         assert client.player != null;
         if (!client.player.getMainHandStack().isEmpty()) {
             client.player.sendMessage(Text.translatable("csmprpgkit.magic.must_have_empty_hand"), true);
+            return;
         }
 
         var buf = PacketByteBufs.create();
