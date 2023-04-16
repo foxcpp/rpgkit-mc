@@ -13,6 +13,7 @@
   "client": [
     "ClientPlayerEntityMixin",
     "ClientWorldMixin",
+    "KeyboardMixin",
     "SoundManagerMixin"
   ],
   "server": [

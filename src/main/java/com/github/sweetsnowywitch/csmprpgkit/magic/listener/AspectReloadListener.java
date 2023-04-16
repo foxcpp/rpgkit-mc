@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.Aspect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellRecipeMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -54,7 +55,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                 }
 
                 var costsRes = costs.build();
-                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color));
+                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color, !model.has("recipe")));
                 RPGKitMod.LOGGER.debug("Loaded aspect {} with kind={}, costs={}", ent.getKey(), kind, costsRes);
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);
@@ -65,6 +66,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
         ModRegistries.ASPECTS.putAll(aspects);
         RPGKitMod.LOGGER.info("Loaded {} aspect definitions", aspects.size());
 
+        var recipes = new SpellRecipeMap<Aspect>();
         for (var ent : prepared.entrySet()) {
             try {
                 var model = ent.getValue().getAsJsonObject();
@@ -79,19 +81,21 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                         if (aspect == null) {
                             throw new IllegalArgumentException("Unknown aspect ID %s in recipe of %s".formatted(idObj.getAsString(), ent.getKey()));
                         }
-                        recipeBuilder.add(new SpellRecipeMap.Element(aspect, null));
+                        recipeBuilder.add(new SpellRecipeMap.Element(aspect, null, false));
                     }
                     var recipe = recipeBuilder.build();
                     if (recipe.size() > 2) {
                         RPGKitMod.LOGGER.error("Aspect {} recipe cannot contain more than 2 other aspects, ignoring", ent.getKey());
                         continue;
                     }
-                    ModRegistries.ASPECT_RECIPES.addRecipe(recipe, ModRegistries.ASPECTS.get(ent.getKey()));
+                    recipes.addRecipe(recipe, ModRegistries.ASPECTS.get(ent.getKey()));
                 }
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);
             }
         }
+        ModRegistries.ASPECT_RECIPES.clear();
+        ModRegistries.ASPECT_RECIPES.copyFrom(recipes);
 
         lastLoadedData = prepared;
     }

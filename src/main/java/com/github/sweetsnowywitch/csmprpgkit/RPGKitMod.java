@@ -10,6 +10,7 @@ import com.github.sweetsnowywitch.csmprpgkit.commands.SpellFormArgument;
 import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellBuildHandler;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.effects.ModEffects;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
@@ -57,6 +58,8 @@ public class RPGKitMod implements ModInitializer  {
     public static final String MOD_ID = "csmprpgkit";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final Identifier SERVER_DATA_SYNC_PACKET_ID = new Identifier(MOD_ID, "server_data_sync");
+    public static final ServerSpellBuildHandler SERVER_SPELL_BUILD_HANDLER =
+            new ServerSpellBuildHandler();
 
     public static final Codec<Box> BOX_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.DOUBLE.fieldOf("minX").forGetter(b -> b.minX),
@@ -112,6 +115,7 @@ public class RPGKitMod implements ModInitializer  {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SpellReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ReactionReloadListener());
         Registry.register(Registry.SCREEN_HANDLER, Identifier.of(RPGKitMod.MOD_ID, "catalyst_bag"), CATALYST_BAG_SCREEN_HANDLER);
+        SERVER_SPELL_BUILD_HANDLER.register();
 
         // Datapack sync
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> this.sendServerData(server, null));

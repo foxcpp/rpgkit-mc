@@ -7,13 +7,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class SpellRecipeMap<T> {
-    public record Element(Aspect aspect, Ingredient item) {
+    public record Element(Aspect aspect, Ingredient item, boolean consume) {
         public static Element fromJson(JsonObject obj) throws IllegalArgumentException {
             if (obj.has("aspect")) {
                 var aspectId = new Identifier(obj.get("aspect").getAsString());
@@ -21,11 +23,15 @@ public class SpellRecipeMap<T> {
                 if (aspect == null) {
                     throw new IllegalArgumentException("attempting to unserialize an unregistered aspect in spell element: %s".formatted(aspectId.toString()));
                 }
-                return new Element(aspect, null);
+                return new Element(aspect, null, false);
             }
 
             var ingredient = Ingredient.fromJson(obj);
-            return new Element(null, ingredient);
+            var consume = false;
+            if (obj.has("consume")) {
+                consume = obj.get("consume").getAsBoolean();
+            }
+            return new Element(null, ingredient, consume);
         }
         public JsonObject toJson() throws IllegalStateException {
             if (aspect != null) {
@@ -49,7 +55,7 @@ public class SpellRecipeMap<T> {
             }
         }
     }
-    private record Recipe<T>(ImmutableList<Element> elements, T result) {}
+    public record Recipe<T>(ImmutableList<Element> elements, T result) {}
     private final List<Recipe<T>> recipes = new ArrayList<>();
 
     public void addRecipe(ImmutableList<Element> elements, T result) {
@@ -64,26 +70,26 @@ public class SpellRecipeMap<T> {
         this.recipes.clear();
     }
 
-    public T tryMatch(List<SpellElement> elements) {
+    public Recipe<T> tryMatch(List<SpellElement> elements) {
         return this.tryMatch(elements, null);
     }
 
-    public T tryMatch(List<SpellElement> elements, Predicate<T> includeOnly) {
+    public Recipe<T> tryMatch(List<SpellElement> elements, Predicate<T> includeOnly) {
         var res = this.tryMatchInner(elements, includeOnly, false);
         if (res.size() == 0) return null;
         return res.get(0);
     }
 
-    public List<T> tryMatchMultiple(List<SpellElement> elements, Predicate<T> includeOnly) {
+    public List<Recipe<T>> tryMatchMultiple(List<SpellElement> elements, Predicate<T> includeOnly) {
         return this.tryMatchInner(elements, includeOnly, true);
     }
 
-    public List<T> tryMatchMultiple(List<SpellElement> elements) {
+    public List<Recipe<T>> tryMatchMultiple(List<SpellElement> elements) {
         return this.tryMatchInner(elements, null, true);
     }
 
-    private List<T> tryMatchInner(List<SpellElement> elements, Predicate<T> includeOnly, boolean multiple) {
-        var res = new ArrayList<T>();
+    private List<Recipe<T>> tryMatchInner(List<SpellElement> elements, Predicate<T> includeOnly, boolean multiple) {
+        var res = new ArrayList<Recipe<T>>();
         for (Recipe<T> recipe : recipes) {
             if (includeOnly != null && !includeOnly.test(recipe.result)) {
                 continue;
@@ -122,9 +128,9 @@ public class SpellRecipeMap<T> {
             }
 
             if (!multiple) {
-                return List.of(recipe.result);
+                return List.of(recipe);
             }
-            res.add(recipe.result);
+            res.add(recipe);
         }
         return res;
     }

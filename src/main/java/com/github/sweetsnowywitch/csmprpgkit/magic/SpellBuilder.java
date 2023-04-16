@@ -4,12 +4,12 @@ import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class SpellBuilder {
     private final List<SpellElement> fullRecipe = new ArrayList<>();
@@ -38,11 +38,11 @@ public class SpellBuilder {
                         this.pendingElements.get(lastIndex-1), this.pendingElements.get(lastIndex), res);
                 this.pendingElements.remove(this.pendingElements.size()-1);
                 this.pendingElements.remove(this.pendingElements.size()-1);
-                this.pendingElements.add(res);
+                this.pendingElements.add(res.result());
 
                 this.fullRecipe.remove(this.fullRecipe.size()-1);
                 this.fullRecipe.remove(this.fullRecipe.size()-1);
-                this.fullRecipe.add(res);
+                this.fullRecipe.add(res.result());
             }
         }
     }
@@ -54,12 +54,13 @@ public class SpellBuilder {
 
         var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
         if (spell != null) {
-            this.spell = spell;
+            this.spell = spell.result();
             for (var element : this.pendingElements) {
                 for (var key : Aspect.COST_ALL) {
                     this.spellAspectCosts.merge(key, element.getBaseCost(key), Float::sum);
                 }
             }
+            this.consumeElements(this.pendingElements, (i) -> spell.elements().get(i).consume());
             this.pendingElements.clear();
         } else {
             // TODO: Construct generic spell.
@@ -71,30 +72,48 @@ public class SpellBuilder {
 
     public void finishReaction() {
         var reactionFound = false;
+        var shouldConsume = new boolean[this.pendingElements.size()];
         for (SpellEffect effect : this.spell.getEffects()) {
             var effectReaction = ModRegistries.REACTION_RECIPES.tryMatch(this.pendingElements, reaction -> reaction.appliesTo(effect));
             if (effectReaction != null) {
-                this.effectReactions.add(effectReaction);
+                this.effectReactions.add(effectReaction.result());
                 for (var entry : this.spellAspectCosts.entrySet()) {
                     this.spellAspectCosts.compute(entry.getKey(),
-                            (k, v) -> effectReaction.applyCost(k, v == null ? 0 : v));
+                            (k, v) -> effectReaction.result().applyCost(k, v == null ? 0 : v));
+                }
+
+                // Consume effect reaction elements if any of matched recipes mark it as consumable.
+                for (int i = 0; i < effectReaction.elements().size(); i++) {
+                    shouldConsume[i] = shouldConsume[i] || effectReaction.elements().get(i).consume();
                 }
                 reactionFound = true;
             }
         }
 
-        var formReaction = ModRegistries.REACTION_RECIPES.tryMatchMultiple(this.pendingElements);
-        if (formReaction != null) {
-            this.formReactions.addAll(formReaction);
+        var formReactions = ModRegistries.REACTION_RECIPES.tryMatchMultiple(this.pendingElements);
+        if (formReactions != null) {
+            for (var reaction : formReactions) {
+                this.formReactions.add(reaction.result());
+
+                for (int i = 0; i < reaction.elements().size(); i++) {
+                    shouldConsume[i] = shouldConsume[i] || reaction.elements().get(i).consume();
+                }
+            }
+
             reactionFound = true;
         }
 
         if (reactionFound) {
+            this.consumeElements(this.pendingElements, (i) -> shouldConsume[i]);
             this.pendingElements.clear();
         }
     }
 
-    public ServerSpellCast toCast(LivingEntity caster, SpellForm form) {
+    public ServerSpellCast toServerCast(LivingEntity caster, SpellForm form) {
+        if (this.spell == null) {
+            this.finishSpell();
+        }
+
         var formReactions = this.formReactions.stream().filter((r) -> r.appliesTo(form)).toList();
         var costs = this.calculateFormedCosts(form, formReactions);
 
@@ -103,6 +122,16 @@ public class SpellBuilder {
         RPGKitMod.LOGGER.debug("Cast costs: {}", costs);
         return new ServerSpellCast(form, this.spell, caster, formReactions, this.effectReactions,
                 costs, this.fullRecipe);
+    }
+
+    private void consumeElements(List<SpellElement> elements, Function<Integer, Boolean> shouldConsume) {
+        for (int i = 0; i < elements.size(); i++) {
+            if (shouldConsume.apply(i)) {
+                // TODO: Check that element is still usable (item still present, etc)
+
+                elements.get(i).consume();
+            }
+        }
     }
 
     private Map<String, Float> calculateFormedCosts(SpellForm form, List<SpellReaction> formReactions) {
@@ -121,5 +150,9 @@ public class SpellBuilder {
         }
 
         return formedCosts;
+    }
+
+    public List<SpellElement> getPendingElements() {
+        return this.pendingElements;
     }
 }

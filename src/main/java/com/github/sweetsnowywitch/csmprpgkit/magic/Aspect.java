@@ -5,9 +5,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.Objects;
 
-public class Aspect implements SpellElement {
+public class Aspect implements SpellElement, Comparable<Aspect> {
     public enum Kind {
         EFFECT,
         REACTION,
@@ -20,12 +21,16 @@ public class Aspect implements SpellElement {
     private final Kind kind;
     private final ImmutableMap<String, @NotNull Float> scales;
     private final int color;
+    private final boolean primary;
+    private final Identifier texturePath;
 
-    public Aspect(Identifier id, Kind kind, ImmutableMap<String, @NotNull Float> scales, int color) {
+    public Aspect(Identifier id, Kind kind, ImmutableMap<String, @NotNull Float> scales, int color, boolean primary) {
         this.id = id;
         this.kind = kind;
         this.scales = scales;
         this.color = color;
+        this.primary = primary;
+        this.texturePath = new Identifier(id.getNamespace(), "textures/magic/aspects/"+id.getPath()+".png");
     }
 
     public Kind getKind() {
@@ -38,6 +43,14 @@ public class Aspect implements SpellElement {
 
     public int getColor() {
         return this.color;
+    }
+
+    public boolean isPrimary() {
+        return this.primary;
+    }
+
+    public Identifier getTexturePath() {
+        return this.texturePath;
     }
 
     @Override
@@ -56,5 +69,10 @@ public class Aspect implements SpellElement {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public int compareTo(@NotNull Aspect o) {
+        return this.id.compareTo(o.id);
     }
 }

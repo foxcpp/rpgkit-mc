@@ -224,7 +224,7 @@ public class ModCommands {
         builder.finishSpell();
         // TODO: Add ability to apply reactions.
 
-        builder.toCast(player, form).perform(source.getWorld());
+        builder.toServerCast(player, form).perform(source.getWorld());
 
         return 1;
     }
