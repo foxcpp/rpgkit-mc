@@ -12,7 +12,12 @@
         {
           "type": "csmprpgkit:status_effect",
           "id": "minecraft:strength",
-          "amplifier": 1
+          "amplifier": 0
+        },
+        {
+          "type": "csmprpgkit:on_combo",
+          "combo": "0",
+          "maxCombo": "3"
         }
       ]
     }

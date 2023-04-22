@@ -18,6 +18,16 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+
+    maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.terraformersmc.com/releases/" }
+
+    maven {
+        name "KosmX's maven"
+        url 'https://maven.kosmx.dev/'
+    }
+
+    maven { url 'https://api.modrinth.com/maven' }
 }
 
 dependencies {
@@ -29,8 +39,17 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2"
+    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2")
     include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2"
+
+    modApi("me.shedaniel.cloth:cloth-config-fabric:8.2.88") {
+        exclude(group: "net.fabricmc.fabric-api")
+        exclude(group: "net.fabricmc")
+    }
+
+    include modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2")
+
+    modImplementation "maven.modrinth:better-combat:1.6.2+1.19-fabric"
 }
 
 processResources {
