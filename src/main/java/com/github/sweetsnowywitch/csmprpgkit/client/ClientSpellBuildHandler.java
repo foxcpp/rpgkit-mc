@@ -59,7 +59,7 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
         buf.writeString(ServerSpellBuildHandler.Action.START.name());
 
         ClientPlayNetworking.send(PACKET_ID, buf);
-        this.builder = new SpellBuilder();
+        this.builder = new SpellBuilder(5);
     }
 
     public void addAspect(Aspect aspect) {

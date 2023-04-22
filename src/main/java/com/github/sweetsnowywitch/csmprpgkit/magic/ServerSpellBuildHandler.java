@@ -65,7 +65,7 @@ public class ServerSpellBuildHandler implements ServerLivingEntityEvents.AfterDe
 
         player.getInventory().setStack(player.getInventory().selectedSlot, new ItemStack(ModItems.SPELL_ITEM));
 
-        builders.put(player.getUuid(), new SpellBuilder());
+        builders.put(player.getUuid(), new SpellBuilder(5));
     }
 
     private void onAddAspect(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {

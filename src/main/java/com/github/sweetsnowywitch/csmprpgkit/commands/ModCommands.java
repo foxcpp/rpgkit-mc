@@ -198,7 +198,7 @@ public class ModCommands {
         final String[] parts = elements.split(",");
         final PlayerEntity player = source.getPlayerOrThrow();
 
-        final var builder = new SpellBuilder();
+        final var builder = new SpellBuilder(5);
 
         for (String part : parts) {
             Identifier id;

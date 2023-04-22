@@ -12,16 +12,28 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class SpellBuilder {
-    private final List<SpellElement> fullRecipe = new ArrayList<>();
-    private final List<SpellElement> pendingElements = new ArrayList<>();
+    private final int maxElements;
+    private final List<SpellElement> fullRecipe;
+    private final List<SpellElement> pendingElements;
     private Spell spell;
-    private final List<SpellReaction> formReactions = new ArrayList<>();
-    private final List<SpellReaction> effectReactions = new ArrayList<>();
-    private final Map<String, Float> spellAspectCosts = new HashMap<>();
+    private final List<SpellReaction> formReactions;
+    private final List<SpellReaction> effectReactions;
+    private final Map<String, Float> spellAspectCosts;
 
-    public SpellBuilder() {}
+    public SpellBuilder(int maxElements) {
+        this.maxElements = maxElements;
+        this.fullRecipe = new ArrayList<>();
+        this.pendingElements = new ArrayList<>();
+        this.formReactions = new ArrayList<>();
+        this.effectReactions = new ArrayList<>();
+        this.spellAspectCosts = new HashMap<>();
+    }
 
     public void addElement(@NotNull SpellElement element) {
+        if (this.pendingElements.size() == this.maxElements) {
+            return;
+        }
+
         this.pendingElements.add(element);
         this.fullRecipe.add(element);
 
@@ -158,5 +170,9 @@ public class SpellBuilder {
 
     public List<SpellElement> getFullRecipe() {
         return fullRecipe;
+    }
+
+    public int getMaxElements() {
+        return maxElements;
     }
 }
