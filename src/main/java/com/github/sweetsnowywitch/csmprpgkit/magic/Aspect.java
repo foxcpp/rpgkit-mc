@@ -24,14 +24,16 @@ public class Aspect implements SpellElement, Comparable<Aspect> {
     private final ImmutableMap<String, @NotNull Float> scales;
     private final int color;
     private final boolean primary;
+    private final int order;
     private final Identifier texturePath;
 
-    public Aspect(Identifier id, Kind kind, ImmutableMap<String, @NotNull Float> scales, int color, boolean primary) {
+    public Aspect(Identifier id, Kind kind, ImmutableMap<String, @NotNull Float> scales, int color, boolean primary, int order) {
         this.id = id;
         this.kind = kind;
         this.scales = scales;
         this.color = color;
         this.primary = primary;
+        this.order = order;
         this.texturePath = new Identifier(id.getNamespace(), "textures/magic/aspects/"+id.getPath()+".png");
     }
 
@@ -75,7 +77,11 @@ public class Aspect implements SpellElement, Comparable<Aspect> {
 
     @Override
     public int compareTo(@NotNull Aspect o) {
-        return this.id.compareTo(o.id);
+        var ord = this.order - o.order;
+        if (ord == 0) {
+            return this.id.compareTo(o.id);
+        }
+        return ord;
     }
 
     public static Aspect fromNbt(NbtCompound comp) {

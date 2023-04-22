@@ -51,8 +51,13 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                     color = Integer.parseInt(model.get("color").getAsString(), 16);
                 }
 
+                int order = 0;
+                if (model.has("order")) {
+                    order = model.get("order").getAsInt();
+                }
+
                 var costsRes = costs.build();
-                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color, !model.has("recipes")));
+                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color, !model.has("recipes"), order));
                 RPGKitMod.LOGGER.debug("Loaded aspect {} with kind={}, costs={}", ent.getKey(), kind, costsRes);
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);
