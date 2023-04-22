@@ -155,4 +155,8 @@ public class SpellBuilder {
     public List<SpellElement> getPendingElements() {
         return this.pendingElements;
     }
+
+    public List<SpellElement> getFullRecipe() {
+        return fullRecipe;
+    }
 }

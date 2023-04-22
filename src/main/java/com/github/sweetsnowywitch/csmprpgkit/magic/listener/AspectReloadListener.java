@@ -15,10 +15,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AspectReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener {
     private static Gson GSON = new Gson();
@@ -55,7 +52,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                 }
 
                 var costsRes = costs.build();
-                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color, !model.has("recipe")));
+                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color, !model.has("recipes")));
                 RPGKitMod.LOGGER.debug("Loaded aspect {} with kind={}, costs={}", ent.getKey(), kind, costsRes);
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);
@@ -70,25 +67,27 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
         for (var ent : prepared.entrySet()) {
             try {
                 var model = ent.getValue().getAsJsonObject();
-                if (model.has("recipe")) {
-                    ImmutableList.Builder<SpellRecipeMap.Element> recipeBuilder = ImmutableList.builder();
-                    for (var idObj : model.getAsJsonArray("recipe")) {
-                        var aspectID = Identifier.tryParse(idObj.getAsString());
-                        if (aspectID == null) {
-                            throw new IllegalArgumentException("Malformed aspect ID: %s".formatted(idObj.getAsString()));
+                if (model.has("recipes")) {
+                    for (JsonElement recipeElement : model.getAsJsonArray("recipes")) {
+                        ImmutableList.Builder<SpellRecipeMap.Element> recipeBuilder = ImmutableList.builder();
+                        for (var idObj : recipeElement.getAsJsonArray()) {
+                            var aspectID = Identifier.tryParse(idObj.getAsString());
+                            if (aspectID == null) {
+                                throw new IllegalArgumentException("Malformed aspect ID: %s".formatted(idObj.getAsString()));
+                            }
+                            var aspect = ModRegistries.ASPECTS.get(aspectID);
+                            if (aspect == null) {
+                                throw new IllegalArgumentException("Unknown aspect ID %s in recipe of %s".formatted(idObj.getAsString(), ent.getKey()));
+                            }
+                            recipeBuilder.add(new SpellRecipeMap.Element(aspect, null, false));
                         }
-                        var aspect = ModRegistries.ASPECTS.get(aspectID);
-                        if (aspect == null) {
-                            throw new IllegalArgumentException("Unknown aspect ID %s in recipe of %s".formatted(idObj.getAsString(), ent.getKey()));
+                        var recipe = recipeBuilder.build();
+                        if (recipe.size() > 2) {
+                            RPGKitMod.LOGGER.error("Aspect {} recipe cannot contain more than 2 other aspects, ignoring", ent.getKey());
+                            continue;
                         }
-                        recipeBuilder.add(new SpellRecipeMap.Element(aspect, null, false));
+                        recipes.addRecipe(recipeBuilder.build(), ModRegistries.ASPECTS.get(ent.getKey()));
                     }
-                    var recipe = recipeBuilder.build();
-                    if (recipe.size() > 2) {
-                        RPGKitMod.LOGGER.error("Aspect {} recipe cannot contain more than 2 other aspects, ignoring", ent.getKey());
-                        continue;
-                    }
-                    recipes.addRecipe(recipe, ModRegistries.ASPECTS.get(ent.getKey()));
                 }
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);

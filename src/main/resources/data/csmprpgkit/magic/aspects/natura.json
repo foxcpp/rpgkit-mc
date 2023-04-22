@@ -3,8 +3,10 @@
   "costs": {
     "magicae": "11"
   },
-  "recipe": [
-    "csmprpgkit:terra",
-    "csmprpgkit:aqua"
+  "recipes": [
+    [
+      "csmprpgkit:terra",
+      "csmprpgkit:aqua"
+    ]
   ]
 }
