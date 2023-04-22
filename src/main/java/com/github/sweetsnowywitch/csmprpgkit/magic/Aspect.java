@@ -1,13 +1,14 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 public class Aspect implements SpellElement, Comparable<Aspect> {
@@ -26,8 +27,12 @@ public class Aspect implements SpellElement, Comparable<Aspect> {
     private final boolean primary;
     private final int order;
     private final Identifier texturePath;
+    private final ImmutableList<SpellEffect> genericEffects;
+    private final ImmutableList<SpellReaction> genericEffectReactions;
 
-    public Aspect(Identifier id, Kind kind, ImmutableMap<String, @NotNull Float> scales, int color, boolean primary, int order) {
+    public Aspect(Identifier id, Kind kind, ImmutableMap<String, @NotNull Float> scales,
+                  int color, boolean primary, int order,
+                  ImmutableList<SpellEffect> genericEffects, ImmutableList<SpellReaction> genericEffectReactions) {
         this.id = id;
         this.kind = kind;
         this.scales = scales;
@@ -35,6 +40,8 @@ public class Aspect implements SpellElement, Comparable<Aspect> {
         this.primary = primary;
         this.order = order;
         this.texturePath = new Identifier(id.getNamespace(), "textures/magic/aspects/"+id.getPath()+".png");
+        this.genericEffects = genericEffects;
+        this.genericEffectReactions = genericEffectReactions;
     }
 
     public Kind getKind() {
@@ -51,6 +58,16 @@ public class Aspect implements SpellElement, Comparable<Aspect> {
 
     public boolean isPrimary() {
         return this.primary;
+    }
+
+    @Override
+    public List<SpellReaction> getGenericReactions() {
+        return this.genericEffectReactions;
+    }
+
+    @Override
+    public ImmutableList<SpellEffect> getGenericEffects() {
+        return genericEffects;
     }
 
     public Identifier getTexturePath() {

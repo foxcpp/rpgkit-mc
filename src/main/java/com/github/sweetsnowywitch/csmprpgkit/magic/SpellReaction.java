@@ -61,13 +61,15 @@ public abstract class SpellReaction implements JSONParameters<SpellReaction> {
         ImmutableMap.Builder<String, Float> costTerms = ImmutableMap.builder();
 
         var costs = obj.getAsJsonObject("costs");
-        for (var entry : costs.entrySet()) {
-            var values = entry.getValue().getAsJsonObject();
-            if (values.has("add")) {
-                costTerms.put(entry.getKey(), values.get("add").getAsFloat());
-            }
-            if (values.has("mul")) {
-                costMultipliers.put(entry.getKey(), values.get("mul").getAsFloat());
+        if (costs != null) {
+            for (var entry : costs.entrySet()) {
+                var values = entry.getValue().getAsJsonObject();
+                if (values.has("add")) {
+                    costTerms.put(entry.getKey(), values.get("add").getAsFloat());
+                }
+                if (values.has("mul")) {
+                    costMultipliers.put(entry.getKey(), values.get("mul").getAsFloat());
+                }
             }
         }
 

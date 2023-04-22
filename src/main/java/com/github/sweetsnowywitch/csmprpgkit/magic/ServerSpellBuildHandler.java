@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.network.PacketByteBuf;
@@ -18,6 +19,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,10 @@ public class ServerSpellBuildHandler implements ServerLivingEntityEvents.AfterDe
         FINISH_SPELL,
         FINISH_REACTION,
         CAST,
+    }
+
+    public boolean isActive(@NotNull PlayerEntity ent) {
+        return builders.containsKey(ent.getUuid());
     }
 
     public void register() {

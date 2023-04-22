@@ -23,6 +23,14 @@ public interface SpellElement {
 
     int getColor();
 
+    default List<SpellEffect> getGenericEffects() {
+        return List.of();
+    }
+
+    default List<SpellReaction> getGenericReactions() {
+        return List.of();
+    }
+
     /**
      * Called when SpellElement is consumed during spell completion.
      */

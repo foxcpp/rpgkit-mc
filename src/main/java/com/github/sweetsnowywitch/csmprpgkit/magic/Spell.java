@@ -18,7 +18,6 @@ public class Spell {
     public final Identifier id;
     public static final Spell EMPTY = new Spell(Identifier.of(RPGKitMod.MOD_ID, "empty"), ImmutableList.of());
     private final ImmutableList<SpellEffect> effects;
-
     public Spell(Identifier id, ImmutableList<SpellEffect> effects) {
         this.id = id;
         this.effects = effects;

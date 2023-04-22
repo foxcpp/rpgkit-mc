@@ -1,7 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.items;
 
+import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.client.ClientRPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.client.ClientSpellBuildHandler;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellBuildHandler;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import net.fabricmc.api.EnvType;
@@ -11,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -80,6 +83,10 @@ public class SpellItem extends Item implements IAnimatable {
                 this.doCast(ModForms.SELF);
             }
 
+            stack.decrement(1);
+        }
+        // Might result if server is shutdown during cast.
+        if (entity instanceof ServerPlayerEntity spe && !RPGKitMod.SERVER_SPELL_BUILD_HANDLER.isActive(spe)) {
             stack.decrement(1);
         }
     }

@@ -2,13 +2,12 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public class SpellBuilder {
@@ -73,11 +72,12 @@ public class SpellBuilder {
                 }
             }
             this.consumeElements(this.pendingElements, (i) -> spell.elements().get(i).consume());
-            this.pendingElements.clear();
         } else {
-            // TODO: Construct generic spell.
-            this.spell = Spell.EMPTY;
+            var generic = new GenericSpell(ImmutableList.copyOf(this.pendingElements));
+            this.effectReactions.addAll(generic.getForcedEffectReactions());
+            this.spell = generic;
         }
+        this.pendingElements.clear();
 
         RPGKitMod.LOGGER.debug("SpellBuilder.finishSpell: {}", this.spell);
     }
@@ -164,12 +164,12 @@ public class SpellBuilder {
         return formedCosts;
     }
 
-    public List<SpellElement> getPendingElements() {
-        return this.pendingElements;
+    public @Unmodifiable List<SpellElement> getPendingElements() {
+        return Collections.unmodifiableList(this.pendingElements);
     }
 
-    public List<SpellElement> getFullRecipe() {
-        return fullRecipe;
+    public @Unmodifiable List<SpellElement> getFullRecipe() {
+        return Collections.unmodifiableList(fullRecipe);
     }
 
     public int getMaxElements() {

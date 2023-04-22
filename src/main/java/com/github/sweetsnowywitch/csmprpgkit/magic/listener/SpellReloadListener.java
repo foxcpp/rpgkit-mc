@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.GenericSpell;
 import com.github.sweetsnowywitch.csmprpgkit.magic.Spell;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellRecipeMap;
@@ -68,6 +69,7 @@ public class SpellReloadListener extends JsonDataLoader implements IdentifiableR
             }
         }
         ModRegistries.SPELLS.clear();
+        ModRegistries.SPELLS.put(GenericSpell.EMPTY.id, GenericSpell.EMPTY);
         ModRegistries.SPELLS.put(Spell.EMPTY.id, Spell.EMPTY);
         ModRegistries.SPELLS.putAll(spells);
         ModRegistries.SPELL_RECIPES.clear();

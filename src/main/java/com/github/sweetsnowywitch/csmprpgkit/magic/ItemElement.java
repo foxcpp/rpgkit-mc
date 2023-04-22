@@ -10,6 +10,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.Objects;
+
 public class ItemElement implements SpellElement {
     public static class Stack extends ItemElement {
         protected final ItemStack stack;
@@ -92,5 +94,18 @@ public class ItemElement implements SpellElement {
     public void writeToNbt(NbtCompound comp) {
         comp.putString("Type", "Item");
         comp.putString("Id", Registry.ITEM.getId(this.item).toString());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ItemElement that = (ItemElement) o;
+        return item.equals(that.item);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(item);
     }
 }

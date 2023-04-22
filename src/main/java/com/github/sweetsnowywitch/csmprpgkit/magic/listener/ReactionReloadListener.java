@@ -63,13 +63,17 @@ public class ReactionReloadListener extends JsonDataLoader implements Identifiab
 
                 reaction = reaction.withParametersFromJSON(model);
 
-                ImmutableList.Builder<SpellRecipeMap.Element> recipe = ImmutableList.builder();
+                ImmutableList.Builder<SpellRecipeMap.Element> recipeBuilder = ImmutableList.builder();
                 for (var el : model.getAsJsonArray("recipe")) {
-                    recipe.add(SpellRecipeMap.Element.fromJson(el.getAsJsonObject()));
+                    recipeBuilder.add(SpellRecipeMap.Element.fromJson(el.getAsJsonObject()));
                 }
 
                 reactions.put(ent.getKey(), reaction);
-                reactionRecipes.addRecipe(recipe.build(), reaction);
+
+                var recipe = recipeBuilder.build();
+                if (recipe.size() != 0) {
+                    reactionRecipes.addRecipe(recipeBuilder.build(), reaction);
+                }
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading reaction definition for {}: {}", ent.getKey(), e);
             }

@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.Aspect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellRecipeMap;
 import com.google.common.collect.ImmutableList;
@@ -56,8 +57,50 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                     order = model.get("order").getAsInt();
                 }
 
+                ImmutableList.Builder<SpellEffect> genericEffects = ImmutableList.builder();
+                if (model.has("generic_effects")) {
+                    for (JsonElement effectElement : model.getAsJsonArray("generic_effects")) {
+                        var obj = effectElement.getAsJsonObject();
+
+                        var effectId = new Identifier(obj.get("type").getAsString());
+                        var effect = ModRegistries.SPELL_EFFECTS.get(effectId);
+                        if (effect == null) {
+                            throw new IllegalArgumentException("unknown effect: %s".formatted(effectId.toString()));
+                        }
+                        genericEffects.add(effect.withParametersFromJSON(obj));
+                    }
+                }
+
+                ImmutableList.Builder<SpellReaction> genericReactions = ImmutableList.builder();
+                if (model.has("generic_reactions")) {
+                    for (JsonElement effectElement : model.getAsJsonArray("generic_reactions")) {
+                        var obj = effectElement.getAsJsonObject();
+
+                        SpellReaction reaction;
+                        if (obj.has("for_effect")) {
+                            var id = new Identifier(obj.get("for_effect").getAsString());
+                            var effect = ModRegistries.SPELL_EFFECTS.get(id);
+                            if (effect == null) {
+                                throw new IllegalArgumentException("unknown effect: %s".formatted(id.toString()));
+                            }
+                            reaction = effect.reactionType(ent.getKey());
+                        } else if (obj.has("for_form")) {
+                            throw new IllegalArgumentException("for_form is not supported in generic_reactions");
+                        } else {
+                            throw new IllegalArgumentException("reaction definition must have for_form or for_effect");
+                        }
+                        if (reaction == null) {
+                            throw new IllegalArgumentException("reaction cannot be defined for that form/effect");
+                        }
+                        reaction = reaction.withParametersFromJSON(obj);
+                        genericReactions.add(reaction);
+                    }
+                }
+
                 var costsRes = costs.build();
-                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color, !model.has("recipes"), order));
+                aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color,
+                        !model.has("recipes"), order,
+                        genericEffects.build(), genericReactions.build()));
                 RPGKitMod.LOGGER.debug("Loaded aspect {} with kind={}, costs={}", ent.getKey(), kind, costsRes);
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);
