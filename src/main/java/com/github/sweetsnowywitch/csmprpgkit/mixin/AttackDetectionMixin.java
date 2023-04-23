@@ -33,9 +33,6 @@ public abstract class AttackDetectionMixin extends PlayerEntity implements Playe
     @Inject(method = "attack",
             at = {@At("TAIL")})
     public void attack(Entity target, CallbackInfo ci) {
-        RPGKitMod.LOGGER.info("Combo: {}", ModPerks.ON_COMBO.getCombo());
-        RPGKitMod.LOGGER.info("Attack Detected, combo: {}", this.getComboCount() % ModPerks.ON_COMBO.getMaxCombo());
-
         if (ModPerks.ON_COMBO.getCombo() == (this.getComboCount() % ModPerks.ON_COMBO.getMaxCombo())) {
             Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)).
                     addTemporaryModifier(new EntityAttributeModifier(this.getName().getString(), 10,

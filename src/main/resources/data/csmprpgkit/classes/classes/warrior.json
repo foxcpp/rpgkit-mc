@@ -18,6 +18,13 @@
           "type": "csmprpgkit:on_combo",
           "combo": "0",
           "maxCombo": "3"
+        },
+        {
+          "type": "csmprpgkit:kill_streak",
+          "id": "minecraft:generic.movement_speed",
+          "modifier": "0.1",
+          "penalty": "1",
+          "maxStreak": 20
         }
       ]
     }

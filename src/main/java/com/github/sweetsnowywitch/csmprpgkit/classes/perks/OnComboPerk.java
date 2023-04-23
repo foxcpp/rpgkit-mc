@@ -8,7 +8,6 @@ public class OnComboPerk extends Perk {
     public static final int DEFAULT_COMBO = Integer.MAX_VALUE;
 
     private int combo;
-
     private int maxCombo;
 
     public OnComboPerk(Identifier typeId) {
@@ -35,6 +34,8 @@ public class OnComboPerk extends Perk {
     public Perk withParametersFromJSON(JsonObject obj) {
         if (obj.has("combo")) {
             this.combo = obj.get("combo").getAsInt();
+        }
+        if (obj.has("combo")) {
             this.maxCombo = obj.get("maxCombo").getAsInt();
         }
         return new OnComboPerk(this.typeId, this.combo, this.maxCombo);
