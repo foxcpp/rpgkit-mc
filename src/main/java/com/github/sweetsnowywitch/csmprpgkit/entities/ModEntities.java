@@ -15,9 +15,12 @@ public class ModEntities {
     public static final EntityType<SoundBarrierEntity> SOUND_BARRIER = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
                     SoundBarrierEntity::empty).build();
 
+    public static final EntityType<SpellBlastEntity> SPELL_BLAST = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
+            SpellBlastEntity::empty).build();
+
     public static void register() {
         Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "spell_ray"), SPELL_RAY);
-
+        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "spell_blast"), SPELL_BLAST);
         Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "sound_barrier"), SOUND_BARRIER);
     }
 }

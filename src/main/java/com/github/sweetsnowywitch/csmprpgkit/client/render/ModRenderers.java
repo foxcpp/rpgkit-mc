@@ -11,6 +11,7 @@ public class ModRenderers {
     public static void register() {
         EntityRendererRegistry.register(ModEntities.SPELL_RAY, SpellRayRenderer::new);
         EntityRendererRegistry.register(ModEntities.SOUND_BARRIER, EmptyEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.SPELL_BLAST, EmptyEntityRenderer::new);
         //EntityModelLayerRegistry.registerModelLayer(IcicleModel.ICILE, IcicleModel::getTexturedModelData);
     }
 }

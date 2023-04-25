@@ -22,8 +22,6 @@ import com.github.sweetsnowywitch.csmprpgkit.screen.CatalystBagScreenHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -33,18 +31,12 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
-import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -62,28 +54,6 @@ public class RPGKitMod implements ModInitializer  {
     public static final ServerSpellBuildHandler SERVER_SPELL_BUILD_HANDLER =
             new ServerSpellBuildHandler();
 
-    public static final Codec<Box> BOX_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.DOUBLE.fieldOf("minX").forGetter(b -> b.minX),
-            Codec.DOUBLE.fieldOf("minY").forGetter(b -> b.minY),
-            Codec.DOUBLE.fieldOf("minZ").forGetter(b -> b.minZ),
-            Codec.DOUBLE.fieldOf("maxX").forGetter(b -> b.maxX),
-            Codec.DOUBLE.fieldOf("maxY").forGetter(b -> b.maxY),
-            Codec.DOUBLE.fieldOf("maxZ").forGetter(b -> b.maxZ)
-    ).apply(instance, Box::new));
-    public static final TrackedDataHandler<Box> BOX_TRACKED_HANDLER = new TrackedDataHandler.ImmutableHandler<Box>() {
-        @Override
-        public void write(PacketByteBuf buf, Box value) {
-            buf.writeNbt((NbtCompound) RPGKitMod.BOX_CODEC.encodeStart(NbtOps.INSTANCE, value)
-                    .resultOrPartial(RPGKitMod.LOGGER::error).orElseThrow());
-        }
-
-        @Override
-        public Box read(PacketByteBuf buf) {
-            return BOX_CODEC.parse(NbtOps.INSTANCE, buf.readNbt())
-                    .resultOrPartial(RPGKitMod.LOGGER::error).orElseThrow();
-        }
-    };
-
     public static final ScreenHandlerType<CatalystBagScreenHandler> CATALYST_BAG_SCREEN_HANDLER =
             new ScreenHandlerType<>(CatalystBagScreenHandler::new);
 
@@ -94,7 +64,7 @@ public class RPGKitMod implements ModInitializer  {
         ModEntities.register();
         ModParticles.register();
         CommandRegistrationCallback.EVENT.register(ModCommands::register);
-        TrackedDataHandlerRegistry.register(BOX_TRACKED_HANDLER);
+        TrackedHandlers.register();
 
         // Classes
         ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "class"), CharacterClassArgument.class,

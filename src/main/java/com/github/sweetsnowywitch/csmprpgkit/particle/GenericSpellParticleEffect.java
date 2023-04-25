@@ -12,27 +12,32 @@ import java.util.Locale;
 
 public class GenericSpellParticleEffect implements ParticleEffect {
     public static final Codec<GenericSpellParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.fieldOf("color").forGetter(eff -> eff.color)
+            Codec.INT.fieldOf("color").forGetter(eff -> eff.color),
+            Codec.INT.fieldOf("maxAge").forGetter(eff -> eff.color)
     ).apply(instance, GenericSpellParticleEffect::new));
 
     public static final ParticleEffect.Factory<GenericSpellParticleEffect> FACTORY = new Factory<>() {
         @Override
         public GenericSpellParticleEffect read(ParticleType<GenericSpellParticleEffect> type, StringReader reader) throws CommandSyntaxException {
             var color = reader.readInt();
-            return new GenericSpellParticleEffect(color);
+            var maxAge = reader.readInt();
+            return new GenericSpellParticleEffect(color, maxAge);
         }
 
         @Override
         public GenericSpellParticleEffect read(ParticleType<GenericSpellParticleEffect> type, PacketByteBuf buf) {
             var color = buf.readInt();
-            return new GenericSpellParticleEffect(color);
+            var maxAge = buf.readInt();
+            return new GenericSpellParticleEffect(color, maxAge);
         }
     };
 
     public final int color;
+    public final int maxAge;
 
-    public GenericSpellParticleEffect(int color) {
+    public GenericSpellParticleEffect(int color, int maxAge) {
         this.color = color;
+        this.maxAge = maxAge;
     }
 
     @Override
@@ -43,10 +48,11 @@ public class GenericSpellParticleEffect implements ParticleEffect {
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeInt(color);
+        buf.writeInt(maxAge);
     }
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %d", ModParticles.GENERIC_SPELL, this.color);
+        return String.format(Locale.ROOT, "%s %d %d", ModParticles.GENERIC_SPELL, this.color, this.maxAge);
     }
 }

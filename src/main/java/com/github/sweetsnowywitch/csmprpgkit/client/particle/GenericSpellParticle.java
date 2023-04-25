@@ -10,10 +10,12 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class GenericSpellParticle extends AscendingParticle {
-    GenericSpellParticle(ClientWorld world, double x, double y, double z, int color, SpriteProvider spriteProvider) {
+    GenericSpellParticle(ClientWorld world, double x, double y, double z,
+                         double velocityX, double velocityY, double velocityZ,
+                         int color, SpriteProvider spriteProvider) {
         super(world, x, y, z,
                 0.1f, -0.01f, 0.1f,
-                0f, 0f, 0f,
+                velocityX, velocityY, velocityZ,
                 1.0f, spriteProvider, 0.5f, 20,
                 0.01f, true);
 
@@ -40,7 +42,7 @@ public class GenericSpellParticle extends AscendingParticle {
         @Nullable
         @Override
         public Particle createParticle(GenericSpellParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-            return new  GenericSpellParticle(world, x, y, z, parameters.color, spriteProvider);
+            return new  GenericSpellParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.color, spriteProvider);
         }
     }
 }
