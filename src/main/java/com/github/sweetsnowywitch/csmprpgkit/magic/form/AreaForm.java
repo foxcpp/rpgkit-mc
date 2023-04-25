@@ -5,6 +5,7 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
+import com.github.sweetsnowywitch.csmprpgkit.particle.GenericSpellParticleEffect;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
@@ -60,14 +61,14 @@ public class AreaForm extends SpellForm {
     public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         super.startCast(cast, world, caster);
 
-        double radius = 4;
+        double radius = 2;
         for (var reaction : cast.getReactions()) {
             if (reaction instanceof Reaction r) {
                 radius += r.radius;
             }
         }
 
-        var area = Box.of(caster.getPos(), radius, radius, radius);
+        var area = Box.of(caster.getPos(), radius*2, radius*2, radius*2);
 
         for (var ent : world.getOtherEntities(caster, area)) {
             if (ent instanceof MagicAreaEntity) { // TODO: Magic field interactions.
@@ -77,6 +78,12 @@ public class AreaForm extends SpellForm {
         }
 
         cast.getSpell().onAreaHit(cast, world, area);
+
+        var volume = (area.maxX - area.minX) * (area.maxZ - area.minZ) * (area.maxY - area.minY);
+        var center = area.getCenter();
+        world.spawnParticles(new GenericSpellParticleEffect(SpellElement.calculateBaseColor(cast.getFullRecipe()), 10),
+                center.getX(), center.getY(), center.getZ(), (int)(volume / 40 + 1),
+                area.getXLength()/2, area.getYLength()/2, area.getZLength()/2, 0);
     }
 
     @Override
