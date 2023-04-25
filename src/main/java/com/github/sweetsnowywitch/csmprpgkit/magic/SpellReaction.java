@@ -103,4 +103,9 @@ public abstract class SpellReaction implements JSONParameters<SpellReaction> {
         }
         obj.add("costs", costsObj);
     }
+
+    @Override
+    public String toString() {
+        return this.id.toString();
+    }
 }

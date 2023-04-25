@@ -11,10 +11,12 @@ public class ModForms {
     public static final SpellForm RAY = new RayForm();
     public static final SpellForm AREA = new AreaForm();
     public static final SpellForm BLAST = new BlastForm();
+    public static final SpellForm HITSCAN = new HitscanForm();
     public static void register() {
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "self"), SELF);
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "ray"), RAY);
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "area"), AREA);
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "blast"), BLAST);
+        Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "hitscan"), HITSCAN);
     }
 }

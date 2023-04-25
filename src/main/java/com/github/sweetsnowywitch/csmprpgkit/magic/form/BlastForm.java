@@ -69,8 +69,17 @@ public class BlastForm extends SpellForm {
             pos = pos.add(0, 0.7, 0);
         }
 
+        double distance = 5;
+        double radius = 1.25;
+        for (var reaction : cast.getReactions()) {
+            if (reaction instanceof Reaction r) {
+                distance += r.distance;
+                radius += r.radius;
+            }
+        }
+
         var blast = new SpellBlastEntity(ModEntities.SPELL_BLAST, world, pos,
-                5, 1.25, caster.getRotationVector(), 15);
+                distance, radius, caster.getRotationVector(), 15);
         blast.setCast(cast);
         world.spawnEntity(blast);
 
