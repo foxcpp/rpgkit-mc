@@ -10,7 +10,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class SpellEffect implements JSONParameters<SpellEffect> {
+public abstract class SpellEffect implements JSONParameters<SpellEffect>, SpellReaction.Factory {
     @Override
     public SpellEffect withParametersFromJSON(JsonObject jsonObject) {
         return this;

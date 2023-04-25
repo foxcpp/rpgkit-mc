@@ -2,11 +2,14 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -21,15 +24,17 @@ public class ServerSpellCast extends SpellCast {
     private final UUID casterUuid;
 
     public ServerSpellCast(SpellForm form, Spell spell, UUID casterID, List<SpellReaction> formReactions,
-                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe) {
-        super(form, spell, formReactions, effectReactions, costs, fullRecipe);
+                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+                           Vec3d startPos) {
+        super(form, spell, formReactions, effectReactions, costs, fullRecipe, startPos);
 
         this.casterUuid = casterID;
     }
 
     public ServerSpellCast(SpellForm form, Spell spell, @NotNull LivingEntity caster, List<SpellReaction> formReactions,
-                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe) {
-        super(form, spell, formReactions, effectReactions, costs, fullRecipe);
+                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+                           Vec3d startPos) {
+        super(form, spell, formReactions, effectReactions, costs, fullRecipe, startPos);
 
         if (caster.getWorld().isClient) {
             throw new IllegalStateException("cannot instantiate ServerSpellCast on logical client");
@@ -48,6 +53,11 @@ public class ServerSpellCast extends SpellCast {
 
     public void perform(ServerWorld world) {
         var caster = (LivingEntity)world.getEntity(this.casterUuid);
+
+        if (caster == null) {
+            RPGKitMod.LOGGER.error("ServerSpellCast.perform is called but caster entity is missing in world");
+            return;
+        }
 
         this.form.startCast(this, world, caster);
 
@@ -68,6 +78,10 @@ public class ServerSpellCast extends SpellCast {
 
     public UUID getCasterUuid() {
         return this.casterUuid;
+    }
+
+    public @Nullable Entity getCaster(@NotNull ServerWorld world) {
+        return world.getEntity(this.casterUuid);
     }
 
     public static ServerSpellCast readFromNbt(NbtCompound nbt) {

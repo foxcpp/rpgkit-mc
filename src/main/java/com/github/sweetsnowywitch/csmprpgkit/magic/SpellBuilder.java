@@ -133,7 +133,7 @@ public class SpellBuilder {
                 caster, this.spell, form, this.formReactions, this.effectReactions, this.fullRecipe);
         RPGKitMod.LOGGER.debug("Cast costs: {}", costs);
         return new ServerSpellCast(form, this.spell, caster, formReactions, this.effectReactions,
-                costs, this.fullRecipe);
+                costs, this.fullRecipe, caster.getPos());
     }
 
     private void consumeElements(List<SpellElement> elements, Function<Integer, Boolean> shouldConsume) {

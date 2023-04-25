@@ -5,6 +5,7 @@ import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -14,7 +15,9 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -26,7 +29,7 @@ import java.util.*;
  * @see ServerSpellCast
  */
 public class SpellCast {
-    public static final TrackedDataHandler<SpellCast> TRACKED_HANDLER = new TrackedDataHandler.ImmutableHandler<SpellCast>() {
+    public static final TrackedDataHandler<SpellCast> TRACKED_HANDLER = new TrackedDataHandler.ImmutableHandler<>() {
         @Override
         public void write(PacketByteBuf buf, SpellCast value) {
             var nbt = new NbtCompound();
@@ -42,7 +45,7 @@ public class SpellCast {
     };
 
     public static final SpellCast EMPTY = new SpellCast(ModForms.SELF, Spell.EMPTY,
-                                              List.of(), List.of(), Map.of(), List.of());
+                                              List.of(), List.of(), Map.of(), List.of(), Vec3d.ZERO);
 
     protected final SpellForm form;
     protected final Spell spell;
@@ -50,15 +53,18 @@ public class SpellCast {
     protected final ImmutableList<SpellReaction> effectReactions;
     protected final ImmutableMap<String, Float> costs;
     protected final ImmutableList<SpellElement> fullRecipe;
+    protected final Vec3d startPos;
 
     public SpellCast(SpellForm form, Spell spell, List<SpellReaction> formReactions,
-                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe) {
+                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+                            Vec3d startPos) {
         this.form = form;
         this.spell = spell;
         this.formReactions = ImmutableList.copyOf(formReactions);
         this.effectReactions = ImmutableList.copyOf(effectReactions);
         this.costs = ImmutableMap.copyOf(costs);
         this.fullRecipe = ImmutableList.copyOf(fullRecipe);
+        this.startPos = startPos;
     }
 
     protected SpellCast(NbtCompound nbt) {
@@ -129,6 +135,7 @@ public class SpellCast {
         this.effectReactions = effectReactions.build();
         this.costs = costs.build();
         this.fullRecipe = fullRecipe.build();
+        this.startPos = new Vec3d(nbt.getDouble("StartX"), nbt.getDouble("StartY"), nbt.getDouble("StartZ"));
     }
 
     public static SpellCast readFromNbt(NbtCompound nbt) {
@@ -169,6 +176,10 @@ public class SpellCast {
             fullRecipe.add(elementNBT);
         }
         nbt.put("Recipe", fullRecipe);
+
+        nbt.putDouble("StartX", this.startPos.x);
+        nbt.putDouble("StartY", this.startPos.y);
+        nbt.putDouble("StartZ", this.startPos.z);
     }
 
     public SpellForm getForm() {
@@ -192,5 +203,9 @@ public class SpellCast {
 
     public ImmutableList<SpellElement> getFullRecipe() {
         return this.fullRecipe;
+    }
+
+    public Vec3d getStartPos() {
+        return this.startPos;
     }
 }

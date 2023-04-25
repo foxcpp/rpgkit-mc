@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class SpellForm {
+public abstract class SpellForm implements SpellReaction.Factory {
     private final ImmutableMap<String, Float> costMultipliers;
     private final ImmutableMap<String, Float> costTerms;
 

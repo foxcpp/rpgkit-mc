@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -21,6 +22,11 @@ import java.util.Objects;
  * </p>
  */
 public abstract class SpellReaction implements JSONParameters<SpellReaction> {
+    @FunctionalInterface
+    public interface Factory {
+        @Nullable SpellReaction reactionType(Identifier id);
+    }
+
     public final Identifier id;
     private ImmutableMap<String, Float> costMultipliers;
     private ImmutableMap<String, Float> costTerms;
