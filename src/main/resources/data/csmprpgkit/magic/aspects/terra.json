@@ -4,16 +4,35 @@
   "costs": {
     "magicae": "7"
   },
+  "color": "38761D",
   "generic_effects": [
     {
       "type": "csmprpgkit:damage",
       "damage_dealt": 5
+    },
+    {
+      "type": "csmprpgkit:potion",
+      "id": "minecraft:slowness",
+      "duration": 5
     }
   ],
   "generic_reactions": [
     {
       "for_effect": "csmprpgkit:damage",
       "damage_dealt": 3
+    },
+    {
+      "for_effect": "csmprpgkit:potion",
+      "amplifier": 0.3
+    },
+    {
+      "for_form": "csmprpgkit:blast",
+      "distance": 2,
+      "radius": 0.25
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "radius": 1
     }
   ]
 }

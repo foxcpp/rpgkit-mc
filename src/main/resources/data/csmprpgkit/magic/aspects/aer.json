@@ -4,5 +4,26 @@
   "costs": {
     "magicae": "3"
   },
-  "color": 8347648
+  "color": "D5A6BD",
+  "generic_effects": [
+    {
+      "type": "csmprpgkit:push_away",
+      "velocity": 1
+    }
+  ],
+  "generic_reactions": [
+    {
+      "for_effect": "csmprpgkit:push_away",
+      "velocity": 2
+    },
+    {
+      "for_form": "csmprpgkit:blast",
+      "distance": 2,
+      "radius": 0.25
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "radius": 1
+    }
+  ]
 }

@@ -4,5 +4,29 @@
   "costs": {
     "magicae": "11"
   },
-  "color": "ff6600"
+  "color": "ff6600",
+  "generic_effects": [
+    {
+      "type": "csmprpgkit:fire"
+    },
+    {
+      "type": "csmprpgkit:damage",
+      "damage_dealt": 3
+    }
+  ],
+  "generic_reactions": [
+    {
+      "for_effect": "csmprpgkit:damage",
+      "damage_dealt": 5
+    },
+    {
+      "for_form": "csmprpgkit:blast",
+      "distance": 2,
+      "radius": 0.25
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "radius": 1
+    }
+  ]
 }

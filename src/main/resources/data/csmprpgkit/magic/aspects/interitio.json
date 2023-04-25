@@ -4,5 +4,17 @@
   "costs": {
     "magicae": "11"
   },
-  "color": 2631720
+  "color": 2631720,
+  "generic_effects": [
+    {
+      "type": "csmprpgkit:damage",
+      "damage_dealt": 5
+    }
+  ],
+  "generic_reactions": [
+    {
+      "for_effect": "csmprpgkit:damage",
+      "damage_dealt": 3
+    }
+  ]
 }

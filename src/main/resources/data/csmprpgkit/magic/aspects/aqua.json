@@ -3,5 +3,30 @@
   "order": 2,
   "costs": {
     "magicae": "5"
-  }
+  },
+  "color": "3C78D8",
+  "generic_effects": [
+    {
+      "type": "csmprpgkit:push_away",
+      "velocity": 0.2
+    },
+    {
+      "type": "csmprpgkit:extinguish"
+    }
+  ],
+  "generic_reactions": [
+    {
+      "for_effect": "csmprpgkit:push_away",
+      "velocity": 0.3
+    },
+    {
+      "for_form": "csmprpgkit:blast",
+      "distance": 2,
+      "radius": 0.25
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "radius": 1
+    }
+  ]
 }
