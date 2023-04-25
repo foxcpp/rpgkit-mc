@@ -72,9 +72,9 @@ public class DamageEffect extends SpellEffect {
     }
 
     @Override
-    public void onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         if (!(entity instanceof LivingEntity le)) {
-            return;
+            return false;
         }
 
         var damageDealt = this.damageDealt;
@@ -86,11 +86,12 @@ public class DamageEffect extends SpellEffect {
         }
 
         le.damage(DamageSource.MAGIC, damageDealt);
+        return false;
     }
 
     @Override
-    public void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-
+    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+        return false;
     }
 
     @Override

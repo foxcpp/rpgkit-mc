@@ -266,8 +266,7 @@ public class SpellRayEntity extends Entity {
         if (this.cast == null) {
             return false;
         }
-        this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld)this.world, bhr.getBlockPos(), bhr.getSide());
-        return false;
+        return this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld)this.world, bhr.getBlockPos(), bhr.getSide());
     }
 
     /**

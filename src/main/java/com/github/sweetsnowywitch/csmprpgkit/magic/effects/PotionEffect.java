@@ -105,13 +105,13 @@ public class PotionEffect extends SpellEffect {
     }
 
     @Override
-    public void onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         if (this.statusEffect == null) {
             RPGKitMod.LOGGER.warn("Cast {} with empty status effect", cast);
-            return;
+            return false;
         }
         if (!(entity instanceof LivingEntity le)) {
-            return;
+            return false;
         }
 
         double amplifier = this.baseAmplifier;
@@ -130,11 +130,13 @@ public class PotionEffect extends SpellEffect {
                 new StatusEffectInstance(this.statusEffect, duration, (int)amplifier, false, false),
                 caster
         );
+
+        return false;
     }
 
     @Override
-    public void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-
+    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+        return false;
     }
 
     @Override

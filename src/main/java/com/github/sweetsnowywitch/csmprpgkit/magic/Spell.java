@@ -77,16 +77,20 @@ public class Spell {
         }
     }
 
-    public void onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+        var passThrough = true;
         for (var effect : this.effects) {
-            effect.onSingleEntityHit(cast, entity);
+            passThrough = passThrough && effect.onSingleEntityHit(cast, entity);
         }
+        return passThrough;
     }
 
-    public void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+        var passThrough = true;
         for (var effect : this.effects) {
-            effect.onSingleBlockHit(cast, world, pos, dir);
+            passThrough = passThrough && effect.onSingleBlockHit(cast, world, pos, dir);
         }
+        return passThrough;
     }
 
     public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {

@@ -27,7 +27,7 @@ public abstract class SpellEffect implements JSONParameters<SpellEffect>, SpellR
 
     public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {}
     public void endCast(ServerSpellCast cast, ServerWorld world) {}
-    public abstract void onSingleEntityHit(ServerSpellCast cast, Entity entity);
-    public abstract void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir);
+    public abstract boolean onSingleEntityHit(ServerSpellCast cast, Entity entity);
+    public abstract boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir);
     public abstract void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box);
 }

@@ -12,7 +12,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -21,8 +20,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class MuteEffect extends SpellEffect {
     public final int duration;
@@ -37,9 +34,9 @@ public class MuteEffect extends SpellEffect {
     }
 
     @Override
-    public void onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         if (!(entity instanceof LivingEntity le)) {
-            return;
+            return false;
         }
 
         var caster = ((ServerWorld)entity.getWorld()).getEntity(cast.getCasterUuid());
@@ -50,11 +47,13 @@ public class MuteEffect extends SpellEffect {
                         false, false),
                 caster
         );
+        return false;
     }
 
     @Override
-    public void onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
         // TODO: Attach effect to block so it is locked.
+        return false;
     }
 
     @Override
