@@ -75,7 +75,7 @@ public class RayForm extends SpellForm {
         ray.setPitch(caster.getPitch());
 
         var bounces = 0;
-        for (var reaction : cast.getFormReactions()) {
+        for (var reaction : cast.getReactions()) {
             if (reaction instanceof Reaction r) {
                 bounces += r.addBounces;
             }

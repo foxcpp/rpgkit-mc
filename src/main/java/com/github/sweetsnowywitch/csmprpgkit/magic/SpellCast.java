@@ -45,23 +45,21 @@ public class SpellCast {
     };
 
     public static final SpellCast EMPTY = new SpellCast(ModForms.SELF, Spell.EMPTY,
-                                              List.of(), List.of(), Map.of(), List.of(), Vec3d.ZERO);
+                                              List.of(), Map.of(), List.of(), Vec3d.ZERO);
 
     protected final SpellForm form;
     protected final Spell spell;
-    protected final ImmutableList<SpellReaction> formReactions;
-    protected final ImmutableList<SpellReaction> effectReactions;
+    protected final ImmutableList<SpellReaction> reactions;
     protected final ImmutableMap<String, Float> costs;
     protected final ImmutableList<SpellElement> fullRecipe;
     protected final Vec3d startPos;
 
-    public SpellCast(SpellForm form, Spell spell, List<SpellReaction> formReactions,
-                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+    public SpellCast(SpellForm form, Spell spell, List<SpellReaction> reactions,
+                     Map<String, Float> costs, List<SpellElement> fullRecipe,
                             Vec3d startPos) {
         this.form = form;
         this.spell = spell;
-        this.formReactions = ImmutableList.copyOf(formReactions);
-        this.effectReactions = ImmutableList.copyOf(effectReactions);
+        this.reactions = ImmutableList.copyOf(reactions);
         this.costs = ImmutableMap.copyOf(costs);
         this.fullRecipe = ImmutableList.copyOf(fullRecipe);
         this.startPos = startPos;
@@ -87,30 +85,17 @@ public class SpellCast {
         var casterID = nbt.getUuid("Caster");
         if (casterID == null) throw new IllegalArgumentException("missing caster UUID in NBT");
 
-        ImmutableList.Builder<SpellReaction> formReactions = ImmutableList.builder();
-        var formReactionsNbt = nbt.getList("FormReactions", NbtElement.STRING_TYPE);
+        ImmutableList.Builder<SpellReaction> reactions = ImmutableList.builder();
+        var formReactionsNbt = nbt.getList("Reactions", NbtElement.STRING_TYPE);
         for (var element : formReactionsNbt) {
             var reactionID = Identifier.tryParse(element.asString());
             if (reactionID == null) throw new IllegalArgumentException("malformed reaction identifier in NBT: %s".formatted(element.asString()));
             var reaction = ModRegistries.REACTIONS.get(reactionID);
             if (reaction == null) {
-                RPGKitMod.LOGGER.warn("Unknown form reaction ID in NBT, discarding: {}", reactionID);
+                RPGKitMod.LOGGER.warn("Unknown reaction ID in NBT, discarding: {}", reactionID);
                 continue;
             }
-            formReactions.add(reaction);
-        }
-
-        ImmutableList.Builder<SpellReaction> effectReactions = ImmutableList.builder();
-        var effectReactionsNbt = nbt.getList("EffectReactions", NbtElement.STRING_TYPE);
-        for (var element : effectReactionsNbt) {
-            var reactionID = Identifier.tryParse(element.asString());
-            if (reactionID == null) throw new IllegalArgumentException("malformed reaction identifier in NBT: %s".formatted(element.asString()));
-            var reaction = ModRegistries.REACTIONS.get(reactionID);
-            if (reaction == null) {
-                RPGKitMod.LOGGER.warn("Unknown effect reaction ID in NBT, discarding: {}", reactionID);
-                continue;
-            }
-            effectReactions.add(reaction);
+            reactions.add(reaction);
         }
 
         ImmutableMap.Builder<String, Float> costs = ImmutableMap.builder();
@@ -131,8 +116,7 @@ public class SpellCast {
 
         this.form = form;
         this.spell = spell;
-        this.formReactions = formReactions.build();
-        this.effectReactions = effectReactions.build();
+        this.reactions = reactions.build();
         this.costs = costs.build();
         this.fullRecipe = fullRecipe.build();
         this.startPos = new Vec3d(nbt.getDouble("StartX"), nbt.getDouble("StartY"), nbt.getDouble("StartZ"));
@@ -152,16 +136,10 @@ public class SpellCast {
         nbt.put("Spell", spellNBT);
 
         var formReactions = new NbtList();
-        for (var reaction : this.formReactions) {
+        for (var reaction : this.reactions) {
             formReactions.add(NbtString.of(reaction.id.toString()));
         }
-        nbt.put("FormReactions", formReactions);
-
-        var effectReactions = new NbtList();
-        for (var reaction : this.effectReactions) {
-            effectReactions.add(NbtString.of(reaction.id.toString()));
-        }
-        nbt.put("EffectReactions", effectReactions);
+        nbt.put("Reactions", formReactions);
 
         var costs = new NbtCompound();
         for (var ent : this.costs.entrySet()) {
@@ -189,16 +167,12 @@ public class SpellCast {
     public Spell getSpell() {
         return spell;
     }
-    public ImmutableList<SpellReaction> getFormReactions() {
-        return formReactions;
+    public ImmutableList<SpellReaction> getReactions() {
+        return this.reactions;
     }
 
     public float getCost(String key) {
         return Objects.requireNonNull(this.costs.getOrDefault(key, 0f));
-    }
-
-    public ImmutableList<SpellReaction> getEffectReactions() {
-        return effectReactions;
     }
 
     public ImmutableList<SpellElement> getFullRecipe() {

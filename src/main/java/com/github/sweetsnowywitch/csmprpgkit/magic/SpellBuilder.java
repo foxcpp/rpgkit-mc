@@ -15,16 +15,14 @@ public class SpellBuilder {
     private final List<SpellElement> fullRecipe;
     private final List<SpellElement> pendingElements;
     private Spell spell;
-    private final List<SpellReaction> formReactions;
-    private final List<SpellReaction> effectReactions;
+    private final List<SpellReaction> reactions;
     private final Map<String, Float> spellAspectCosts;
 
     public SpellBuilder(int maxElements) {
         this.maxElements = maxElements;
         this.fullRecipe = new ArrayList<>();
         this.pendingElements = new ArrayList<>();
-        this.formReactions = new ArrayList<>();
-        this.effectReactions = new ArrayList<>();
+        this.reactions = new ArrayList<>();
         this.spellAspectCosts = new HashMap<>();
     }
 
@@ -74,7 +72,7 @@ public class SpellBuilder {
             this.consumeElements(this.pendingElements, (i) -> spell.elements().get(i).consume());
         } else {
             var generic = new GenericSpell(ImmutableList.copyOf(this.pendingElements));
-            this.effectReactions.addAll(generic.getForcedEffectReactions());
+            this.reactions.addAll(generic.getForcedEffectReactions());
             this.spell = generic;
         }
         this.pendingElements.clear();
@@ -88,7 +86,7 @@ public class SpellBuilder {
         for (SpellEffect effect : this.spell.getEffects()) {
             var effectReaction = ModRegistries.REACTION_RECIPES.tryMatch(this.pendingElements, reaction -> reaction.appliesTo(effect));
             if (effectReaction != null) {
-                this.effectReactions.add(effectReaction.result());
+                this.reactions.add(effectReaction.result());
                 for (var entry : this.spellAspectCosts.entrySet()) {
                     this.spellAspectCosts.compute(entry.getKey(),
                             (k, v) -> effectReaction.result().applyCost(k, v == null ? 0 : v));
@@ -105,7 +103,7 @@ public class SpellBuilder {
         var formReactions = ModRegistries.REACTION_RECIPES.tryMatchMultiple(this.pendingElements);
         if (formReactions != null) {
             for (var reaction : formReactions) {
-                this.formReactions.add(reaction.result());
+                this.reactions.add(reaction.result());
 
                 for (int i = 0; i < reaction.elements().size(); i++) {
                     shouldConsume[i] = shouldConsume[i] || reaction.elements().get(i).consume();
@@ -126,13 +124,12 @@ public class SpellBuilder {
             this.finishSpell();
         }
 
-        var formReactions = this.formReactions.stream().filter((r) -> r.appliesTo(form)).toList();
-        var costs = this.calculateFormedCosts(form, formReactions);
+        var costs = this.calculateFormedCosts(form);
 
-        RPGKitMod.LOGGER.info("{} casting spell {} with form {} ({}) and effect reactions {} (elements: {})",
-                caster, this.spell, form, this.formReactions, this.effectReactions, this.fullRecipe);
+        RPGKitMod.LOGGER.info("{} casting spell {} with form {} and reactions {} (elements: {})",
+                caster, this.spell, form, this.reactions, this.fullRecipe);
         RPGKitMod.LOGGER.debug("Cast costs: {}", costs);
-        return new ServerSpellCast(form, this.spell, caster, formReactions, this.effectReactions,
+        return new ServerSpellCast(form, this.spell, caster, this.reactions,
                 costs, this.fullRecipe, caster.getPos());
     }
 
@@ -146,7 +143,7 @@ public class SpellBuilder {
         }
     }
 
-    private Map<String, Float> calculateFormedCosts(SpellForm form, List<SpellReaction> formReactions) {
+    private Map<String, Float> calculateFormedCosts(SpellForm form) {
         var formedCosts = new HashMap<String, Float>();
 
         for (var element : this.spellAspectCosts.entrySet()) {
@@ -154,7 +151,8 @@ public class SpellBuilder {
 
             cost = form.applyCost(element.getKey(), cost);
 
-            for (var reaction : formReactions) {
+            for (var reaction : this.reactions) {
+                if (!reaction.appliesTo(form)) continue;
                 cost = reaction.applyCost(element.getKey(), cost);
             }
 

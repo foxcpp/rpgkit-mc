@@ -21,14 +21,14 @@ import java.util.Objects;
 
 public class PotionEffect extends SpellEffect {
     public static class Reaction extends SpellReaction {
-        private final int amplifier;
+        private final double amplifier;
         private final int durationTicks;
 
         protected Reaction(Identifier id) {
             this(id, 0, 0);
         }
 
-        protected Reaction(Identifier id, int amplifier, int durationTicks) {
+        protected Reaction(Identifier id, double amplifier, int durationTicks) {
             super(id);
             this.amplifier = amplifier;
             this.durationTicks = durationTicks;
@@ -43,7 +43,7 @@ public class PotionEffect extends SpellEffect {
         public SpellReaction withParametersFromJSON(JsonObject jsonObject) {
             var amplifier = this.amplifier;
             if (jsonObject.has("amplifier")) {
-                amplifier = jsonObject.get("amplifier").getAsInt();
+                amplifier = jsonObject.get("amplifier").getAsDouble();
             }
             var durationTicks = this.durationTicks;
             if (jsonObject.has("duration")) {
@@ -114,21 +114,20 @@ public class PotionEffect extends SpellEffect {
             return;
         }
 
-        var amplifier = this.baseAmplifier;
+        double amplifier = this.baseAmplifier;
         var duration = this.baseDuration;
 
-        for (var reaction : cast.getEffectReactions()) {
-            if (reaction.appliesTo(this)) {
-                var peReaction = (Reaction)reaction;
-                amplifier += peReaction.amplifier;
-                duration += peReaction.durationTicks;
+        for (var reaction : cast.getReactions()) {
+            if (reaction instanceof Reaction r) {
+                amplifier += r.amplifier;
+                duration += r.durationTicks;
             }
         }
 
         var caster = ((ServerWorld)entity.getWorld()).getEntity(cast.getCasterUuid());
 
         le.addStatusEffect(
-                new StatusEffectInstance(this.statusEffect, duration, amplifier, false, false),
+                new StatusEffectInstance(this.statusEffect, duration, (int)amplifier, false, false),
                 caster
         );
     }

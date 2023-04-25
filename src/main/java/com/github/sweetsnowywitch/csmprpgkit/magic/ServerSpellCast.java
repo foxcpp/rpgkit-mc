@@ -24,17 +24,17 @@ public class ServerSpellCast extends SpellCast {
     private final UUID casterUuid;
 
     public ServerSpellCast(SpellForm form, Spell spell, UUID casterID, List<SpellReaction> formReactions,
-                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+                           List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
                            Vec3d startPos) {
-        super(form, spell, formReactions, effectReactions, costs, fullRecipe, startPos);
+        super(form, spell, reactions, costs, fullRecipe, startPos);
 
         this.casterUuid = casterID;
     }
 
-    public ServerSpellCast(SpellForm form, Spell spell, @NotNull LivingEntity caster, List<SpellReaction> formReactions,
-                           List<SpellReaction> effectReactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+    public ServerSpellCast(SpellForm form, Spell spell, @NotNull LivingEntity caster,
+                           List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
                            Vec3d startPos) {
-        super(form, spell, formReactions, effectReactions, costs, fullRecipe, startPos);
+        super(form, spell, reactions, costs, fullRecipe, startPos);
 
         if (caster.getWorld().isClient) {
             throw new IllegalStateException("cannot instantiate ServerSpellCast on logical client");

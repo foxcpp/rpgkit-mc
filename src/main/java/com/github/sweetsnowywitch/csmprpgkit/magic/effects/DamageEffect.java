@@ -79,10 +79,9 @@ public class DamageEffect extends SpellEffect {
 
         var damageDealt = this.damageDealt;
 
-        for (var reaction : cast.getEffectReactions()) {
-            if (reaction.appliesTo(this)) {
-                var deReaction = (DamageEffect.Reaction) reaction;
-                damageDealt += deReaction.damageDealt;
+        for (var reaction : cast.getReactions()) {
+            if (reaction instanceof DamageEffect.Reaction r) {
+                damageDealt += r.damageDealt;
             }
         }
 

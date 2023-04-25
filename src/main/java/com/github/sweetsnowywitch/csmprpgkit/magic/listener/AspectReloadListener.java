@@ -85,7 +85,12 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                             }
                             reaction = effect.reactionType(ent.getKey());
                         } else if (obj.has("for_form")) {
-                            throw new IllegalArgumentException("for_form is not supported in generic_reactions");
+                            var id = new Identifier(obj.get("for_form").getAsString());
+                            var form = ModRegistries.SPELL_FORMS.get(id);
+                            if (form == null) {
+                                throw new IllegalArgumentException("unknown form: %s".formatted(id.toString()));
+                            }
+                            reaction = form.reactionType(ent.getKey());
                         } else {
                             throw new IllegalArgumentException("reaction definition must have for_form or for_effect");
                         }
