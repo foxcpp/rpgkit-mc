@@ -42,6 +42,13 @@ public class RayForm extends SpellForm {
         public void toJson(@NotNull JsonObject obj) {
             obj.addProperty("bounces", this.addBounces);
         }
+
+        @Override
+        public String toString() {
+            return "RayForm.Reaction[" +
+                    "addBounces=" + addBounces +
+                    ']';
+        }
     }
 
     public RayForm() {

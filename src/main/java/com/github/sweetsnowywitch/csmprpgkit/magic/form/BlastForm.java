@@ -46,6 +46,14 @@ public class BlastForm extends SpellForm {
             obj.addProperty("radius", this.radius);
             obj.addProperty("distance", this.distance);
         }
+
+        @Override
+        public String toString() {
+            return "BlastForm.Reaction[" +
+                    "radius=" + radius +
+                    ", distance=" + distance +
+                    ']';
+        }
     }
 
     public BlastForm() {

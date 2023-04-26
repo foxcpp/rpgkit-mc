@@ -39,6 +39,13 @@ public class AreaForm extends SpellForm {
             super.toJson(obj);
             obj.addProperty("radius", this.radius);
         }
+
+        @Override
+        public String toString() {
+            return "AreaForm.Reaction[" +
+                    "radius=" + radius +
+                    ']';
+        }
     }
 
     public AreaForm() {

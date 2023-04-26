@@ -57,7 +57,7 @@ public class PotionEffect extends SpellEffect {
 
         @Override
         public String toString() {
-            return "Reaction[" +
+            return "PotionEffect.Reaction[" +
                     "amplifier=" + amplifier +
                     ", durationTicks=" + durationTicks +
                     ']';

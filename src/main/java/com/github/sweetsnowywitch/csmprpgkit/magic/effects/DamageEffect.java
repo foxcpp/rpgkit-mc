@@ -42,7 +42,7 @@ public class DamageEffect extends SpellEffect {
 
         @Override
         public String toString() {
-            return "Reaction[" +
+            return "DamageEffect.Reaction[" +
                     "damageDealt=" + damageDealt +
                     ']';
         }

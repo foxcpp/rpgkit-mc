@@ -34,6 +34,13 @@ public class PushAwayEffect extends SpellEffect {
         public void toJson(@NotNull JsonObject obj) {
             obj.addProperty("velocity", this.velocity);
         }
+
+        @Override
+        public String toString() {
+            return "PushAwayEffect.Reaction{" +
+                    "velocity=" + velocity +
+                    '}';
+        }
     }
 
     private final double velocity;
