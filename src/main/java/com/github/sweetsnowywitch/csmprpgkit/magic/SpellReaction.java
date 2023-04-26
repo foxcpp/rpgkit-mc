@@ -8,28 +8,36 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * SpellReaction is a base class for spell "reaction". Reaction
  * is a spell cast element that changes how its form or effect works, typically
  * by changing its parameters.
  *
- * <p>
- *     Inheritors should call {@link SpellReaction#populateFromJson(JsonObject) populateFromJson}
- *     method in their {@link JSONParameters#withParametersFromJSON(JsonObject) withParmetersFromJson} implementation
- *     in order to populate costMultiplers and costTerms fields of SpellReaction class. Same goes for
- *     {@link SpellReaction#writeToJson(JsonObject) writeToJson} and {@link JSONParameters#parametersToJSON() parmaetersToJSON}.
- * </p>
  */
-public abstract class SpellReaction implements JSONParameters<SpellReaction> {
-    @FunctionalInterface
+public abstract class SpellReaction {
     public interface Factory {
-        @Nullable SpellReaction reactionType(Identifier id);
+        @Nullable SpellReaction createDefaultReaction(Identifier id);
+        @Nullable SpellReaction createReactionFromJson(Identifier id, JsonObject obj);
+    }
+
+    public static Factory factoryFor(Function<Identifier, SpellReaction> def, BiFunction<Identifier, JsonObject, SpellReaction> json) {
+        return new Factory() {
+            public @Nullable SpellReaction createDefaultReaction(Identifier id) {
+                return def.apply(id);
+            }
+
+            public @Nullable SpellReaction createReactionFromJson(Identifier id, JsonObject obj) {
+                return json.apply(id, obj);
+            }
+        };
     }
 
     public final Identifier id;
-    private ImmutableMap<String, Float> costMultipliers;
-    private ImmutableMap<String, Float> costTerms;
+    private final ImmutableMap<String, Float> costMultipliers;
+    private final ImmutableMap<String, Float> costTerms;
 
     public boolean appliesTo(SpellEffect effect) {
         return false;
@@ -42,6 +50,29 @@ public abstract class SpellReaction implements JSONParameters<SpellReaction> {
         this.id = id;
         this.costMultipliers = ImmutableMap.of();
         this.costTerms = ImmutableMap.of();
+    }
+
+    public SpellReaction(Identifier id, JsonObject obj) {
+        this.id = id;
+
+        ImmutableMap.Builder<String, Float> costMultipliers = ImmutableMap.builder();
+        ImmutableMap.Builder<String, Float> costTerms = ImmutableMap.builder();
+
+        var costs = obj.getAsJsonObject("costs");
+        if (costs != null) {
+            for (var entry : costs.entrySet()) {
+                var values = entry.getValue().getAsJsonObject();
+                if (values.has("add")) {
+                    costTerms.put(entry.getKey(), values.get("add").getAsFloat());
+                }
+                if (values.has("mul")) {
+                    costMultipliers.put(entry.getKey(), values.get("mul").getAsFloat());
+                }
+            }
+        }
+
+        this.costTerms = costTerms.build();
+        this.costMultipliers = costMultipliers.build();
     }
 
     public SpellReaction(Identifier id, ImmutableMap<String, Float> costMultipliers, ImmutableMap<String, Float> costTerms) {
@@ -62,29 +93,7 @@ public abstract class SpellReaction implements JSONParameters<SpellReaction> {
         return cost * this.getCostMultiplier(key) + this.getCostTerm(key);
     }
 
-    protected void populateFromJson(@NotNull JsonObject obj) {
-        ImmutableMap.Builder<String, Float> costMultipliers = ImmutableMap.builder();
-        ImmutableMap.Builder<String, Float> costTerms = ImmutableMap.builder();
-
-        var costs = obj.getAsJsonObject("costs");
-        if (costs != null) {
-            for (var entry : costs.entrySet()) {
-                var values = entry.getValue().getAsJsonObject();
-                if (values.has("add")) {
-                    costTerms.put(entry.getKey(), values.get("add").getAsFloat());
-                }
-                if (values.has("mul")) {
-                    costMultipliers.put(entry.getKey(), values.get("mul").getAsFloat());
-                }
-            }
-        }
-
-        this.costTerms = costTerms.build();
-        this.costMultipliers = costMultipliers.build();
-
-    }
-
-    protected void writeToJson(@NotNull JsonObject obj) {
+    public void toJson(@NotNull JsonObject obj) {
         if (obj.has("costs")) {
             obj.remove("costs");
         }

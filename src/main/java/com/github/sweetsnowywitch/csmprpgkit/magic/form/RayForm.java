@@ -20,12 +20,17 @@ public class RayForm extends SpellForm {
         private final int addBounces;
 
         public Reaction(Identifier id) {
-            this(id, 0);
+            super(id);
+            this.addBounces = 0;
         }
 
-        public Reaction(Identifier id, int addBounces) {
-            super(id);
-            this.addBounces = addBounces;
+        public Reaction(Identifier id, JsonObject obj) {
+            super(id, obj);
+            if (obj.has("bounces")) {
+                this.addBounces = obj.get("bounces").getAsInt();
+            } else {
+                this.addBounces = 0;
+            }
         }
 
         @Override
@@ -34,29 +39,13 @@ public class RayForm extends SpellForm {
         }
 
         @Override
-        public SpellReaction withParametersFromJSON(JsonObject jsonObject) {
-            var addBounces = this.addBounces;
-            if (jsonObject.has("bounces")) {
-                addBounces = jsonObject.get("bounces").getAsInt();
-            }
-            return new Reaction(this.id, addBounces);
-        }
-
-        @Override
-        public JsonObject parametersToJSON() {
-            var res = new JsonObject();
-            res.addProperty("bounces", this.addBounces);
-            return null;
+        public void toJson(@NotNull JsonObject obj) {
+            obj.addProperty("bounces", this.addBounces);
         }
     }
 
     public RayForm() {
         super(ImmutableMap.of(), ImmutableMap.of());
-    }
-
-    @Override
-    public @Nullable SpellReaction reactionType(Identifier id) {
-        return new Reaction(id);
     }
 
     @Override

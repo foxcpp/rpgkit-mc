@@ -13,10 +13,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,12 +23,26 @@ public class MuteEffect extends SpellEffect {
     public final int duration;
     public final boolean muteInside;
 
-    public MuteEffect() {
-        this(60*20, true);
+    public MuteEffect(Identifier id) {
+        super(id);
+        this.duration = 60*20;
+        this.muteInside = true;
     }
-    public MuteEffect(int duration, boolean muteInside) {
-        this.duration = duration;
-        this.muteInside = muteInside;
+
+    public MuteEffect(Identifier id, JsonObject obj) {
+        super(id);
+
+        if (obj.has("duration")) {
+            this.duration = obj.get("duration").getAsInt();
+        } else {
+            this.duration = 60*20;
+        }
+
+        if (obj.has("mute_inside")) {
+            this.muteInside = obj.get("mute_inside").getAsBoolean();
+        } else {
+            this.muteInside = true;
+        }
     }
 
     @Override
@@ -63,27 +75,9 @@ public class MuteEffect extends SpellEffect {
         world.spawnEntity(barrier);
     }
 
-    @Override
-    public SpellEffect withParametersFromJSON(JsonObject obj) {
-        var duration = this.duration;
-        if (obj.has("duration")) {
-            duration = obj.get("duration").getAsInt();
-        }
-
-        var muteInside = this.muteInside;
-        if (obj.has("mute_inside")) {
-            muteInside = obj.get("mute_inside").getAsBoolean();
-        }
-
-        return new MuteEffect(duration, muteInside);
-    }
-
-    @Override
-    public JsonObject parametersToJSON() {
-        var obj = new JsonObject();
+    public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("duration", this.duration);
         obj.addProperty("mute_inside", this.muteInside);
-        return obj;
     }
 
     public static boolean shouldHear(@NotNull LivingEntity hearer, @NotNull Entity source) {
@@ -161,5 +155,13 @@ public class MuteEffect extends SpellEffect {
         }
 
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "MuteEffect[" +
+                "duration=" + duration +
+                ", muteInside=" + muteInside +
+                ']';
     }
 }

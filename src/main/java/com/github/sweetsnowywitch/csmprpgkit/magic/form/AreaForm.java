@@ -20,28 +20,24 @@ public class AreaForm extends SpellForm {
         public final double radius;
 
         public Reaction(Identifier id) {
-            this(id,0);
-        }
-
-        public Reaction(Identifier id, double radius) {
             super(id);
-            this.radius = radius;
+            this.radius = 0;
         }
 
-        @Override
-        public SpellReaction withParametersFromJSON(JsonObject jsonObject) {
-            var radius = this.radius;
-            if (jsonObject.has("radius")) {
-                radius = jsonObject.get("radius").getAsDouble();
+        public Reaction(Identifier id, JsonObject obj) {
+            super(id, obj);
+
+            if (obj.has("radius")) {
+                this.radius = obj.get("radius").getAsDouble();
+            } else {
+                this.radius = 0;
             }
-            return new Reaction(this.id, radius);
         }
 
         @Override
-        public JsonObject parametersToJSON() {
-            var obj = new JsonObject();
+        public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
             obj.addProperty("radius", this.radius);
-            return obj;
         }
     }
 
@@ -50,11 +46,6 @@ public class AreaForm extends SpellForm {
                 SpellElement.COST_MAGICAE, 2.75f,
                 SpellElement.COST_INTERITIO, 2f
         ), ImmutableMap.of());
-    }
-
-    @Override
-    public @Nullable SpellReaction reactionType(Identifier id) {
-        return new Reaction(id);
     }
 
     @Override

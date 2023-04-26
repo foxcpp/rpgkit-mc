@@ -12,39 +12,32 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DamageEffect extends SpellEffect {
-
     public static class Reaction extends SpellReaction {
         private final int damageDealt;
 
-        protected Reaction(Identifier id) {
-            this(id, 0);
-        }
-
-        protected Reaction(Identifier id, int damageDealt) {
+        public Reaction(Identifier id) {
             super(id);
-            this.damageDealt = damageDealt;
+            this.damageDealt = 0;
         }
 
-        @Override
-        public SpellReaction withParametersFromJSON(JsonObject jsonObject) {
-            var damageDealt = this.damageDealt;
-            if (jsonObject.has("damage_dealt")) {
-                damageDealt = jsonObject.get("damage_dealt").getAsInt();
+        public Reaction(Identifier id, JsonObject obj) {
+            super(id, obj);
+
+            if (obj.has("damage_dealt")) {
+                this.damageDealt = obj.get("damage_dealt").getAsInt();
+            } else {
+                this.damageDealt = 0;
             }
-
-            var r = new Reaction(this.id, damageDealt);
-            r.populateFromJson(jsonObject);
-            return r;
         }
 
         @Override
-        public JsonObject parametersToJSON() {
-            var obj = new JsonObject();
+        public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
             obj.addProperty("damage_dealt", this.damageDealt);
-            return obj;
         }
 
         @Override
@@ -55,20 +48,21 @@ public class DamageEffect extends SpellEffect {
         }
     }
 
-
     private final int damageDealt;
 
-    public DamageEffect() {
-        this.damageDealt = 0;
+    public DamageEffect(Identifier id) {
+        super(id);
+        this.damageDealt = 2;
     }
 
-    public DamageEffect(int damageDealt) {
-        this.damageDealt = damageDealt;
-    }
+    public DamageEffect(Identifier id, JsonObject obj) {
+        super(id);
 
-    @Override
-    public @Nullable SpellReaction reactionType(Identifier id) {
-        return new Reaction(id);
+        if (obj.has("damage_dealt")) {
+            this.damageDealt = obj.get("damage_dealt").getAsInt();
+        } else {
+            this.damageDealt = 0;
+        }
     }
 
     @Override
@@ -100,12 +94,9 @@ public class DamageEffect extends SpellEffect {
     }
 
     @Override
-    public SpellEffect withParametersFromJSON(JsonObject obj) {
-        int damageDealt = this.damageDealt;
-        if (obj.has("damage_dealt")) {
-            damageDealt = obj.get("damage_dealt").getAsInt();
-        }
-
-        return new DamageEffect(damageDealt);
+    public String toString() {
+        return "DamageEffect[" +
+                "damage=" + damageDealt +
+                ']';
     }
 }

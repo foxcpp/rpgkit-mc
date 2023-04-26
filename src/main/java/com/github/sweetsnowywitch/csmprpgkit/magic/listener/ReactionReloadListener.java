@@ -42,26 +42,24 @@ public class ReactionReloadListener extends JsonDataLoader implements Identifiab
                 SpellReaction reaction;
                 if (model.has("for_effect")) {
                     var id = new Identifier(model.get("for_effect").getAsString());
-                    var effect = ModRegistries.SPELL_EFFECTS.get(id);
+                    var effect = ModRegistries.SPELL_EFFECT_REACTIONS.get(id);
                     if (effect == null) {
                         throw new IllegalArgumentException("unknown effect: %s".formatted(id.toString()));
                     }
-                    reaction = effect.reactionType(ent.getKey());
+                    reaction = effect.createReactionFromJson(ent.getKey(), model);
                 } else if (model.has("for_form")) {
                     var id = new Identifier(model.get("for_form").getAsString());
-                    var form = ModRegistries.SPELL_FORMS.get(id);
+                    var form = ModRegistries.SPELL_FORM_REACTIONS.get(id);
                     if (form == null) {
                         throw new IllegalArgumentException("unknown reaction: %s".formatted(id.toString()));
                     }
-                    reaction = form.reactionType(ent.getKey());
+                    reaction = form.createReactionFromJson(ent.getKey(), model);
                 } else {
                     throw new IllegalArgumentException("reaction definition must have for_form or for_effect");
                 }
                 if (reaction == null) {
                     throw new IllegalArgumentException("reaction cannot be defined for that form/effect");
                 }
-
-                reaction = reaction.withParametersFromJSON(model);
 
                 ImmutableList.Builder<SpellRecipeMap.Element> recipeBuilder = ImmutableList.builder();
                 for (var el : model.getAsJsonArray("recipe")) {

@@ -3,10 +3,12 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
+import com.google.gson.JsonObject;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -16,12 +18,18 @@ import net.minecraft.world.event.GameEvent;
 public class FireEffect extends SpellEffect {
     private final float areaCoverage;
 
-    public FireEffect() {
-        this(0.25f);
+    public FireEffect(Identifier id) {
+        super(id);
+        this.areaCoverage = 0.25f;
     }
 
-    public FireEffect(float areaCoverage) {
-        this.areaCoverage = areaCoverage;
+    public FireEffect(Identifier id, JsonObject obj) {
+        super(id);
+        if (obj.has("area_coverage")) {
+            this.areaCoverage = obj.get("area_coverage").getAsFloat();
+        } else {
+            this.areaCoverage = 0.25f;
+        }
     }
 
     @Override
@@ -78,5 +86,12 @@ public class FireEffect extends SpellEffect {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "FireEffect[" +
+                "areaCoverage=" + areaCoverage +
+                ']';
     }
 }

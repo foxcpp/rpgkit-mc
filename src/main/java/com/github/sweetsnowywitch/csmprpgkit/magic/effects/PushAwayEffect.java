@@ -10,51 +10,47 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PushAwayEffect extends SpellEffect {
     public static class Reaction extends SpellReaction {
         public final double velocity;
 
-        protected Reaction(Identifier id) {
-            this(id, 0);
-        }
-
-        protected Reaction(Identifier id, double velocity) {
+        public Reaction(Identifier id) {
             super(id);
-            this.velocity = velocity;
+            this.velocity = 0;
         }
 
-        @Override
-        public SpellReaction withParametersFromJSON(JsonObject jsonObject) {
-            var velocity = this.velocity;
-            if (jsonObject.has("velocity")) {
-                velocity = jsonObject.get("velocity").getAsDouble();
+        public Reaction(Identifier id, JsonObject obj) {
+            super(id);
+            if (obj.has("velocity")) {
+                this.velocity = obj.get("velocity").getAsDouble();
+            } else {
+                this.velocity = 0.25;
             }
-            return new Reaction(this.id, velocity);
         }
 
-        @Override
-        public JsonObject parametersToJSON() {
-            var obj = new JsonObject();
+        public void toJson(@NotNull JsonObject obj) {
             obj.addProperty("velocity", this.velocity);
-            return obj;
         }
     }
 
     private final double velocity;
 
-    public PushAwayEffect() {
-        this(3);
+    public PushAwayEffect(Identifier id) {
+        super(id);
+        this.velocity = 3;
     }
 
-    @Override
-    public @Nullable SpellReaction reactionType(Identifier id) {
-        return new Reaction(id);
-    }
+    public PushAwayEffect(Identifier id, JsonObject obj) {
+        super(id);
 
-    public PushAwayEffect(double velocity) {
-        this.velocity = velocity;
+        if (obj.has("velocity")) {
+            this.velocity = obj.get("velocity").getAsDouble();
+        } else {
+            this.velocity = 3;
+        }
     }
 
     @Override
@@ -76,19 +72,7 @@ public class PushAwayEffect extends SpellEffect {
         // none
     }
 
-    @Override
-    public SpellEffect withParametersFromJSON(JsonObject jsonObject) {
-        var velocity = this.velocity;
-        if (jsonObject.has("velocity")) {
-            velocity = jsonObject.get("velocity").getAsDouble();
-        }
-        return new PushAwayEffect(velocity);
-    }
-
-    @Override
-    public JsonObject parametersToJSON() {
-        var obj = super.parametersToJSON();
+    public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("velocity", this.velocity);
-        return obj;
     }
 }

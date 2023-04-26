@@ -9,21 +9,29 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class ExtinguishEffect extends SpellEffect {
     private final float areaCoverage;
 
-    public ExtinguishEffect() {
-        this(0.95f);
+    public ExtinguishEffect(Identifier id) {
+        super(id);
+        this.areaCoverage = 0.95f;
     }
 
-    public ExtinguishEffect(float areaCoverage) {
-        this.areaCoverage = areaCoverage;
+    public ExtinguishEffect(Identifier id, JsonObject obj) {
+        super(id);
+        if (obj.has("area_coverage")) {
+            this.areaCoverage = obj.get("area_coverage").getAsFloat();
+        } else {
+            this.areaCoverage = 0.25f;
+        }
     }
 
     @Override
@@ -75,19 +83,14 @@ public class ExtinguishEffect extends SpellEffect {
         return false;
     }
 
-    @Override
-    public SpellEffect withParametersFromJSON(JsonObject obj) {
-        var areaCoverage = this.areaCoverage;
-        if (obj.has("area_coverage")) {
-            areaCoverage = obj.get("area_coverage").getAsFloat();
-        }
-        return new ExtinguishEffect(areaCoverage);
+    public void toJson(@NotNull JsonObject obj) {
+        obj.addProperty("area_coverage", this.areaCoverage);
     }
 
     @Override
-    public JsonObject parametersToJSON() {
-        var obj = new JsonObject();
-        obj.addProperty("area_coverage", this.areaCoverage);
-        return obj;
+    public String toString() {
+        return "ExtinguishEffect[" +
+                "areaCoverage=" + areaCoverage +
+                ']';
     }
 }

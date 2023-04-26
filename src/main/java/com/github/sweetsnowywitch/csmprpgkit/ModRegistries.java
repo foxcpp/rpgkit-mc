@@ -15,10 +15,16 @@ import java.util.Map;
 
 public class ModRegistries {
     // fixed
-    public static final Registry<SpellEffect> SPELL_EFFECTS = FabricRegistryBuilder.createSimple(SpellEffect.class,
+    public static final Registry<SpellEffect.Factory> SPELL_EFFECTS = FabricRegistryBuilder.createSimple(SpellEffect.Factory.class,
             new Identifier(RPGKitMod.MOD_ID, "spell_effects")).buildAndRegister();
+    public static final Registry<SpellReaction.Factory> SPELL_EFFECT_REACTIONS = FabricRegistryBuilder.createSimple(SpellReaction.Factory.class,
+            new Identifier(RPGKitMod.MOD_ID, "spell_effect_reactions")).buildAndRegister();
+
     public static final Registry<SpellForm> SPELL_FORMS = FabricRegistryBuilder.createSimple(SpellForm.class,
             new Identifier(RPGKitMod.MOD_ID, "spell_forms")).buildAndRegister();
+
+    public static final Registry<SpellReaction.Factory> SPELL_FORM_REACTIONS = FabricRegistryBuilder.createSimple(SpellReaction.Factory.class,
+            new Identifier(RPGKitMod.MOD_ID, "spell_form_reactions")).buildAndRegister();
 
     public static final Registry<Perk> CLASS_PERKS = FabricRegistryBuilder.createSimple(Perk.class,
             new Identifier(RPGKitMod.MOD_ID, "class_perks")).buildAndRegister();

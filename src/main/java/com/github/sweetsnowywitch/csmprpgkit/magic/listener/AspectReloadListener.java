@@ -67,38 +67,41 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                         if (effect == null) {
                             throw new IllegalArgumentException("unknown effect: %s".formatted(effectId.toString()));
                         }
-                        genericEffects.add(effect.withParametersFromJSON(obj));
+                        genericEffects.add(effect.createEffectFromJSON(effectId, obj));
                     }
                 }
 
                 ImmutableList.Builder<SpellReaction> genericReactions = ImmutableList.builder();
                 if (model.has("generic_reactions")) {
+                    var i = 0;
                     for (JsonElement effectElement : model.getAsJsonArray("generic_reactions")) {
                         var obj = effectElement.getAsJsonObject();
+
+                        var reactionId = Identifier.of(ent.getKey().getNamespace(), ent.getKey().getPath()+"/generic_reaction_" + i);
 
                         SpellReaction reaction;
                         if (obj.has("for_effect")) {
                             var id = new Identifier(obj.get("for_effect").getAsString());
-                            var effect = ModRegistries.SPELL_EFFECTS.get(id);
+                            var effect = ModRegistries.SPELL_EFFECT_REACTIONS.get(id);
                             if (effect == null) {
                                 throw new IllegalArgumentException("unknown effect: %s".formatted(id.toString()));
                             }
-                            reaction = effect.reactionType(ent.getKey());
+                            reaction = effect.createReactionFromJson(reactionId, obj);
                         } else if (obj.has("for_form")) {
                             var id = new Identifier(obj.get("for_form").getAsString());
-                            var form = ModRegistries.SPELL_FORMS.get(id);
+                            var form = ModRegistries.SPELL_FORM_REACTIONS.get(id);
                             if (form == null) {
                                 throw new IllegalArgumentException("unknown form: %s".formatted(id.toString()));
                             }
-                            reaction = form.reactionType(ent.getKey());
+                            reaction = form.createReactionFromJson(reactionId, obj);
                         } else {
                             throw new IllegalArgumentException("reaction definition must have for_form or for_effect");
                         }
                         if (reaction == null) {
                             throw new IllegalArgumentException("reaction cannot be defined for that form/effect");
                         }
-                        reaction = reaction.withParametersFromJSON(obj);
                         genericReactions.add(reaction);
+                        i++;
                     }
                 }
 

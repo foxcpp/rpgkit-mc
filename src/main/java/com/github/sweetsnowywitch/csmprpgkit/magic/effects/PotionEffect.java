@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -24,14 +25,24 @@ public class PotionEffect extends SpellEffect {
         private final double amplifier;
         private final int durationTicks;
 
-        protected Reaction(Identifier id) {
-            this(id, 0, 0);
+        public Reaction(Identifier id) {
+            super(id);
+            this.amplifier = 1;
+            this.durationTicks = 0;
         }
 
-        protected Reaction(Identifier id, double amplifier, int durationTicks) {
-            super(id);
-            this.amplifier = amplifier;
-            this.durationTicks = durationTicks;
+        public Reaction(Identifier id, JsonObject obj) {
+            super(id, obj);
+            if (obj.has("amplifier")) {
+                this.amplifier = obj.get("amplifier").getAsDouble();
+            } else {
+                this.amplifier = 1;
+            }
+            if (obj.has("duration")) {
+                this.durationTicks = obj.get("duration").getAsInt();
+            } else {
+                this.durationTicks = 0;
+            }
         }
 
         @Override
@@ -39,27 +50,9 @@ public class PotionEffect extends SpellEffect {
             return effect instanceof PotionEffect;
         }
 
-        @Override
-        public SpellReaction withParametersFromJSON(JsonObject jsonObject) {
-            var amplifier = this.amplifier;
-            if (jsonObject.has("amplifier")) {
-                amplifier = jsonObject.get("amplifier").getAsDouble();
-            }
-            var durationTicks = this.durationTicks;
-            if (jsonObject.has("duration")) {
-                durationTicks = jsonObject.get("duration").getAsInt();
-            }
-            var r = new Reaction(this.id, amplifier, durationTicks);
-            r.populateFromJson(jsonObject);
-            return r;
-        }
-
-        @Override
-        public JsonObject parametersToJSON() {
-            var obj = new JsonObject();
+        public void toJson(@NotNull JsonObject obj) {
             obj.addProperty("amplifier", this.amplifier);
             obj.addProperty("duration", this.durationTicks);
-            return obj;
         }
 
         @Override
@@ -78,16 +71,38 @@ public class PotionEffect extends SpellEffect {
     private final int baseDuration;
     private final int baseAmplifier;
 
-    public PotionEffect() {
+    public PotionEffect(Identifier id) {
+        super(id);
         this.statusEffect = null;
         this.baseAmplifier = DEFAULT_AMPLIFIER;
         this.baseDuration = DEFAULT_DURATION;
     }
 
-    public PotionEffect(@Nullable StatusEffect statusEffect, int baseAmplifier, int baseDuration) {
-        this.statusEffect = statusEffect;
-        this.baseAmplifier = baseAmplifier;
-        this.baseDuration = baseDuration;
+    public PotionEffect(Identifier id, JsonObject obj) {
+        super(id);
+
+        if (obj.has("id")) {
+            var effectId = new Identifier(obj.get("id").getAsString());
+            var effect = Registry.STATUS_EFFECT.get(effectId);
+            RPGKitMod.LOGGER.debug("PotionEffect populated with potion effect {}", effectId);
+            if (effect == null) {
+                throw new IllegalStateException("unknown potion effect");
+            }
+            this.statusEffect = effect;
+        } else {
+            this.statusEffect = null;
+        }
+        if (obj.has("amplifier")) {
+            this.baseAmplifier = obj.get("amplifier").getAsInt();
+        } else {
+            this.baseAmplifier = DEFAULT_AMPLIFIER;
+        }
+
+        if (obj.has("duration")) {
+            this.baseDuration = obj.get("duration").getAsInt();
+        } else {
+            this.baseDuration = DEFAULT_DURATION;
+        }
     }
 
     public String toString() {
@@ -98,12 +113,6 @@ public class PotionEffect extends SpellEffect {
                 Objects.requireNonNull(Registry.STATUS_EFFECT.getId(this.statusEffect)).toString(),
                 this.baseAmplifier, this.baseDuration);
     }
-
-    @Override
-    public @Nullable SpellReaction reactionType(Identifier id) {
-        return new Reaction(id);
-    }
-
     @Override
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         if (this.statusEffect == null) {
@@ -144,31 +153,7 @@ public class PotionEffect extends SpellEffect {
 
     }
 
-    @Override
-    public SpellEffect withParametersFromJSON(JsonObject obj) {
-        StatusEffect effect = this.statusEffect;
-        if (obj.has("id")) {
-            var id = new Identifier(obj.get("id").getAsString());
-            effect = Registry.STATUS_EFFECT.get(id);
-            RPGKitMod.LOGGER.debug("PotionEffect populated with potion effect {}", id);
-            if (effect == null) {
-                throw new IllegalStateException("unknown potion effect");
-            }
-        }
-        int baseAmplifier = this.baseAmplifier;
-        if (obj.has("amplifier")) {
-            baseAmplifier = obj.get("amplifier").getAsInt();
-        }
-        int baseDuration = this.baseDuration;
-        if (obj.has("duration")) {
-            baseDuration = obj.get("duration").getAsInt();
-        }
-        return new PotionEffect(effect, baseAmplifier, baseDuration);
-    }
-
-    @Override
-    public JsonObject parametersToJSON() {
-        var obj = new JsonObject();
+    public void toJson(@NotNull JsonObject obj) {
         if (this.statusEffect != null) {
             var id = Registry.STATUS_EFFECT.getId(this.statusEffect);
             if (id == null) {
@@ -178,6 +163,5 @@ public class PotionEffect extends SpellEffect {
         }
         obj.addProperty("amplifier", this.baseAmplifier);
         obj.addProperty("duration", this.baseDuration);
-        return obj;
     }
 }

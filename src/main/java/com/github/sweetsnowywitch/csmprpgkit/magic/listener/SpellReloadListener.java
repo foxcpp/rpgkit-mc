@@ -50,7 +50,7 @@ public class SpellReloadListener extends JsonDataLoader implements IdentifiableR
                     if (effect == null) {
                         throw new IllegalArgumentException("unknown effect: %s".formatted(effectId.toString()));
                     }
-                    effects.add(effect.withParametersFromJSON(obj));
+                    effects.add(effect.createEffectFromJSON(effectId, obj));
                 }
 
                 ImmutableList.Builder<SpellRecipeMap.Element> recipe = ImmutableList.builder();
