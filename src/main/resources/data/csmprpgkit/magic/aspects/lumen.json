@@ -1,0 +1,12 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "24"
+  },
+  "recipes": [
+    [
+      "csmprpgkit:ignis",
+      "csmprpgkit:ordino"
+    ]
+  ]
+}

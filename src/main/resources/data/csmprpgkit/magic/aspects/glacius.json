@@ -1,0 +1,12 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "12"
+  },
+  "recipes": [
+    [
+      "csmprpgkit:aqua",
+      "csmprpgkit:terra"
+    ]
+  ]
+}

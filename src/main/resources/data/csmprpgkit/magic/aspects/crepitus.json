@@ -1,0 +1,12 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "22"
+  },
+  "recipes": [
+    [
+      "csmprpgkit:ignis",
+      "csmprpgkit:interitio"
+    ]
+  ]
+}

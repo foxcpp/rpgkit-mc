@@ -1,0 +1,16 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "18"
+  },
+  "recipes": [
+    [
+      "csmprpgkit:terra",
+      "csmprpgkit:ignis"
+    ],
+    [
+      "csmprpgkit:ignis",
+      "csmprpgkit:terra"
+    ]
+  ]
+}
