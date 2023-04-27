@@ -79,6 +79,7 @@ public class PushAwayEffect extends SpellEffect {
         // none
     }
 
+    @Override
     public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("velocity", this.velocity);
     }

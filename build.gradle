@@ -32,6 +32,9 @@ dependencies {
 
     modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2"
     include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2"
+
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-chunk:5.0.2"
+    include "dev.onyxstudios.cardinal-components-api:cardinal-components-chunk:5.0.2"
 }
 
 processResources {

@@ -83,6 +83,7 @@ public class ExtinguishEffect extends SpellEffect {
         return false;
     }
 
+    @Override
     public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("area_coverage", this.areaCoverage);
     }

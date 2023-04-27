@@ -153,6 +153,7 @@ public class PotionEffect extends SpellEffect {
 
     }
 
+    @Override
     public void toJson(@NotNull JsonObject obj) {
         if (this.statusEffect != null) {
             var id = Registry.STATUS_EFFECT.getId(this.statusEffect);

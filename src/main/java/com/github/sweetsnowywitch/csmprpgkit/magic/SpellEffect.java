@@ -39,6 +39,11 @@ public abstract class SpellEffect {
         this.id = id;
     }
 
+    protected SpellEffect(Identifier id, JsonObject obj) {
+        this.id = id;
+        // Reserved for future use.
+    }
+
     public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {}
     public void endCast(ServerSpellCast cast, ServerWorld world) {}
     public abstract boolean onSingleEntityHit(ServerSpellCast cast, Entity entity);
@@ -61,5 +66,9 @@ public abstract class SpellEffect {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void toJson(JsonObject obj) {
+        // Reserved for future use.
     }
 }

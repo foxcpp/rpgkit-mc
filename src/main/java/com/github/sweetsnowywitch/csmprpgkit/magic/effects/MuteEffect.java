@@ -1,6 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
+import com.github.sweetsnowywitch.csmprpgkit.components.chunk.MagicEffectsComponent;
 import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
 import com.github.sweetsnowywitch.csmprpgkit.effects.MuteStatusEffect;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
@@ -64,7 +66,6 @@ public class MuteEffect extends SpellEffect {
 
     @Override
     public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        // TODO: Attach effect to block so it is locked.
         return false;
     }
 
@@ -75,6 +76,7 @@ public class MuteEffect extends SpellEffect {
         world.spawnEntity(barrier);
     }
 
+    @Override
     public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("duration", this.duration);
         obj.addProperty("mute_inside", this.muteInside);

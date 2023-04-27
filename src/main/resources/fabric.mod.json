@@ -26,7 +26,8 @@
     "cardinal-components": [
       "csmprpgkit:abilities",
       "csmprpgkit:mana",
-      "csmprpgkit:class"
+      "csmprpgkit:class",
+      "csmprpgkit:chunk_magic_effects"
     ]
   },
   "mixins": [

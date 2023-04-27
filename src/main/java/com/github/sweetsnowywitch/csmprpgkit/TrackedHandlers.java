@@ -7,12 +7,22 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Optional;
 
 public class TrackedHandlers {
+    public static final Codec<BlockBox> BLOCKBOX_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("minX").forGetter(BlockBox::getMinX),
+            Codec.INT.fieldOf("minY").forGetter(BlockBox::getMinY),
+            Codec.INT.fieldOf("minZ").forGetter(BlockBox::getMinZ),
+            Codec.INT.fieldOf("maxX").forGetter(BlockBox::getMaxX),
+            Codec.INT.fieldOf("maxY").forGetter(BlockBox::getMaxY),
+            Codec.INT.fieldOf("maxZ").forGetter(BlockBox::getMaxZ)
+    ).apply(instance, BlockBox::new));
+
     public static final Codec<Box> BOX_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.DOUBLE.fieldOf("minX").forGetter(b -> b.minX),
             Codec.DOUBLE.fieldOf("minY").forGetter(b -> b.minY),
