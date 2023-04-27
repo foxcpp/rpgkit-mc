@@ -1,0 +1,11 @@
+{
+  "recipe": [
+    {"aspect": "csmprpgkit:motus"},
+    {"aspect": "csmprpgkit:glacius"}
+  ],
+  "effects": [
+    {
+      "type": "csmprpgkit:ward"
+    }
+  ]
+}

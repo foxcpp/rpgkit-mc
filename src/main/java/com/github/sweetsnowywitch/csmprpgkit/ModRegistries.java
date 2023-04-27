@@ -17,6 +17,8 @@ public class ModRegistries {
     // fixed
     public static final Registry<SpellEffect.Factory> SPELL_EFFECTS = FabricRegistryBuilder.createSimple(SpellEffect.Factory.class,
             new Identifier(RPGKitMod.MOD_ID, "spell_effects")).buildAndRegister();
+    public static final Registry<SpellArea.Factory> SPELL_EFFECT_AREAS = FabricRegistryBuilder.createSimple(SpellArea.Factory.class,
+            new Identifier(RPGKitMod.MOD_ID, "spell_effect_areas")).buildAndRegister();
     public static final Registry<SpellReaction.Factory> SPELL_EFFECT_REACTIONS = FabricRegistryBuilder.createSimple(SpellReaction.Factory.class,
             new Identifier(RPGKitMod.MOD_ID, "spell_effect_reactions")).buildAndRegister();
 
