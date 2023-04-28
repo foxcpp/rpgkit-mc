@@ -7,6 +7,7 @@ import com.github.sweetsnowywitch.csmprpgkit.client.overlays.SpellBuilderOverlay
 import com.github.sweetsnowywitch.csmprpgkit.client.particle.GenericSpellParticle;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.SpellItemRenderer;
+import com.github.sweetsnowywitch.csmprpgkit.client.screen.CatalystBagScreen;
 import com.github.sweetsnowywitch.csmprpgkit.events.DataRegistryReloadCallback;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
@@ -67,7 +68,7 @@ public class ClientRPGKitMod implements ClientModInitializer {
         })));
         ParticleFactoryRegistry.getInstance().register(ModParticles.GENERIC_SPELL, GenericSpellParticle.Factory::new);
 
-        HandledScreens.register(RPGKitMod.CATALYST_BAG_SCREEN_HANDLER, Generic3x3ContainerScreen::new);
+        HandledScreens.register(RPGKitMod.CATALYST_BAG_SCREEN_HANDLER, CatalystBagScreen::new);
 
         ClientPlayNetworking.registerGlobalReceiver(RPGKitMod.SERVER_DATA_SYNC_PACKET_ID, (client, handler, buf, responseSender) -> {
             var jsonBlob = buf.readString(1024*1024);

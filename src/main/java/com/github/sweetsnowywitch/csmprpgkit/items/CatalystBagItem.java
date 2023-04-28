@@ -19,7 +19,7 @@ public class CatalystBagItem extends Item {
         private final ItemStack stack;
 
         BagInventory(@NotNull ItemStack stack) {
-            super(9);
+            super(6);
 
             if (!stack.getItem().equals(ModItems.CATALYST_BAG)) {
                 throw new IllegalStateException("Attempting to create BagInventory from non-bag item");
@@ -62,10 +62,5 @@ public class CatalystBagItem extends Item {
     private NamedScreenHandlerFactory createScreenHandlerFactory(ItemStack stack) {
         return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) ->
                 new CatalystBagScreenHandler(syncId, inventory, new BagInventory(stack)), stack.getName());
-    }
-
-    @Override
-    public boolean hasGlint(ItemStack stack) {
-        return true;
     }
 }
