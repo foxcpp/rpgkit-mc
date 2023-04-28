@@ -3,6 +3,8 @@ package com.github.sweetsnowywitch.csmprpgkit.client;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.events.DataRegistryReloadCallback;
+import com.github.sweetsnowywitch.csmprpgkit.items.CatalystBagItem;
+import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import net.fabricmc.api.EnvType;
@@ -12,12 +14,14 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
@@ -29,14 +33,36 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
     // Local copy of the builder, that mirrors actions sent to the server.
     private @Nullable SpellBuilder builder;
     private List<Aspect> primaryEffectAspects;
+    private boolean viewingCatalysts;
 
     public ClientSpellBuildHandler() {
         this.client = MinecraftClient.getInstance();
         this.primaryEffectAspects = List.of();
+        this.viewingCatalysts = false;
     }
 
     public List<Aspect> getPrimaryEffectAspects() {
         return primaryEffectAspects;
+    }
+    public List<ItemElement.Stack> getAvailableCatalysts() {
+        assert client.player != null;
+
+        var elements = new ArrayList<ItemElement.Stack>(6);
+        var inv = client.player.getInventory();
+        for (int i = 0; i < 9; i++) {
+            if (inv.getStack(i).getItem().equals(ModItems.CATALYST_BAG)) {
+                var bagInv = CatalystBagItem.getInventory(inv.getStack(i));
+                for (int j = 0; j < bagInv.size(); j++) {
+                    if (bagInv.getStack(j).isEmpty()) continue;
+                    elements.add(new ItemElement.Stack(bagInv.getStack(j), bagInv));
+                }
+            }
+        }
+        return elements;
+    }
+
+    public boolean isViewingCatalysts() {
+        return viewingCatalysts;
     }
 
     public @Nullable SpellBuilder getBuilder() {
@@ -60,6 +86,7 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
 
         ClientPlayNetworking.send(PACKET_ID, buf);
         this.builder = new SpellBuilder(5);
+        this.viewingCatalysts = false;
     }
 
     public void addAspect(Aspect aspect) {
@@ -80,7 +107,7 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
         this.builder.addElement(aspect);
     }
 
-    public void addItemStack(ItemStack stack) {
+    public void addItemStack(ItemElement.Stack stack) {
         if (!ClientPlayNetworking.canSend(PACKET_ID)) {
             RPGKitMod.LOGGER.error("Cannot send a spell build packet");
             return;
@@ -92,10 +119,10 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
 
         var buf = PacketByteBufs.create();
         buf.writeString(ServerSpellBuildHandler.Action.ADD_ITEM_STACK.name());
-        buf.writeItemStack(stack);
+        buf.writeItemStack(stack.getStack());
         ClientPlayNetworking.send(PACKET_ID, buf);
 
-        this.builder.addElement(new ItemElement.Stack(stack));
+        this.builder.addElement(stack);
     }
 
     public void finishSpell() {
@@ -159,6 +186,7 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
         }
         this.keyboard.intercept(GLFW.GLFW_KEY_Q, (k) -> this.builder != null);
         this.keyboard.intercept(GLFW.GLFW_KEY_F, (k) -> this.builder != null);
+        this.keyboard.intercept(GLFW.GLFW_KEY_TAB, (k) -> this.builder != null);
 
         this.primaryEffectAspects = ModRegistries.ASPECTS.values().stream().filter(
                 (a) -> a.isPrimary() && a.getKind() == Aspect.Kind.EFFECT
@@ -182,12 +210,26 @@ public class ClientSpellBuildHandler implements DataRegistryReloadCallback, Clie
 
         assert this.keyboard != null; // onReloaded called at least once before onEndTick
         for (int key = GLFW.GLFW_KEY_1; key <= GLFW.GLFW_KEY_9; key++) {
-            if (this.primaryEffectAspects.size() <= key - GLFW.GLFW_KEY_1) {
-                break;
+            if (this.viewingCatalysts) {
+                var availableCatalysts = this.getAvailableCatalysts();
+                if (availableCatalysts.size() <= key - GLFW.GLFW_KEY_1) {
+                    break;
+                }
+                while (this.keyboard.wasInterceptPressed(key)) {
+                    this.addItemStack(availableCatalysts.get(key - GLFW.GLFW_KEY_1));
+                }
+            } else {
+                if (this.primaryEffectAspects.size() <= key - GLFW.GLFW_KEY_1) {
+                    break;
+                }
+                while (this.keyboard.wasInterceptPressed(key)) {
+                    this.addAspect(this.primaryEffectAspects.get(key - GLFW.GLFW_KEY_1));
+                }
             }
-            while (this.keyboard.wasInterceptPressed(key)) {
-                this.addAspect(this.primaryEffectAspects.get(key - GLFW.GLFW_KEY_1));
-            }
+        }
+
+        while (this.keyboard.wasInterceptPressed(GLFW.GLFW_KEY_TAB)) {
+            this.viewingCatalysts = !this.viewingCatalysts;
         }
 
         while (this.keyboard.wasInterceptPressed(GLFW.GLFW_KEY_Q)) {

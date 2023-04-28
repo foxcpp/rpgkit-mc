@@ -101,12 +101,18 @@ public class ServerSpellBuildHandler implements ServerLivingEntityEvents.AfterDe
         var targetStack = buf.readItemStack();
 
         server.execute(() -> {
-            var slot = player.getInventory().getSlotWithStack(new ItemStack(ModItems.CATALYST_BAG));
-            if (slot == -1) {
+            ItemStack bagStack = null;
+            for (int i = 0; i < 9; i++) {
+                var stack = player.getInventory().getStack(i);
+                if (stack.getItem().equals(ModItems.CATALYST_BAG)) {
+                    bagStack = stack;
+                    break;
+                }
+            }
+            if (bagStack == null) {
                 RPGKitMod.LOGGER.error("onAddAspect called for player {} without a catalyst bag in inventory", player);
                 return;
             }
-            var bagStack = player.getInventory().getStack(slot);
 
             var builder = builders.get(player.getUuid());
             if (builder == null) {

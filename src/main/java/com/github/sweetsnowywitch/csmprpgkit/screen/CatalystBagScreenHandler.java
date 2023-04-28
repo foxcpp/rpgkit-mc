@@ -67,7 +67,7 @@ public class CatalystBagScreenHandler extends ScreenHandler {
             if (stack.getItem().equals(ModItems.CATALYST_BAG)) {
                 return;
             }
-            if (!stack.isIn(catalystTag)) {
+            if (!stack.isIn(catalystTag) && !stack.isOf(Items.AIR)) {
                 return;
             }
 
@@ -77,7 +77,7 @@ public class CatalystBagScreenHandler extends ScreenHandler {
                 if (playerStack.getItem().equals(ModItems.CATALYST_BAG)) {
                     return;
                 }
-                if (!playerStack.isIn(catalystTag)) {
+                if (!playerStack.isIn(catalystTag) && !playerStack.isOf(Items.AIR)) {
                     return;
                 }
             }

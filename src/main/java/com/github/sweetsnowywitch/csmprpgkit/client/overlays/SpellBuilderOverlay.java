@@ -17,6 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 @Environment(EnvType.CLIENT)
 public class SpellBuilderOverlay implements HudRenderCallback {
     private static final Identifier FRAME_TEXTURE = new Identifier(RPGKitMod.MOD_ID, "textures/hud/frame.png");
@@ -42,18 +44,6 @@ public class SpellBuilderOverlay implements HudRenderCallback {
             guiStartHeight += 20;
         }
 
-        // Available aspects.
-        var totalAspects = 0;
-        var aspects = handler.getPrimaryEffectAspects();
-        for (var asp : aspects) {
-            if (!asp.isPrimary() || asp.getKind() != Aspect.Kind.EFFECT) {
-                continue;
-            }
-            totalAspects++;
-        }
-
-
-
         // Pending elements.
         var maxElements = handler.getBuilder().getMaxElements();
         var elementGap = (180 - ELEMENT_SLOT_SIZE*maxElements)/(maxElements - 1);
@@ -74,12 +64,26 @@ public class SpellBuilderOverlay implements HudRenderCallback {
             drawnAspects++;
         }
 
+        // Available aspects.
+        var elements = new ArrayList<SpellElement>(6);
+        if (handler.isViewingCatalysts()) {
+            elements.addAll(handler.getAvailableCatalysts());
+        } else {
+            var aspects = handler.getPrimaryEffectAspects();
+            for (var asp : aspects) {
+                if (!asp.isPrimary() || asp.getKind() != Aspect.Kind.EFFECT) {
+                    continue;
+                }
+                elements.add(asp);
+            }
+        }
+
         drawnAspects = 0;
-        for (var asp : aspects) {
-            var x = width/2 - totalAspects*18/2 + drawnAspects*18;
+        for (var element : elements) {
+            var x = width/2 - elements.size()*18/2 + drawnAspects*18;
             var y = guiStartHeight + ELEMENT_SLOT_SIZE;
 
-            this.drawElement(matrix, x, y, asp, 0.75f);
+            this.drawElement(matrix, x, y, element, 0.75f);
 
             drawnAspects++;
         }
@@ -101,15 +105,21 @@ public class SpellBuilderOverlay implements HudRenderCallback {
 
         if (element instanceof Aspect asp) {
             RenderSystem.setShaderTexture(0, asp.getTexturePath());
-        } else if (element instanceof ItemElement.Stack ies) {
-            var renderer = MinecraftClient.getInstance().getItemRenderer();
-            renderer.renderInGui(ies.getStack(), x, y);
-        } else if (element instanceof ItemElement ie) {
-            var renderer = MinecraftClient.getInstance().getItemRenderer();
-            renderer.renderInGui(new ItemStack(ie.getItem()), x, y);
+            DrawableHelper.drawTexture(matrixStack, x+(int)(frameOffset*scale), y+(int)(frameOffset*scale), 0, 0,
+                    (int)(16*scale), (int)(16*scale), (int)(16*scale), (int)(16*scale));
+            return;
         }
 
-        DrawableHelper.drawTexture(matrixStack, x+(int)(frameOffset*scale), y+(int)(frameOffset*scale), 0, 0,
-                (int)(16*scale), (int)(16*scale), (int)(16*scale), (int)(16*scale));
+        if (scale < 1f) {
+            frameOffset = 0; // TODO: Figure out how to scale items.
+        }
+
+        if (element instanceof ItemElement.Stack ies) {
+            var renderer = MinecraftClient.getInstance().getItemRenderer();
+            renderer.renderInGui(ies.getStack(), x+(int)(frameOffset*scale), y+(int)(frameOffset*scale));
+        } else if (element instanceof ItemElement ie) {
+            var renderer = MinecraftClient.getInstance().getItemRenderer();
+            renderer.renderInGui(new ItemStack(ie.getItem()), x+(int)(frameOffset*scale), y+(int)(frameOffset*scale));
+        }
     }
 }
