@@ -12,10 +12,10 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Objects;
 
-public class ItemElement implements SpellElement {
-    public static class Stack extends ItemElement {
-        protected final ItemStack stack;
-        protected final Inventory sourceInventory;
+public sealed class ItemElement implements SpellElement {
+    public static final class Stack extends ItemElement {
+        private final ItemStack stack;
+        private final Inventory sourceInventory;
 
         public Stack(ItemStack stack) {
             this(stack, null);

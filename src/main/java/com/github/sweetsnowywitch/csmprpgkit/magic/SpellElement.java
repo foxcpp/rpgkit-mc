@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface SpellElement {
+public sealed interface SpellElement permits Aspect, ItemElement {
     String COST_REGENERATIO = "regeneratio";
     String COST_MUTATIO = "mutatio";
     String COST_INTERITIO = "interitio";

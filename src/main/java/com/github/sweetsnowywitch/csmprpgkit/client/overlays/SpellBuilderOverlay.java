@@ -1,7 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.client.overlays;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.client.ClientSpellBuildHandler;
+import com.github.sweetsnowywitch.csmprpgkit.client.ClientSpellCastController;
+import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.magic.Aspect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ItemElement;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
@@ -23,19 +24,23 @@ import java.util.ArrayList;
 public class SpellBuilderOverlay implements HudRenderCallback {
     private static final Identifier FRAME_TEXTURE = new Identifier(RPGKitMod.MOD_ID, "textures/hud/frame.png");
     private static final int ELEMENT_SLOT_SIZE = 22;
-    public ClientSpellBuildHandler handler;
+    public ClientSpellCastController handler;
 
-    public SpellBuilderOverlay(ClientSpellBuildHandler handler) {
+    public SpellBuilderOverlay(ClientSpellCastController handler) {
         this.handler = handler;
     }
 
     @Override
     public void onHudRender(MatrixStack matrix, float tickDelta) {
-        if (handler.getBuilder() == null) {
+        var client = MinecraftClient.getInstance();
+        if (client.player == null) {
+            return;
+        }
+        var comp = client.player.getComponent(ModComponents.CAST);
+        if (!comp.isBuilding()) {
             return;
         }
 
-        var client = MinecraftClient.getInstance();
         var width = client.getWindow().getScaledWidth();
         var height = client.getWindow().getScaledHeight();
 
@@ -45,11 +50,11 @@ public class SpellBuilderOverlay implements HudRenderCallback {
         }
 
         // Pending elements.
-        var maxElements = handler.getBuilder().getMaxElements();
+        var maxElements = comp.getMaxElements();
         var elementGap = (180 - ELEMENT_SLOT_SIZE*maxElements)/(maxElements - 1);
 
         var drawnAspects = 0;
-        var pending = handler.getBuilder().getPendingElements();
+        var pending = comp.getPendingElements();
         for (int i = 0; i < maxElements; i++) {
             var x = width / 2 - 90 + (22 + elementGap) * drawnAspects;
             var y = guiStartHeight - 5;
@@ -65,19 +70,7 @@ public class SpellBuilderOverlay implements HudRenderCallback {
         }
 
         // Available aspects.
-        var elements = new ArrayList<SpellElement>(6);
-        if (handler.isViewingCatalysts()) {
-            elements.addAll(handler.getAvailableCatalysts());
-        } else {
-            var aspects = handler.getPrimaryEffectAspects();
-            for (var asp : aspects) {
-                if (!asp.isPrimary() || asp.getKind() != Aspect.Kind.EFFECT) {
-                    continue;
-                }
-                elements.add(asp);
-            }
-        }
-
+        var elements = comp.getAvailableElements();
         drawnAspects = 0;
         for (var element : elements) {
             var x = width/2 - elements.size()*18/2 + drawnAspects*18;

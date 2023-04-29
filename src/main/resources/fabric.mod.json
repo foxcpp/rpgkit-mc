@@ -27,6 +27,7 @@
       "csmprpgkit:abilities",
       "csmprpgkit:mana",
       "csmprpgkit:class",
+      "csmprpgkit:cast",
       "csmprpgkit:chunk_magic_effects"
     ]
   },

@@ -12,5 +12,19 @@
       "csmprpgkit:ordino",
       "csmprpgkit:interitio"
     ]
+  ],
+  "generic_effects": [
+    {
+      "type": "csmprpgkit:potion",
+      "id": "minecraft:darkness",
+      "duration": 5,
+      "amplifier": 1
+    }
+  ],
+  "generic_reactions": [
+    {
+      "for_effect": "csmprpgkit:potion",
+      "duration": 3
+    }
   ]
 }

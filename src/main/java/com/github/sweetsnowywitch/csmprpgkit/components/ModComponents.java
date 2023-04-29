@@ -19,6 +19,8 @@ public final class ModComponents implements EntityComponentInitializer, ChunkCom
             ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(RPGKitMod.MOD_ID, "mana"), ManaComponent.class);
     public static final ComponentKey<ClassComponent> CLASS =
             ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(RPGKitMod.MOD_ID, "class"), ClassComponent.class);
+    public static final ComponentKey<ActiveCastComponent> CAST =
+            ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(RPGKitMod.MOD_ID, "cast"), ActiveCastComponent.class);
 
     // Chunk
     public static final ComponentKey<MagicEffectsComponent> CHUNK_MAGIC_EFFECTS =
@@ -30,6 +32,7 @@ public final class ModComponents implements EntityComponentInitializer, ChunkCom
         registry.registerForPlayers(ABILITIES, AbilitiesComponent::new, RespawnCopyStrategy.CHARACTER);
         registry.registerForPlayers(MANA, ManaComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(CLASS, ClassComponent::new, RespawnCopyStrategy.CHARACTER);
+        registry.registerForPlayers(CAST, ActiveCastComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 
     @Override

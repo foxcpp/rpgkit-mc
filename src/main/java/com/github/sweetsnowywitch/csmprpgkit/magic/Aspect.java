@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
-public class Aspect implements SpellElement, Comparable<Aspect> {
+public final class Aspect implements SpellElement, Comparable<Aspect> {
     public enum Kind {
         EFFECT,
         REACTION,

@@ -8,10 +8,9 @@ import com.github.sweetsnowywitch.csmprpgkit.client.particle.GenericSpellParticl
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.SpellItemRenderer;
 import com.github.sweetsnowywitch.csmprpgkit.client.screen.CatalystBagScreen;
+import com.github.sweetsnowywitch.csmprpgkit.components.ActiveCastComponent;
 import com.github.sweetsnowywitch.csmprpgkit.events.DataRegistryReloadCallback;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
-import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
-import com.github.sweetsnowywitch.csmprpgkit.magic.form.SelfForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.ReactionReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.SpellReloadListener;
@@ -28,7 +27,6 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
-import net.minecraft.client.gui.screen.ingame.Generic3x3ContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -44,7 +42,8 @@ import java.util.HashMap;
 public class ClientRPGKitMod implements ClientModInitializer {
     public static final Gson GSON = new Gson();
 
-    public static final ClientSpellBuildHandler SPELL_BUILD_HANDLER = new ClientSpellBuildHandler();
+    public static final ClientSpellCastController SPELL_BUILD_HANDLER = new ClientSpellCastController();
+
     public static final KeyBinding ACTIVATE_SPELL_BUILD_KEY = new KeyBinding(
             "key."+RPGKitMod.MOD_ID+".magic.spell_build",
             InputUtil.Type.KEYSYM,
@@ -57,9 +56,10 @@ public class ClientRPGKitMod implements ClientModInitializer {
         ModRenderers.register();
         HudRenderCallback.EVENT.register(new ManaHudOverlay());
         HudRenderCallback.EVENT.register(new SpellBuilderOverlay(SPELL_BUILD_HANDLER));
+
         KeyBindingHelper.registerKeyBinding(ACTIVATE_SPELL_BUILD_KEY);
-        ClientTickEvents.END_CLIENT_TICK.register(SPELL_BUILD_HANDLER);
-        DataRegistryReloadCallback.EVENT.register(SPELL_BUILD_HANDLER);
+        ClientTickEvents.END_CLIENT_TICK.register(new SpellBuildKeyboardHandler());
+        ActiveCastComponent.CLIENT_CONTROLLER = new ClientSpellCastController();
 
         GeoItemRenderer.registerItemRenderer(ModItems.SPELL_ITEM, new SpellItemRenderer());
 

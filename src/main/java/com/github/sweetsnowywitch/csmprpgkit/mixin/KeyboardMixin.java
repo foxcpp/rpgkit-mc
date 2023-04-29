@@ -10,14 +10,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Mixin(Keyboard.class)
 public class KeyboardMixin implements InterceptableKeyboard {
-    public final Map<Integer, Integer> timesPressed = new HashMap<>();
-
+    public final Deque<Integer> pressQueue = new ArrayDeque<>();
     public final Map<Integer, Boolean> isPressed = new HashMap<>();
     public final Map<Integer, Function<Integer, Boolean>> intercepted = new HashMap<>();
 
@@ -25,12 +26,10 @@ public class KeyboardMixin implements InterceptableKeyboard {
         this.intercepted.put(key, isActive);
     }
 
-    public boolean wasInterceptPressed(int key) {
-        if (this.timesPressed.getOrDefault(key, 0) == 0) {
-            return false;
-        }
-        this.timesPressed.computeIfPresent(key, (k, v) -> v - 1);
-        return true;
+    public int popPressed() {
+        var i = this.pressQueue.poll();
+        if (i == null) return 0;
+        return i;
     }
 
     @Inject(method = "onKey", cancellable = true,
@@ -41,13 +40,15 @@ public class KeyboardMixin implements InterceptableKeyboard {
         if (isActive != null && isActive.apply(key)) {
             if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), key)) {
                 if (!isPressed.getOrDefault(key, false)) {
-                    this.timesPressed.compute(key, (k, v) -> (v != null ? v : 0) + 1);
+                    pressQueue.add(key);
                     isPressed.put(key, true);
                 }
             } else {
                 isPressed.put(key, false);
             }
             ci.cancel();
+        } else {
+            isPressed.clear();
         }
     }
 }

@@ -2,13 +2,11 @@ package com.github.sweetsnowywitch.csmprpgkit.items;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.client.ClientRPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.client.ClientSpellBuildHandler;
-import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellBuildHandler;
+import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -51,11 +49,6 @@ public class SpellItem extends Item implements IAnimatable {
         return this.factory;
     }
 
-    @Environment(EnvType.CLIENT)
-    private void doCast(SpellForm form) {
-        ClientRPGKitMod.SPELL_BUILD_HANDLER.doCast(form);
-    }
-
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack inHand = user.getStackInHand(hand);
@@ -63,7 +56,11 @@ public class SpellItem extends Item implements IAnimatable {
             return TypedActionResult.success(inHand);
         }
 
-        this.doCast(ModForms.RAY);
+        try {
+            user.getComponent(ModComponents.CAST).performUseCast();
+        } catch (Exception ex) {
+            RPGKitMod.LOGGER.error("Exception happened while trying to perform cast", ex);
+        }
 
         return TypedActionResult.success(inHand);
     }
@@ -77,17 +74,18 @@ public class SpellItem extends Item implements IAnimatable {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        if (!selected) {
-            // TODO: Apply to random items in inventory?
-            if (world.isClient) {
-                this.doCast(ModForms.SELF);
-            }
-
-            stack.decrement(1);
+        if (!(entity instanceof ServerPlayerEntity spe)) {
+            return;
         }
-        // Might result if server is shutdown during cast.
-        if (entity instanceof ServerPlayerEntity spe && !RPGKitMod.SERVER_SPELL_BUILD_HANDLER.isActive(spe)) {
+        var comp = spe.getComponent(ModComponents.CAST);
+
+        if (!comp.isBuilding()) {
             stack.decrement(1);
+            return;
+        }
+
+        if (!selected) {
+            comp.performSelfCast();
         }
     }
 
