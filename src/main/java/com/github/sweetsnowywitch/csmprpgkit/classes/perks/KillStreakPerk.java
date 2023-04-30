@@ -14,10 +14,10 @@ public class KillStreakPerk extends Perk {
 
     private int killStreak = 0;
 
-    private EntityAttribute attribute;
-    private float modifier;
-    private int penalty;
-    private int maxStreak;
+    private final EntityAttribute attribute;
+    private final float modifier;
+    private final int penalty;
+    private final int maxStreak;
 
     public KillStreakPerk(Identifier typeId) {
         super(typeId);
@@ -44,20 +44,23 @@ public class KillStreakPerk extends Perk {
             if (attribute == null) {
                 throw new IllegalStateException("unknown attribute");
             }
-            else {
-                this.attribute = attribute;
-            }
         }
+
+        var modifier = this.modifier;
         if (obj.has("modifier")) {
-            this.modifier = obj.get("modifier").getAsFloat();
+            modifier = obj.get("modifier").getAsFloat();
         }
+
+        var penalty = this.penalty;
         if (obj.has("penalty")) {
-            this.penalty = obj.get("penalty").getAsInt();
+            penalty = obj.get("penalty").getAsInt();
         }
+
+        var maxStreak = this.maxStreak;
         if (obj.has("maxStreak")) {
-            this.maxStreak = obj.get("maxStreak").getAsInt();
+            maxStreak = obj.get("maxStreak").getAsInt();
         }
-        return new KillStreakPerk(this.typeId, this.attribute, this.modifier, this.penalty, this.maxStreak);
+        return new KillStreakPerk(this.typeId, attribute, modifier, penalty, maxStreak);
     }
 
     @Override
@@ -66,7 +69,7 @@ public class KillStreakPerk extends Perk {
         if (this.attribute != null) {
             var id = Registry.ATTRIBUTE.getId(this.attribute);
             if (id == null) {
-                throw new IllegalStateException("on kill perk with unregistered effect");
+                throw new IllegalStateException("on kill perk with unregistered attribute");
             }
             obj.addProperty("id", id.toString());
         }
@@ -77,7 +80,7 @@ public class KillStreakPerk extends Perk {
     }
 
     public EntityAttribute getAttribute(){
-        return this.attribute;
+        return attribute;
     }
 
     public float getModifier() {

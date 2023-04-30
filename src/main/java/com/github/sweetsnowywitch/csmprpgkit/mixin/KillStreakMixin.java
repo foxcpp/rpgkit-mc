@@ -1,7 +1,10 @@
 package com.github.sweetsnowywitch.csmprpgkit.mixin;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.classes.perks.KillStreakPerk;
 import com.github.sweetsnowywitch.csmprpgkit.classes.perks.ModPerks;
+import com.github.sweetsnowywitch.csmprpgkit.classes.perks.SingleKillPerk;
+import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -21,7 +24,6 @@ import java.util.Objects;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class KillStreakMixin extends PlayerEntity {
-
     public KillStreakMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile, @Nullable PlayerPublicKey publicKey) {
         super(world, pos, yaw, gameProfile, publicKey);
     }
@@ -29,30 +31,45 @@ public abstract class KillStreakMixin extends PlayerEntity {
     @Inject(method = "attack",
             at = {@At("TAIL")})
     public void attack(Entity target, CallbackInfo ci) {
-        if (ModPerks.KILL_STREAK.getKillStreak() < ModPerks.KILL_STREAK.getMaxStreak() && !target.isAlive()) {
-            Objects.requireNonNull(this.getAttributeInstance(ModPerks.KILL_STREAK.getAttribute())).
-                    addTemporaryModifier(new EntityAttributeModifier(this.getName().getString(),
-                            ModPerks.KILL_STREAK.getModifier(),
-                            EntityAttributeModifier.Operation.ADDITION));
-            ModPerks.KILL_STREAK.setKillStreak(ModPerks.KILL_STREAK.getKillStreak() + 1);
+        var perks = ModComponents.CLASS.get(this).getPerk(ModPerks.KILL_STREAK.typeId);
+
+        for (var rawPerk : perks) {
+            var perk = (KillStreakPerk) rawPerk;
+            if (perk.getAttribute() != null && perk.getKillStreak() < perk.getMaxStreak() && !target.isAlive()) {
+                Objects.requireNonNull(this.getAttributeInstance(perk.getAttribute())).
+                        addTemporaryModifier(new EntityAttributeModifier(this.getName().getString(), perk.getModifier(),
+                                EntityAttributeModifier.Operation.ADDITION));
+                perk.setKillStreak(perk.getKillStreak() + 1);
+            }
         }
     }
 
     @Inject(method = "onDeath",
             at = {@At("TAIL")})
     public void onDeath(DamageSource damageSource, CallbackInfo ci) {
-        if (ModPerks.KILL_STREAK.getKillStreak() > 0) {
-            ModPerks.KILL_STREAK.setKillStreak(Math.max(0, ModPerks.KILL_STREAK.getKillStreak() - ModPerks.KILL_STREAK.getPenalty()));
+        var perks = ModComponents.CLASS.get(this).getPerk(ModPerks.KILL_STREAK.typeId);
+
+        for (var rawPerk : perks) {
+            var perk = (KillStreakPerk) rawPerk;
+            if (perk.getAttribute() != null && perk.getKillStreak() > 0) {
+                perk.setKillStreak(Math.max(0, perk.getKillStreak() - perk.getPenalty()));
+            }
         }
     }
 
     @Inject(method = "onSpawn",
             at = {@At("TAIL")})
     public void onSpawn(CallbackInfo ci) {
-        RPGKitMod.LOGGER.info("Current streak: {}", ModPerks.KILL_STREAK.getKillStreak());
-        Objects.requireNonNull(this.getAttributeInstance(ModPerks.KILL_STREAK.getAttribute())).
-                addTemporaryModifier(new EntityAttributeModifier(this.getName().getString(),
-                        ModPerks.KILL_STREAK.getKillStreak() * ModPerks.KILL_STREAK.getModifier(),
-                        EntityAttributeModifier.Operation.ADDITION));
+        var perks = ModComponents.CLASS.get(this).getPerk(ModPerks.KILL_STREAK.typeId);
+
+        for (var rawPerk : perks) {
+            var perk = (KillStreakPerk) rawPerk;
+            if (perk.getAttribute() != null) {
+                Objects.requireNonNull(this.getAttributeInstance(perk.getAttribute())).
+                        addTemporaryModifier(new EntityAttributeModifier(this.getName().getString(),
+                                perk.getKillStreak() * perk.getModifier(),
+                                EntityAttributeModifier.Operation.ADDITION));
+            }
+        }
     }
 }

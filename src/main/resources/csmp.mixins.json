@@ -4,8 +4,9 @@
   "package": "com.github.sweetsnowywitch.csmprpgkit.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "AttackDetectionMixin",
-    "KillStreakMixin"
+    "ComboMixin",
+    "KillStreakMixin",
+    "SingleKillMixin"
   ],
   "client": [
   ],

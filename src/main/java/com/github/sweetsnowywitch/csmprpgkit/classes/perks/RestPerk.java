@@ -2,35 +2,42 @@ package com.github.sweetsnowywitch.csmprpgkit.classes.perks;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.classes.Perk;
+import com.github.sweetsnowywitch.csmprpgkit.classes.ServerTickablePerk;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class SingleKillPerk extends Perk {
+import java.util.Objects;
+
+public class RestPerk extends Perk implements ServerTickablePerk {
     public static final int DEFAULT_DURATION = 20 * 10;
     public static final int DEFAULT_AMPLIFIER = 0;
+    public static final int DEFAULT_REST_TIME = 20 * 10;
 
     private final StatusEffect statusEffect;
-    private final boolean onlyPlayerKill;
     private final int duration;
     private final int amplifier;
+    private final int restTime;
+    private int timer;
 
-    public SingleKillPerk(Identifier typeId) {
+    public RestPerk(Identifier typeId) {
         super(typeId);
         this.statusEffect = null;
-        this.onlyPlayerKill = false;
         this.duration = DEFAULT_DURATION;
         this.amplifier = DEFAULT_AMPLIFIER;
+        this.restTime = DEFAULT_REST_TIME;
     }
 
-    public SingleKillPerk(Identifier typeId, @Nullable StatusEffect statusEffect, boolean onlyPlayerKill, int duration, int amplifier) {
+    public RestPerk(Identifier typeId, @Nullable StatusEffect statusEffect, int duration, int amplifier, int restTime) {
         super(typeId);
         this.statusEffect = statusEffect;
-        this.onlyPlayerKill = onlyPlayerKill;
         this.duration = duration;
         this.amplifier = amplifier;
+        this.restTime = restTime;
     }
 
     @Override
@@ -45,9 +52,9 @@ public class SingleKillPerk extends Perk {
             }
         }
 
-        var playerKill = this.onlyPlayerKill;
-        if (obj.has("playerKill")) {
-            playerKill = obj.get("playerKill").getAsBoolean();
+        var duration = this.duration;
+        if (obj.has("duration")) {
+            duration = obj.get("duration").getAsInt();
         }
 
         var amplifier = this.amplifier;
@@ -55,11 +62,11 @@ public class SingleKillPerk extends Perk {
             amplifier = obj.get("amplifier").getAsInt();
         }
 
-        var duration = this.duration;
-        if (obj.has("duration")) {
-            duration = obj.get("duration").getAsInt();
+        var restTime = this.restTime;
+        if (obj.has("restTime")) {
+            restTime = obj.get("restTime").getAsInt();
         }
-        return new SingleKillPerk(this.typeId, effect, playerKill, duration, amplifier);
+        return new RestPerk(this.typeId, effect, duration, amplifier, restTime);
     }
 
     @Override
@@ -68,29 +75,31 @@ public class SingleKillPerk extends Perk {
         if (this.statusEffect != null) {
             var id = Registry.STATUS_EFFECT.getId(this.statusEffect);
             if (id == null) {
-                throw new IllegalStateException("on kill perk with unregistered effect");
+                throw new IllegalStateException("rest perk with unregistered effect");
             }
             obj.addProperty("id", id.toString());
         }
-        obj.addProperty("playerKill", this.onlyPlayerKill);
         obj.addProperty("duration", this.duration);
         obj.addProperty("amplifier", this.amplifier);
+        obj.addProperty("restTime", this.restTime);
         return obj;
     }
 
-    public StatusEffect getStatusEffect() {
-        return statusEffect;
-    }
+    @Override
+    public void tick(ServerPlayerEntity entity) {
+        if (this.statusEffect == null) {
+            RPGKitMod.LOGGER.warn("RestPerk on {} with empty status effect", entity);
+            return;
+        }
 
-    public boolean isOnlyPlayerKill() {
-        return onlyPlayerKill;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public int getAmplifier() {
-        return amplifier;
+        if (entity.getAttacking() == null && entity.getAttacker() == null) {
+            this.timer++;
+            if (this.timer >= this.restTime) {
+                entity.addStatusEffect(new StatusEffectInstance(this.statusEffect, this.duration, this.amplifier,
+                        false, false), entity);
+            }
+        } else {
+            this.timer = 0;
+        }
     }
 }
