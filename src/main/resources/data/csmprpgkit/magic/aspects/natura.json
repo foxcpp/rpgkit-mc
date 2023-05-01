@@ -19,6 +19,9 @@
       "id": "minecraft:regeneration",
       "duration": 3,
       "amplifier": 1
+    },
+    {
+      "type": "csmprpgkit:bone_meal"
     }
   ],
   "generic_reactions": [

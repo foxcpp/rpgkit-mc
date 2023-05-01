@@ -107,7 +107,7 @@ public class Spell {
     public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
         var passThrough = true;
         for (var effect : this.effects) {
-            passThrough = passThrough && effect.onSingleBlockHit(cast, world, pos, dir);
+            passThrough = effect.onSingleBlockHit(cast, world, pos, dir) && passThrough;
         }
         return passThrough;
     }
