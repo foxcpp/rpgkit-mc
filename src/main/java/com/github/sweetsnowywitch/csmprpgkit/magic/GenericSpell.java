@@ -20,7 +20,7 @@ public class GenericSpell extends Spell {
     private final ImmutableList<SpellReaction> forcedEffectReactions;
 
     public GenericSpell(ImmutableList<SpellElement> elements) {
-        super(Identifier.of(RPGKitMod.MOD_ID, "generic"), computeEffects(elements), null);
+        super(new Identifier(RPGKitMod.MOD_ID, "generic"), computeEffects(elements), null);
         this.elements = elements;
         this.forcedEffectReactions = computeReactions(elements);
     }

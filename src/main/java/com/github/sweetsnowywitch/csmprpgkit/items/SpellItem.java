@@ -52,6 +52,14 @@ public class SpellItem extends Item implements IAnimatable {
     }
 
     @Override
+    public Text getName(ItemStack stack) {
+        if (!stack.hasNbt() && !stack.getNbt().contains("SpellTranslationKey")) {
+            return Text.translatable("csmprpgkit.magic.spell_build");
+        }
+        return Text.translatable(stack.getNbt().getString("SpellTranslationKey"));
+    }
+
+    @Override
     public int getMaxUseTime(ItemStack stack) {
         var nbt = stack.getNbt();
         if (nbt == null) {

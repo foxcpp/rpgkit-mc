@@ -8,7 +8,15 @@
   "commands.csmprpgkit.exp.add.success_single": "%d очков опыта выдано %s.",
   "commands.csmprpgkit.exp.reset.success_multiple": "Сброшены очки опыта у %d целей.",
   "commands.csmprpgkit.exp.reset.success_single": "Очки опыта %s были сброшены.",
-  "commands.csmprpgkit.unknown_spell_element": "Unknown element (no such aspect or item)",
-  "csmprpgkit.class.csmprpgkit.warrior": "Warrior",
-  "csmprpgkit.class.csmprpgkit.wizard": "Wizard"
+  "commands.csmprpgkit.unknown_spell_element": "Неизвестный элемент (нет такого аспекта или предмета)",
+  "csmprpgkit.class.csmprpgkit.warrior": "Воин",
+  "csmprpgkit.class.csmprpgkit.wizard": "Волшебник",
+  "item.csmprpgkit.catalyst_bag": "Сумка для реагентов",
+  "csmprpgkit.magic.must_have_mana": "Вам нужна магическая энергия, чтобы творить заклинания",
+  "csmprpgkit.magic.must_have_empty_hand": "Вам нужна свободная рука, чтобы творить заклинания",
+  "category.csmprpgkit.magic": "CSMP RPGKit - Магия",
+  "key.csmprpgkit.magic.spell_build": "Начать сборку заклинания",
+  "csmprpgkit.magic.spell.csmprpgkit.generic": "Безымянное заклинание",
+  "csmprpgkit.magic.spell.csmprpgkit.silence": "Заклинание: Молчание",
+  "csmprpgkit.magic.spell.csmprpgkit.ward": "Заклинание: Магическая печать"
 }

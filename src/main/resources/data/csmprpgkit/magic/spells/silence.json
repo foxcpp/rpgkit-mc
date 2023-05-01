@@ -1,8 +1,7 @@
 {
   "recipe": [
     {"aspect": "csmprpgkit:aer"},
-    {"aspect": "csmprpgkit:ordino"},
-    {"aspect": "csmprpgkit:interitio"}
+    {"aspect": "csmprpgkit:glacius"}
   ],
   "effects": [
     {

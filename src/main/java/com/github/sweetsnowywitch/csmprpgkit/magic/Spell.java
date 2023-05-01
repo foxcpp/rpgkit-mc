@@ -19,11 +19,13 @@ import java.util.Objects;
 
 public class Spell {
     public final Identifier id;
-    public static final Spell EMPTY = new Spell(Identifier.of(RPGKitMod.MOD_ID, "empty"), ImmutableList.of(), null);
+    private final String translationKey;
+    public static final Spell EMPTY = new Spell(new Identifier(RPGKitMod.MOD_ID, "empty"), ImmutableList.of(), null);
     private final ImmutableList<SpellEffect> effects;
     private final @Nullable SpellForm preferredUseForm;
-    public Spell(Identifier id, ImmutableList<SpellEffect> effects, @Nullable SpellForm preferredUseForm) {
+    public Spell(@NotNull Identifier id, ImmutableList<SpellEffect> effects, @Nullable SpellForm preferredUseForm) {
         this.id = id;
+        this.translationKey = id.toTranslationKey("csmprpgkit.magic.spell");
         this.effects = effects;
         this.preferredUseForm = preferredUseForm;
     }
@@ -76,6 +78,10 @@ public class Spell {
 
     public @NotNull SpellForm determineUseForm() {
         return Objects.requireNonNullElse(this.preferredUseForm, ModForms.RAY);
+    }
+
+    public String getTranslationKey() {
+        return this.translationKey;
     }
 
     public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {

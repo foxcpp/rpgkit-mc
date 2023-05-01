@@ -15,10 +15,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -292,13 +289,15 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
         var cast = this.builder.toServerCast(this.provider, form);
         cast.perform((ServerWorld) this.provider.world);
-        this.activeCast = cast;
-        this.hasActiveCast = true;
 
         if (form instanceof ChanneledForm cf) {
             this.channelMaxAge = cf.getMaxChannelDuration(cast.getSpell(), cast.getReactions());
+            this.activeCast = cast;
+            this.hasActiveCast = true;
         } else {
             this.channelMaxAge = 0;
+            this.activeCast = null;
+            this.hasActiveCast = false;
         }
         this.channelAge = 0;
 
@@ -307,8 +306,13 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         this.usingCatalystBag = false;
 
         var handStack = this.provider.getMainHandStack();
-        if (handStack.getItem().equals(ModItems.SPELL_ITEM) && !this.isChanneling()) {
-            handStack.decrement(1);
+        if (handStack.getItem().equals(ModItems.SPELL_ITEM)) {
+            if (this.isChanneling()) {
+                handStack.setSubNbt("SpellTranslationKey", NbtString.of(cast.getSpell().getTranslationKey()));
+            } else {
+                this.provider.sendMessage(Text.translatable(cast.getSpell().getTranslationKey()), true);
+                handStack.decrement(1);
+            }
         }
 
         ModComponents.CAST.sync(this.provider);
@@ -449,6 +453,13 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
             cf.channelTick(cast, this.provider);
             this.channelAge++;
+
+            if (this.channelAge > 10) {
+                var caster = cast.getCaster((ServerWorld)this.provider.world);
+                if (caster instanceof ServerPlayerEntity spe) {
+                    spe.getComponent(ModComponents.MANA).spendMana(cast.getCost(SpellElement.COST_MAGICAE)/20);
+                }
+            }
 
             if (this.channelAge >= this.channelMaxAge) {
                 this.endCast();
