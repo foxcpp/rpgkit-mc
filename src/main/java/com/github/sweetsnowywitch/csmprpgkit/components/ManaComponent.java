@@ -19,8 +19,8 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
 
     public ManaComponent(LivingEntity provider) {
         this.provider = provider;
-        this.value = 20;
-        this.maxValue = 20;
+        this.value = 200;
+        this.maxValue = 200;
         this.regen = 1;
         this.regenSpeed = 0.005f;
         this.healthMultiplier = 1.0f;

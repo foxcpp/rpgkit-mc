@@ -78,17 +78,19 @@ public class SpellBuilder {
         var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
         if (spell != null) {
             this.spell = spell.result();
-            for (var element : this.pendingElements) {
-                for (var key : Aspect.COST_ALL) {
-                    this.spellAspectCosts.merge(key, element.getBaseCost(key), Float::sum);
-                }
-            }
             this.consumeElements(this.pendingElements, (i) -> spell.elements().get(i).consume());
         } else {
             var generic = new GenericSpell(ImmutableList.copyOf(this.pendingElements));
             this.reactions.addAll(generic.getForcedEffectReactions());
             this.spell = generic;
         }
+
+        for (var element : this.pendingElements) {
+            for (var key : Aspect.COST_ALL) {
+                this.spellAspectCosts.merge(key, element.getBaseCost(key), Float::sum);
+            }
+        }
+
         this.pendingElements.clear();
 
         RPGKitMod.LOGGER.debug("SpellBuilder.finishSpell: {}", this.spell);
