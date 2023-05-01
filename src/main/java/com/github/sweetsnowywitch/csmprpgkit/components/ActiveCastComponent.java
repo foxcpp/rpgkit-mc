@@ -264,9 +264,9 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         this.builder.addElement(this.availableElements.get(index));
         this.pendingElements = this.builder.getPendingElements();
 
-        var pendingForm = this.builder.determineUseForm();
-        if (pendingForm instanceof ChanneledForm cf) {
-            var spell = this.builder.determinePendingSpell();
+        var spell = this.builder.determinePendingSpell();
+        var useForm = spell.determineUseForm();
+        if (useForm instanceof ChanneledForm cf) {
             this.channelMaxAge = cf.getMaxChannelDuration(spell, spell.getForcedEffectReactions());
         } else {
             this.channelMaxAge = 0;

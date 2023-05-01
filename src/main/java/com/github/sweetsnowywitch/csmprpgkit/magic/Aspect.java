@@ -7,6 +7,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -29,10 +30,13 @@ public final class Aspect implements SpellElement, Comparable<Aspect> {
     private final Identifier texturePath;
     private final ImmutableList<SpellEffect> genericEffects;
     private final ImmutableList<SpellReaction> genericEffectReactions;
+    private final @Nullable SpellForm preferredUseForm;
+    private final int preferredFormWeight;
 
     public Aspect(Identifier id, Kind kind, ImmutableMap<String, @NotNull Float> scales,
                   int color, boolean primary, int order,
-                  ImmutableList<SpellEffect> genericEffects, ImmutableList<SpellReaction> genericEffectReactions) {
+                  ImmutableList<SpellEffect> genericEffects, ImmutableList<SpellReaction> genericEffectReactions,
+                  @Nullable SpellForm preferredUseForm, int preferredFormWeight) {
         this.id = id;
         this.kind = kind;
         this.scales = scales;
@@ -42,6 +46,8 @@ public final class Aspect implements SpellElement, Comparable<Aspect> {
         this.texturePath = new Identifier(id.getNamespace(), "textures/magic/aspects/"+id.getPath()+".png");
         this.genericEffects = genericEffects;
         this.genericEffectReactions = genericEffectReactions;
+        this.preferredUseForm = preferredUseForm;
+        this.preferredFormWeight = preferredFormWeight;
     }
 
     public Kind getKind() {
@@ -72,6 +78,16 @@ public final class Aspect implements SpellElement, Comparable<Aspect> {
 
     public Identifier getTexturePath() {
         return this.texturePath;
+    }
+
+    @Override
+    public @Nullable SpellForm getPreferredForm() {
+        return this.preferredUseForm;
+    }
+
+    @Override
+    public int getPreferredFormWeight() {
+        return this.preferredFormWeight;
     }
 
     @Override

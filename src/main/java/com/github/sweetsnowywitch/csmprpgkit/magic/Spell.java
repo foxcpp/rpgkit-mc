@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
@@ -10,17 +11,21 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 
 public class Spell {
     public final Identifier id;
-    public static final Spell EMPTY = new Spell(Identifier.of(RPGKitMod.MOD_ID, "empty"), ImmutableList.of());
+    public static final Spell EMPTY = new Spell(Identifier.of(RPGKitMod.MOD_ID, "empty"), ImmutableList.of(), null);
     private final ImmutableList<SpellEffect> effects;
-    public Spell(Identifier id, ImmutableList<SpellEffect> effects) {
+    private final @Nullable SpellForm preferredUseForm;
+    public Spell(Identifier id, ImmutableList<SpellEffect> effects, @Nullable SpellForm preferredUseForm) {
         this.id = id;
         this.effects = effects;
+        this.preferredUseForm = preferredUseForm;
     }
 
     public ImmutableList<SpellEffect> getEffects() {
@@ -67,6 +72,10 @@ public class Spell {
 
     public ImmutableList<SpellReaction> getForcedEffectReactions() {
         return ImmutableList.of();
+    }
+
+    public @NotNull SpellForm determineUseForm() {
+        return Objects.requireNonNullElse(this.preferredUseForm, ModForms.RAY);
     }
 
     public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {

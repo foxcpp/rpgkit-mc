@@ -2,10 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.Aspect;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellRecipeMap;
+import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -105,10 +102,19 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                     }
                 }
 
+                SpellForm preferredForm = null;
+                int preferredFormWeight = 0;
+                if (model.has("use_form")) {
+                    var formJson = model.getAsJsonObject("use_form");
+                    preferredForm = ModRegistries.SPELL_FORMS.get(new Identifier(formJson.get("id").getAsString()));
+                    preferredFormWeight = formJson.get("weight").getAsInt();
+                }
+
                 var costsRes = costs.build();
                 aspects.put(ent.getKey(), new Aspect(ent.getKey(), kind, costsRes, color,
                         !model.has("recipes"), order,
-                        genericEffects.build(), genericReactions.build()));
+                        genericEffects.build(), genericReactions.build(),
+                        preferredForm, preferredFormWeight));
                 RPGKitMod.LOGGER.debug("Loaded aspect {} with kind={}, costs={}", ent.getKey(), kind, costsRes);
             } catch (Exception e) {
                 RPGKitMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);

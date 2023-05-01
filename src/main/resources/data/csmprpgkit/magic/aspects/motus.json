@@ -12,5 +12,9 @@
       "csmprpgkit:terra",
       "csmprpgkit:aer"
     ]
-  ]
+  ],
+  "use_form": {
+    "id": "csmprpgkit:ray",
+    "weight": 2
+  }
 }

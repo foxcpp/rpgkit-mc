@@ -57,12 +57,11 @@ public class SpellBuilder {
         }
     }
 
-    public SpellForm determineUseForm() {
-        // TODO: Determine correct form dynamically.
-        return ModForms.RAY;
+    public @NotNull SpellForm determineUseForm() {
+        return this.determinePendingSpell().determineUseForm();
     }
 
-    public Spell determinePendingSpell() {
+    public @NotNull Spell determinePendingSpell() {
         var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
         if (spell != null) {
             return spell.result();
@@ -135,7 +134,7 @@ public class SpellBuilder {
         }
     }
 
-    public ServerSpellCast toServerCast(LivingEntity caster, SpellForm form) {
+    public ServerSpellCast toServerCast(@NotNull LivingEntity caster, @NotNull SpellForm form) {
         if (this.spell == null) {
             this.finishSpell();
         }

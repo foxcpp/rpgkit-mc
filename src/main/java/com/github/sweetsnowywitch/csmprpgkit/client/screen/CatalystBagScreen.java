@@ -3,6 +3,8 @@ package com.github.sweetsnowywitch.csmprpgkit.client.screen;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.screen.CatalystBagScreenHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -10,6 +12,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public class CatalystBagScreen extends HandledScreen<CatalystBagScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(RPGKitMod.MOD_ID, "textures/gui/container/catalyst_bag.png");
 

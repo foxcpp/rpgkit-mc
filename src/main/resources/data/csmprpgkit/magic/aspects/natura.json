@@ -9,6 +9,10 @@
       "csmprpgkit:aqua"
     ]
   ],
+  "use_form": {
+    "id": "csmprpgkit:ray",
+    "weight": 2
+  },
   "generic_effects": [
     {
       "type": "csmprpgkit:potion",

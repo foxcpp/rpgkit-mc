@@ -3,5 +3,9 @@
   "order": 5,
   "costs": {
     "magicae": "13"
+  },
+  "use_form": {
+    "id": "csmprpgkit:ray",
+    "weight": 2
   }
 }

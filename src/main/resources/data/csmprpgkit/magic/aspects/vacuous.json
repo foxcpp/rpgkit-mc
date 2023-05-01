@@ -12,5 +12,34 @@
       "csmprpgkit:ignis",
       "csmprpgkit:terra"
     ]
+  ],
+  "use_form": {
+    "id": "csmprpgkit:charge",
+    "weight": 2
+  },
+  "generic_effects": [
+    {
+      "type": "csmprpgkit:push_away",
+      "velocity": -1
+    },
+    {
+      "type": "csmprpgkit:damage",
+      "damage_dealt": 5
+    }
+  ],
+  "generic_reactions": [
+    {
+      "for_effect": "csmprpgkit:push_away",
+      "velocity": -2
+    },
+    {
+      "for_form": "csmprpgkit:blast",
+      "distance": 2,
+      "radius": 0.25
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "radius": 1
+    }
   ]
 }

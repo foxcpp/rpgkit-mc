@@ -2,10 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.GenericSpell;
-import com.github.sweetsnowywitch.csmprpgkit.magic.Spell;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellRecipeMap;
+import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -59,7 +56,16 @@ public class SpellReloadListener extends JsonDataLoader implements IdentifiableR
                     recipe.add(SpellRecipeMap.Element.fromJson(obj));
                 }
 
-                var spell = new Spell(ent.getKey(), effects.build());
+                SpellForm useForm = null;
+                if (model.has("use_form")) {
+                    var id = new Identifier(model.get("use_form").getAsString());
+                    useForm = ModRegistries.SPELL_FORMS.get(id);
+                    if (useForm == null) {
+                        throw new IllegalArgumentException("unknown reaction: %s".formatted(id.toString()));
+                    }
+                }
+
+                var spell = new Spell(ent.getKey(), effects.build(), useForm);
 
                 RPGKitMod.LOGGER.debug("Loaded spell {} with effects={}", ent.getKey(), spell.getEffects());
                 spells.put(ent.getKey(), spell);

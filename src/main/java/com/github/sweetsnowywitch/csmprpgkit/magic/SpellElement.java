@@ -31,6 +31,9 @@ public sealed interface SpellElement permits Aspect, ItemElement {
         return List.of();
     }
 
+    default @Nullable SpellForm getPreferredForm() { return null; }
+    default int getPreferredFormWeight() { return 0; }
+
     /**
      * Called when SpellElement is consumed during spell completion.
      */

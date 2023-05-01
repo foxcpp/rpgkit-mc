@@ -41,7 +41,7 @@ public class SpellRayEntity extends Entity {
     public static final TrackedData<SpellCast> CAST = DataTracker.registerData(SpellRayEntity.class, SpellCast.TRACKED_HANDLER);
     public Vec3d aimOrigin;
 
-    public int rayBaseColor = 0x00FFFFFF; // ARGB
+    public int rayBaseColor = 0x00FFFFFF; // ARGB, calculated on client-side only
 
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);

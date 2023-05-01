@@ -2,6 +2,8 @@ package com.github.sweetsnowywitch.csmprpgkit.client.render;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.items.SpellItem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -10,6 +12,7 @@ import software.bernie.geckolib3.core.util.Color;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 
+@Environment(EnvType.CLIENT)
 public class SpellItemRenderer extends GeoItemRenderer<SpellItem> {
     public static class Model extends AnimatedGeoModel<SpellItem> {
         @Override

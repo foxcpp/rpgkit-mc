@@ -1,14 +1,18 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 public class GenericSpell extends Spell {
     public static final GenericSpell EMPTY = new GenericSpell(ImmutableList.of());
@@ -16,7 +20,7 @@ public class GenericSpell extends Spell {
     private final ImmutableList<SpellReaction> forcedEffectReactions;
 
     public GenericSpell(ImmutableList<SpellElement> elements) {
-        super(Identifier.of(RPGKitMod.MOD_ID, "generic"), computeEffects(elements));
+        super(Identifier.of(RPGKitMod.MOD_ID, "generic"), computeEffects(elements), null);
         this.elements = elements;
         this.forcedEffectReactions = computeReactions(elements);
     }
@@ -71,6 +75,13 @@ public class GenericSpell extends Spell {
             elementsNBT.add(elementNBT);
         }
         comp.put("Elements", elementsNBT);
+    }
+
+    @Override
+    public @NotNull SpellForm determineUseForm() {
+        var max = this.elements.stream().max(Comparator.comparingInt(SpellElement::getPreferredFormWeight));
+        return max.map(spellElement -> Objects.requireNonNullElse(spellElement.getPreferredForm(), ModForms.RAY)).
+                orElseGet(super::determineUseForm);
     }
 
     public ImmutableList<SpellReaction> getForcedEffectReactions() {

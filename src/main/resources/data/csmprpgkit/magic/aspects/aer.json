@@ -5,6 +5,10 @@
     "magicae": "3"
   },
   "color": "D5A6BD",
+  "use_form": {
+    "id": "csmprpgkit:blast",
+    "weight": 1
+  },
   "generic_effects": [
     {
       "type": "csmprpgkit:push_away",

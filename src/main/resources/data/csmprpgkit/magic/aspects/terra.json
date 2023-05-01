@@ -5,6 +5,10 @@
     "magicae": "7"
   },
   "color": "38761D",
+  "use_form": {
+    "id": "csmprpgkit:charge",
+    "weight": 3
+  },
   "generic_effects": [
     {
       "type": "csmprpgkit:damage",

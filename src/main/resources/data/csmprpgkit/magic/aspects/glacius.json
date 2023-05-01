@@ -8,5 +8,31 @@
       "csmprpgkit:aqua",
       "csmprpgkit:terra"
     ]
+  ],
+  "use_form": {
+    "id": "csmprpgkit:charge",
+    "weight": 2
+  },
+  "generic_effects": [
+    {
+      "type": "csmprpgkit:potion",
+      "id": "minecraft:slowness",
+      "duration": 3,
+      "amplifier": 1
+    },
+    {
+      "type": "csmprpgkit:damage",
+      "damage_dealt": 5
+    }
+  ],
+  "generic_reactions": [
+    {
+      "for_effect": "csmprpgkit:potion",
+      "duration": 3
+    },
+    {
+      "for_effect": "csmprpgkit:damage",
+      "damage_dealt": 3
+    }
   ]
 }
