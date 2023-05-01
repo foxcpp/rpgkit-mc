@@ -84,7 +84,7 @@ public class Spell {
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         var passThrough = true;
         for (var effect : this.effects) {
-            passThrough = passThrough && effect.onSingleEntityHit(cast, entity);
+            passThrough = effect.onSingleEntityHit(cast, entity) && passThrough;
         }
         return passThrough;
     }
