@@ -6,6 +6,7 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -49,6 +50,10 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
     }
 
     public void spendMana(double cost){
+        if (this.provider instanceof PlayerEntity p && p.getAbilities().creativeMode) {
+            return;
+        }
+
         this.value -= cost;
         if (this.value < 0) {
             var damage = (float)(-this.value * this.getHealthMultiplier());
