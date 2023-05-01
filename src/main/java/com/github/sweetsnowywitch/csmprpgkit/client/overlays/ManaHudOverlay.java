@@ -37,6 +37,12 @@ public class ManaHudOverlay implements HudRenderCallback {
         assert client != null;
         assert client.player != null;
         assert client.interactionManager != null;
+        var manaComponent = client.player.getComponent(ModComponents.MANA);
+        if (manaComponent.getMaxValue() == 0) {
+            return;
+        }
+
+
         if (client.interactionManager.getCurrentGameMode().equals(GameMode.SURVIVAL) ||
                 client.interactionManager.getCurrentGameMode().equals(GameMode.ADVENTURE)) {
 
@@ -45,7 +51,6 @@ public class ManaHudOverlay implements HudRenderCallback {
             x = width / 2;
             y = height;
 
-            var manaComponent = client.player.getComponent(ModComponents.MANA);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
