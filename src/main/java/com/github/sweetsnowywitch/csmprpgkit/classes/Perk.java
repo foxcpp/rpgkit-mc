@@ -1,6 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.classes;
 
 import com.github.sweetsnowywitch.csmprpgkit.JSONParameters;
+import com.github.sweetsnowywitch.csmprpgkit.components.entity.ClassComponent;
 import com.google.gson.JsonObject;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -13,7 +14,7 @@ import net.minecraft.util.Identifier;
   *     than serialization. Consumers will be probably use instanceof
   *     to check for particular interfaces or even implementations
   *     where appropriate. E.g. {@link ServerTickablePerk} defines {@link ServerTickablePerk#tick(ServerPlayerEntity) tick()}
-  *     method which is called on each tick by {@link com.github.sweetsnowywitch.csmprpgkit.components.ClassComponent ClassComponent}.
+  *     method which is called on each tick by {@link ClassComponent ClassComponent}.
   * </p>
   * <p>
   *     Perk instances with appropriate default (empty) values

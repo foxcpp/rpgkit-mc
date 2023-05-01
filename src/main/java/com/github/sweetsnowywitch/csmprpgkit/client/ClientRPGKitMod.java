@@ -8,7 +8,7 @@ import com.github.sweetsnowywitch.csmprpgkit.client.particle.GenericSpellParticl
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.SpellItemRenderer;
 import com.github.sweetsnowywitch.csmprpgkit.client.screen.CatalystBagScreen;
-import com.github.sweetsnowywitch.csmprpgkit.components.ActiveCastComponent;
+import com.github.sweetsnowywitch.csmprpgkit.components.entity.ActiveCastComponent;
 import com.github.sweetsnowywitch.csmprpgkit.events.DataRegistryReloadCallback;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;

@@ -1,7 +1,8 @@
-package com.github.sweetsnowywitch.csmprpgkit.components;
+package com.github.sweetsnowywitch.csmprpgkit.components.entity;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.items.CatalystBagItem;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.*;

@@ -2,6 +2,10 @@ package com.github.sweetsnowywitch.csmprpgkit.components;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.components.chunk.MagicEffectsComponent;
+import com.github.sweetsnowywitch.csmprpgkit.components.entity.AbilitiesComponent;
+import com.github.sweetsnowywitch.csmprpgkit.components.entity.ActiveCastComponent;
+import com.github.sweetsnowywitch.csmprpgkit.components.entity.ClassComponent;
+import com.github.sweetsnowywitch.csmprpgkit.components.entity.ManaComponent;
 import dev.onyxstudios.cca.api.v3.chunk.ChunkComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.chunk.ChunkComponentInitializer;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;

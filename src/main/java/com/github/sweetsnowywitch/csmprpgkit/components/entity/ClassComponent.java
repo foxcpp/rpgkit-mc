@@ -1,10 +1,11 @@
-package com.github.sweetsnowywitch.csmprpgkit.components;
+package com.github.sweetsnowywitch.csmprpgkit.components.entity;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.classes.CharacterClass;
 import com.github.sweetsnowywitch.csmprpgkit.classes.Perk;
 import com.github.sweetsnowywitch.csmprpgkit.classes.ServerTickablePerk;
+import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;

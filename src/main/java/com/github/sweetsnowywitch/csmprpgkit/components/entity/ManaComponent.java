@@ -1,7 +1,8 @@
-package com.github.sweetsnowywitch.csmprpgkit.components;
+package com.github.sweetsnowywitch.csmprpgkit.components.entity;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModAttributes;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.LivingEntity;

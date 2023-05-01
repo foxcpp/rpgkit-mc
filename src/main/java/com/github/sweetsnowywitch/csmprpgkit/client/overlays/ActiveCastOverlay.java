@@ -2,7 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.client.overlays;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.client.ClientSpellCastController;
-import com.github.sweetsnowywitch.csmprpgkit.components.ActiveCastComponent;
+import com.github.sweetsnowywitch.csmprpgkit.components.entity.ActiveCastComponent;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.magic.Aspect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ItemElement;
