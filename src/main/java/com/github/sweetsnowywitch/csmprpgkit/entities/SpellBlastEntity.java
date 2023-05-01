@@ -33,10 +33,19 @@ public class SpellBlastEntity extends MagicAreaEntity {
         this.dataTracker.set(PARTICLE_ORIGIN, Optional.of(origin));
         this.dataTracker.set(PARTICLE_SPREAD_AGE, 5);
         this.setBoundingBox(this.getArea());
+        this.setPosition(origin);
     }
 
     public static SpellBlastEntity empty(EntityType<?> type, World world) {
         return new SpellBlastEntity(type, world, Vec3d.ZERO, 1, 1, new Vec3d(0, 1, 0), 3*20);
+    }
+
+    public void moveArea(Vec3d origin, Vec3d direction, double distance, double radius) {
+        this.dataTracker.set(MagicAreaEntity.AREA, this.computeArea(origin, direction, distance, radius));
+        this.dataTracker.set(PARTICLE_ORIGIN, Optional.of(origin));
+        this.dataTracker.set(PARTICLE_SPREAD_AGE, this.age+5);
+        this.setBoundingBox(this.getArea());
+        this.setPosition(origin);
     }
 
     private Box computeArea(Vec3d origin, Vec3d direction, double distance, double radius) {

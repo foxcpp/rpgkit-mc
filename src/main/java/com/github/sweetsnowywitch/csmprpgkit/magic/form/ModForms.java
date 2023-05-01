@@ -17,8 +17,6 @@ public class ModForms {
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "self"), SELF);
 
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "ray"), RAY);
-        Registry.register(ModRegistries.SPELL_FORM_REACTIONS, Identifier.of(RPGKitMod.MOD_ID, "ray"),
-                SpellReaction.factoryFor(RayForm.Reaction::new, RayForm.Reaction::new));
 
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "area"), AREA);
         Registry.register(ModRegistries.SPELL_FORM_REACTIONS, Identifier.of(RPGKitMod.MOD_ID, "area"),

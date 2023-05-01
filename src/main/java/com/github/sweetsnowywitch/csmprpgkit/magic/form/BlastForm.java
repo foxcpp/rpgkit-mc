@@ -3,9 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.form;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.entities.SpellBlastEntity;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
-import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
+import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
@@ -14,7 +12,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-public class BlastForm extends SpellForm {
+import java.util.List;
+
+public class BlastForm extends SpellForm implements ChanneledForm {
     public static class Reaction extends SpellReaction {
         public final double radius;
         public final double distance;
@@ -77,7 +77,10 @@ public class BlastForm extends SpellForm {
         }
 
         var blast = new SpellBlastEntity(ModEntities.SPELL_BLAST, world, pos,
-                distance, radius, caster.getRotationVector(), 15);
+                distance, radius, caster.getRotationVector(), 5);
+        cast.customData.putUuid("BlastEntityUUID", blast.getUuid());
+        cast.customData.putDouble("BlastDistance", distance);
+        cast.customData.putDouble("BlastRadius", radius);
         blast.setCast(cast);
         world.spawnEntity(blast);
 
@@ -89,5 +92,44 @@ public class BlastForm extends SpellForm {
     @Override
     public void endCast(ServerSpellCast cast, ServerWorld world) {
         super.endCast(cast, world);
+
+        if (cast.customData.contains("BlastEntityUUID")) {
+            var ent = world.getEntity(cast.customData.getUuid("BlastEntityUUID"));
+            if (ent != null) {
+                ent.discard();
+            }
+        }
+    }
+
+    @Override
+    public int getMaxChannelDuration(Spell cast, List<SpellReaction> reactions) {
+        return 4*20;
+    }
+
+    @Override
+    public void channelTick(ServerSpellCast cast, @NotNull Entity caster) {
+        if (cast.customData.containsUuid("BlastEntityUUID")) {
+            var blast = (SpellBlastEntity)((ServerWorld)caster.getWorld()).getEntity(cast.customData.getUuid("BlastEntityUUID"));
+            if (blast != null) {
+                var pos = caster.getPos();
+                if (caster instanceof PlayerEntity pe) {
+                    pos = pos.add(pe.getHandPosOffset(ModItems.SPELL_ITEM));
+                    pos = pos.add(0, 0.7, 0);
+                }
+
+                double distance = cast.customData.getDouble("BlastDistance");
+                double radius = cast.customData.getDouble("BlastRadius");
+
+                var previousArea = blast.getArea();
+
+                blast.moveArea(pos, caster.getRotationVector(), distance, radius);
+                blast.increaseMaxAge(5);
+
+                var intersection = previousArea.intersection(blast.getArea());
+                if (intersection.getAverageSideLength() < 2) {
+                    cast.getSpell().onAreaHit(cast, (ServerWorld)caster.getWorld(), intersection);
+                }
+            }
+        }
     }
 }

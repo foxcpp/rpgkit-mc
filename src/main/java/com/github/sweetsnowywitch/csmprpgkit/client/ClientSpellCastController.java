@@ -62,6 +62,17 @@ public class ClientSpellCastController implements SpellCastController {
         this.performCast(ServerSpellBuildHandler.CastType.USE);
     }
 
+    public void interruptChanneling() {
+        if (!ClientPlayNetworking.canSend(PACKET_ID)) {
+            RPGKitMod.LOGGER.error("Cannot send a spell build packet");
+            return;
+        }
+
+        var buf = PacketByteBufs.create();
+        buf.writeString(ServerSpellBuildHandler.Action.INTERRUPT_CAST.name());
+        ClientPlayNetworking.send(PACKET_ID, buf);
+    }
+
     private void performCast(ServerSpellBuildHandler.CastType type) {
         if (!ClientPlayNetworking.canSend(PACKET_ID)) {
             RPGKitMod.LOGGER.error("Cannot send a spell build packet");

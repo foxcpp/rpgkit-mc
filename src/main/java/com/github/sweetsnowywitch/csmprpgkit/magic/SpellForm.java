@@ -38,9 +38,7 @@ public abstract class SpellForm {
      * @param caster Entity that performs the cast, does not have to be LivingEntity.
      */
     public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
-        for (var effect : cast.getSpell().getEffects()) {
-            effect.startCast(cast, world, caster);
-        }
+        cast.getSpell().startCast(cast, world, caster);
     }
 
     /**
@@ -50,9 +48,7 @@ public abstract class SpellForm {
      * @param world  Logical server world where cast is happening.
      */
     public void endCast(ServerSpellCast cast, ServerWorld world) {
-        for (var effect : cast.getSpell().getEffects()) {
-            effect.endCast(cast, world);
-        }
+        cast.getSpell().endCast(cast, world);
     }
 
     public String toString() {

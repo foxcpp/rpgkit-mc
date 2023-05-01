@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.client.overlays;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.client.ClientSpellCastController;
+import com.github.sweetsnowywitch.csmprpgkit.components.ActiveCastComponent;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.magic.Aspect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ItemElement;
@@ -18,34 +19,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
 @Environment(EnvType.CLIENT)
-public class SpellBuilderOverlay implements HudRenderCallback {
+public class ActiveCastOverlay implements HudRenderCallback {
     private static final Identifier FRAME_TEXTURE = new Identifier(RPGKitMod.MOD_ID, "textures/hud/frame.png");
+    private static final Identifier CHANNEL_BAR_TEXTURE = new Identifier(RPGKitMod.MOD_ID, "textures/hud/channel_bar.png");
     private static final int ELEMENT_SLOT_SIZE = 22;
     public ClientSpellCastController handler;
 
-    public SpellBuilderOverlay(ClientSpellCastController handler) {
+    public ActiveCastOverlay(ClientSpellCastController handler) {
         this.handler = handler;
     }
 
-    @Override
-    public void onHudRender(MatrixStack matrix, float tickDelta) {
+    public void renderBuilder(ActiveCastComponent comp, MatrixStack matrix, float tickDelta) {
         var client = MinecraftClient.getInstance();
-        if (client.player == null) {
-            return;
-        }
-        var comp = client.player.getComponent(ModComponents.CAST);
-        if (!comp.isBuilding()) {
-            return;
-        }
 
         var width = client.getWindow().getScaledWidth();
         var height = client.getWindow().getScaledHeight();
 
         var guiStartHeight = height - 90;
-        if (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.isCreative()) {
+        if (client.player != null && client.player.isCreative()) {
             guiStartHeight += 20;
         }
 
@@ -79,6 +71,42 @@ public class SpellBuilderOverlay implements HudRenderCallback {
             this.drawElement(matrix, x, y, element, 0.75f);
 
             drawnAspects++;
+        }
+    }
+
+    public void renderChannelBar(ActiveCastComponent comp, MatrixStack matrix, float tickDelta) {
+        var client = MinecraftClient.getInstance();
+
+        var age = comp.getChannelAge();
+        var maxAge = comp.getChannelMaxAge();
+        float factor = (float)(maxAge - age) / maxAge;
+
+        var width = client.getWindow().getScaledWidth();
+        var height = client.getWindow().getScaledHeight();
+        var guiStartHeight = height - 29;
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderTexture(0, CHANNEL_BAR_TEXTURE);
+        DrawableHelper.drawTexture(matrix, width/2 - 91, guiStartHeight, 0, 0,
+                182, 5, 182, 10);
+        DrawableHelper.drawTexture(matrix, width/2 - 91, guiStartHeight, 0, 5,
+                (int)(182*factor), 5, 182, 10);
+    }
+
+    @Override
+    public void onHudRender(MatrixStack matrix, float tickDelta) {
+        var client = MinecraftClient.getInstance();
+        if (client.player == null) {
+            return;
+        }
+        var comp = client.player.getComponent(ModComponents.CAST);
+
+        if (comp.isBuilding()) {
+            this.renderBuilder(comp, matrix, tickDelta);
+        }
+
+        if (comp.isChanneling()) {
+            this.renderChannelBar(comp, matrix, tickDelta);
         }
     }
 

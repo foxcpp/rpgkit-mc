@@ -22,6 +22,7 @@ import java.util.UUID;
  */
 public class ServerSpellCast extends SpellCast {
     private final UUID casterUuid;
+    public final NbtCompound customData;
 
     public ServerSpellCast(SpellForm form, Spell spell, UUID casterID, List<SpellReaction> formReactions,
                            List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
@@ -29,6 +30,7 @@ public class ServerSpellCast extends SpellCast {
         super(form, spell, reactions, costs, fullRecipe, startPos);
 
         this.casterUuid = casterID;
+        this.customData = new NbtCompound();
     }
 
     public ServerSpellCast(SpellForm form, Spell spell, @NotNull LivingEntity caster,
@@ -41,6 +43,7 @@ public class ServerSpellCast extends SpellCast {
         }
 
         this.casterUuid = caster.getUuid();
+        this.customData = new NbtCompound();
     }
 
     protected ServerSpellCast(NbtCompound nbt) {
@@ -49,6 +52,7 @@ public class ServerSpellCast extends SpellCast {
         var casterID = nbt.getUuid("Caster");
         if (casterID == null) throw new IllegalArgumentException("missing caster UUID in NBT");
         this.casterUuid = casterID;
+        this.customData = nbt.getCompound("CustomData");
     }
 
     public void perform(ServerWorld world) {
@@ -74,6 +78,7 @@ public class ServerSpellCast extends SpellCast {
         super.writeToNbt(nbt);
 
         nbt.putUuid("Caster", this.casterUuid);
+        nbt.put("CustomData", this.customData);
     }
 
     public UUID getCasterUuid() {

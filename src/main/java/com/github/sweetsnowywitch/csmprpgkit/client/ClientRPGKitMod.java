@@ -3,7 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.client;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.classes.listener.ClassReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
-import com.github.sweetsnowywitch.csmprpgkit.client.overlays.SpellBuilderOverlay;
+import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ActiveCastOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.particle.GenericSpellParticle;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.SpellItemRenderer;
@@ -55,7 +55,7 @@ public class ClientRPGKitMod implements ClientModInitializer {
     public void onInitializeClient() {
         ModRenderers.register();
         HudRenderCallback.EVENT.register(new ManaHudOverlay());
-        HudRenderCallback.EVENT.register(new SpellBuilderOverlay(SPELL_BUILD_HANDLER));
+        HudRenderCallback.EVENT.register(new ActiveCastOverlay(SPELL_BUILD_HANDLER));
 
         KeyBindingHelper.registerKeyBinding(ACTIVATE_SPELL_BUILD_KEY);
         ClientTickEvents.END_CLIENT_TICK.register(new SpellBuildKeyboardHandler());

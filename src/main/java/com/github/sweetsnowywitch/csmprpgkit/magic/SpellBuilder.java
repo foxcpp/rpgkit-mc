@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,19 @@ public class SpellBuilder {
                 this.fullRecipe.add(res.result());
             }
         }
+    }
+
+    public SpellForm determineUseForm() {
+        // TODO: Determine correct form dynamically.
+        return ModForms.RAY;
+    }
+
+    public Spell determinePendingSpell() {
+        var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
+        if (spell != null) {
+            return spell.result();
+        }
+        return new GenericSpell(ImmutableList.copyOf(this.pendingElements));
     }
 
     public void finishSpell() {

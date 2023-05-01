@@ -25,7 +25,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
     @Override
     public void render(SpellRayEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         var radius = 0.075f;
-        var height = entity.getLength(tickDelta);
+        var height = entity.getLength();
 
         matrices.push();
 
@@ -36,26 +36,19 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
 
         var buffer = vertexConsumers.getBuffer(RenderLayer.getLightning());
 
-        var startFactor = entity.getStartFadeFactor();
-        var endFactor = entity.getEndFadeFactor(tickDelta);
-
-        var argbStart = entity.rayBaseColor | (int)(128 - 128*startFactor) << 24;
-        var argbEnd =   entity.rayBaseColor | (int)(128 - 128*endFactor) << 24;
+        var argbStart = entity.rayBaseColor | 128 << 24;
+        var argbEnd =   entity.rayBaseColor | 128 << 24;
 
         renderBeam(matrices, buffer, argbStart, argbEnd,
                 height, 0, 0,
-                radius - 0.01f*startFactor);
+                radius);
 
-        if (endFactor == 0f) {
-            argbStart |= 0xFF000000;
-            argbStart |= 0xFF000000;
+        argbStart |= 0xFF000000;
 
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(15));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(15));
 
-            renderBeam(matrices, buffer, argbStart, argbEnd,
-                    height, 0, 0, radius / 2);
-
-        }
+        renderBeam(matrices, buffer, argbStart, argbEnd,
+                height, 0, 0, radius / 2);
 
         matrices.pop();
 

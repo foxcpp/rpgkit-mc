@@ -21,6 +21,7 @@ public class ServerSpellBuildHandler {
         ADD_ELEMENT,
         SWITCH_BAG,
         CAST,
+        INTERRUPT_CAST,
     }
     public enum CastType {
         SELF,
@@ -41,6 +42,7 @@ public class ServerSpellBuildHandler {
             case ADD_ELEMENT -> this.onAddElement(server, player, handler, buf, responseSender);
             case SWITCH_BAG -> this.onSwitchBag(server, player, handler, buf, responseSender);
             case CAST -> this.onCast(server, player, handler, buf, responseSender);
+            case INTERRUPT_CAST -> this.onInterruptCast(server, player, handler, buf, responseSender);
             default -> RPGKitMod.LOGGER.error("Unknown spell builder action received from {}", player);
         }
     }
@@ -89,6 +91,16 @@ public class ServerSpellBuildHandler {
                     case AREA -> comp.performAreaCast();
                     case USE -> comp.performUseCast();
                 }
+            } catch (Exception ex) {
+                RPGKitMod.LOGGER.error("Exception happened while handling a spell build packet from %s".formatted(player.toString()), ex);
+            }
+        });
+    }
+
+    private void onInterruptCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+            try {
+                player.getComponent(ModComponents.CAST).interruptChanneling();
             } catch (Exception ex) {
                 RPGKitMod.LOGGER.error("Exception happened while handling a spell build packet from %s".formatted(player.toString()), ex);
             }

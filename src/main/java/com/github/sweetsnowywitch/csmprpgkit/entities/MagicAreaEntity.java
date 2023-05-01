@@ -26,7 +26,7 @@ import java.util.Optional;
 public abstract class MagicAreaEntity extends Entity {
     // Populated only on logical server side.
     public ServerSpellCast cast = null;
-    protected int maxAge = 15*20;
+    protected int maxAge;
     public static final TrackedData<Box> AREA = DataTracker.registerData(MagicAreaEntity.class, TrackedHandlers.BOX);
     public static final TrackedData<SpellCast> CAST = DataTracker.registerData(MagicAreaEntity.class, SpellCast.TRACKED_HANDLER);
     protected int particleColor;
@@ -53,6 +53,7 @@ public abstract class MagicAreaEntity extends Entity {
             this.cast = ServerSpellCast.readFromNbt(nbt.getCompound("Cast")); // full data for server
             this.dataTracker.set(CAST, this.cast); // sync some spell data to client
         }
+        this.maxAge = nbt.getInt("MaxAge");
     }
 
     @Override
@@ -70,6 +71,12 @@ public abstract class MagicAreaEntity extends Entity {
         nbt.put("Area",
                 TrackedHandlers.BOX_CODEC.encodeStart(NbtOps.INSTANCE, this.dataTracker.get(AREA))
                         .resultOrPartial(RPGKitMod.LOGGER::error).orElseThrow());
+
+        nbt.putInt("MaxAge", this.maxAge);
+    }
+
+    public void increaseMaxAge(int duration) {
+        this.maxAge += duration;
     }
 
     @Override

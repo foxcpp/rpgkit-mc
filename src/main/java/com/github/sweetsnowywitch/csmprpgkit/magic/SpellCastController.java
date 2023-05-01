@@ -8,4 +8,5 @@ public interface SpellCastController {
     void performAreaCast();
     void performItemCast();
     void performUseCast();
+    void interruptChanneling();
 }

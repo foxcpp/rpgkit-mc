@@ -182,4 +182,8 @@ public class SpellCast {
     public Vec3d getStartPos() {
         return this.startPos;
     }
+
+    public boolean isChanneled() {
+        return this.getForm() instanceof ChanneledForm;
+    }
 }

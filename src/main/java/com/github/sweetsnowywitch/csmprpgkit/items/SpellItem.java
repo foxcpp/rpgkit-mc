@@ -8,10 +8,12 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -50,10 +52,25 @@ public class SpellItem extends Item implements IAnimatable {
     }
 
     @Override
+    public int getMaxUseTime(ItemStack stack) {
+        var nbt = stack.getNbt();
+        if (nbt == null) {
+            return 0;
+        }
+        return nbt.getInt("MaxChannelAge");
+    }
+
+    @Override
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        super.usageTick(world, user, stack, remainingUseTicks);
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack inHand = user.getStackInHand(hand);
         if (!world.isClient) {
-            return TypedActionResult.success(inHand);
+            user.setCurrentHand(hand);
+            return TypedActionResult.consume(inHand);
         }
 
         try {
@@ -62,7 +79,21 @@ public class SpellItem extends Item implements IAnimatable {
             RPGKitMod.LOGGER.error("Exception happened while trying to perform cast", ex);
         }
 
-        return TypedActionResult.success(inHand);
+        user.setCurrentHand(hand);
+        return TypedActionResult.consume(inHand);
+    }
+
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        if (!world.isClient) {
+            return;
+        }
+
+        try {
+            user.getComponent(ModComponents.CAST).interruptChanneling();
+        } catch (Exception ex) {
+            RPGKitMod.LOGGER.error("Exception happened while trying to interrupt cast", ex);
+        }
     }
 
     @Override
@@ -79,13 +110,17 @@ public class SpellItem extends Item implements IAnimatable {
         }
         var comp = spe.getComponent(ModComponents.CAST);
 
-        if (!comp.isBuilding()) {
+        if (!comp.isBuilding() && !comp.isChanneling()) {
             stack.decrement(1);
             return;
         }
 
         if (!selected) {
-            comp.performSelfCast();
+            if (comp.isBuilding()) {
+                comp.performSelfCast();
+            } else if (comp.isChanneling()) {
+                comp.interruptChanneling();
+            }
         }
     }
 

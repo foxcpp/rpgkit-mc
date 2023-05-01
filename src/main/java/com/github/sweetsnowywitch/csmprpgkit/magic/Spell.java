@@ -65,6 +65,10 @@ public class Spell {
         comp.putString("Id", this.id.toString());
     }
 
+    public ImmutableList<SpellReaction> getForcedEffectReactions() {
+        return ImmutableList.of();
+    }
+
     public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {
         for (var effect : this.effects) {
             effect.startCast(cast, world, caster);
