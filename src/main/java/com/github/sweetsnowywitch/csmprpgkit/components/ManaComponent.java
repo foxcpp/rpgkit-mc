@@ -1,5 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.components;
 
+import com.github.sweetsnowywitch.csmprpgkit.ModAttributes;
+import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.LivingEntity;
@@ -11,42 +13,26 @@ import java.util.Random;
 
 public class ManaComponent implements AutoSyncedComponent, ServerTickingComponent {
     private final LivingEntity provider;
-    private int value;
-    private int maxValue;
-    private int regen;
-    private float regenSpeed;
-    private float healthMultiplier;
+    private double value;
 
     public ManaComponent(LivingEntity provider) {
         this.provider = provider;
         this.value = 200;
-        this.maxValue = 200;
-        this.regen = 1;
-        this.regenSpeed = 0.005f;
-        this.healthMultiplier = 1.0f;
     }
 
     @Override
     public void serverTick() {
-        regenerate(this.regen, this.regenSpeed);
+        this.regenerate(this.getRegen(), this.getRegenSpeed(), this.getMaxValue());
     }
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        this.value = tag.getInt("manaValue");
-        this.maxValue = tag.getInt("maxMana");
-        this.regen = tag.getInt("manaReg");
-        this.regenSpeed = tag.getFloat("manaSpeed");
-        this.healthMultiplier = tag.getFloat("manaMultiplier");
+        this.value = tag.getDouble("ManaValue");
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-        tag.putInt("manaValue", this.value);
-        tag.putInt("maxMana", this.maxValue);
-        tag.putInt("manaReg", this.regen);
-        tag.putFloat("manaSpeed", this.regenSpeed);
-        tag.putFloat("manaMultiplier", this.healthMultiplier);
+        tag.putDouble("ManaValue", this.value);
     }
 
     @Override
@@ -54,30 +40,31 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         return player.equals(this.provider);
     }
 
-    public void regenerate(int reg, float speed) {
-        if (this.value < this.maxValue && new Random().nextFloat() <= speed)
-            this.value += reg;
-        else if (this.value > this.maxValue)
-            this.value = this.maxValue;
+    public void regenerate(double regen, double speed, double maxValue) {
+        if (this.value < maxValue && RPGKitMod.RANDOM.nextFloat() <= speed)
+            this.value += regen;
+        else if (this.value > maxValue)
+            this.value = maxValue;
         ModComponents.MANA.sync(this.provider);
     }
 
-    public void spendMana(int cost){
+    public void spendMana(double cost){
         this.value -= cost;
-        if (this.value < 0)
-        {
-            this.provider.damage(DamageSource.MAGIC, -this.value * healthMultiplier);
-            //this.provider.world.addParticle(ParticleTypes.ELECTRIC_SPARK,
-            //        this.provider.getX() + new Random().nextDouble(-0.5,0.5),
-            //        this.provider.getY() + new Random().nextDouble(0.5,2),
-            //        this.provider.getZ() + new Random().nextDouble(-0.5,0.5),
-            //        0, 0, 0);
+        if (this.value < 0) {
+            var damage = (float)(-this.value * this.getHealthMultiplier());
+            if (damage > this.provider.getHealth() - 0.5f) {
+                damage = this.provider.getHealth() - 0.5f;
+            }
+            if (this.provider.getHealth() <= 1) {
+                damage = 10;
+            }
+            this.provider.damage(DamageSource.MAGIC, damage);
             this.value = 0;
         }
         ModComponents.MANA.sync(this.provider);
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
@@ -86,39 +73,35 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         ModComponents.MANA.sync(this.provider);
     }
 
-    public int getMaxValue() {
-        return maxValue;
+    public double getMaxValue() {
+        var attr = this.provider.getAttributeInstance(ModAttributes.MAX_MANA);
+        if (attr == null) {
+            return ModAttributes.MAX_MANA.getDefaultValue();
+        }
+        return attr.getValue();
     }
 
-    public void setMaxValue(int maxValue) {
-        this.maxValue = maxValue;
-        ModComponents.MANA.sync(this.provider);
+    public double getRegen() {
+        var attr = this.provider.getAttributeInstance(ModAttributes.MANA_REGEN);
+        if (attr == null) {
+            return ModAttributes.MANA_REGEN.getDefaultValue();
+        }
+        return attr.getValue();
     }
 
-    public int getRegen() {
-        return regen;
+    public double getRegenSpeed() {
+        var attr = this.provider.getAttributeInstance(ModAttributes.MANA_REGEN_SPEED);
+        if (attr == null) {
+            return ModAttributes.MANA_REGEN_SPEED.getDefaultValue();
+        }
+        return attr.getValue();
     }
 
-    public void setRegen(int regen) {
-        this.regen = regen;
-        ModComponents.MANA.sync(this.provider);
-    }
-
-    public float getRegenSpeed() {
-        return regenSpeed;
-    }
-
-    public void setRegenSpeed(int regenSpeed) {
-        this.regenSpeed = regenSpeed;
-        ModComponents.MANA.sync(this.provider);
-    }
-
-    public float getHealthMultiplier() {
-        return healthMultiplier;
-    }
-
-    public void setHealthMultiplier(float healthMultiplier) {
-        this.healthMultiplier = healthMultiplier;
-        ModComponents.MANA.sync(this.provider);
+    public double getHealthMultiplier() {
+        var attr = this.provider.getAttributeInstance(ModAttributes.MANA_HEALTH_FACTOR);
+        if (attr == null) {
+            return ModAttributes.MANA_HEALTH_FACTOR.getDefaultValue();
+        }
+        return attr.getValue();
     }
 }

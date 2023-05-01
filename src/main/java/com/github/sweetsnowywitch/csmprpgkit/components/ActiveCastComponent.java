@@ -168,6 +168,11 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return;
         }
 
+        if (this.provider.getComponent(ModComponents.MANA).getValue() == 0) {
+            this.provider.sendMessage(Text.translatable("csmprpgkit.magic.must_have_mana"), true);
+            return;
+        }
+
         if (this.isChanneling()) {
             this.endCast();
         }
@@ -278,6 +283,11 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
     private void performCast(SpellForm form) {
         assert this.builder != null;
+
+        if (this.builder.getFullRecipe().size() == 0) {
+            this.cancelBuild();
+            return;
+        }
 
         var cast = this.builder.toServerCast(this.provider, form);
         cast.perform((ServerWorld) this.provider.world);

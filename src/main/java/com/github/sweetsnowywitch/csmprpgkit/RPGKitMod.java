@@ -69,6 +69,7 @@ public class RPGKitMod implements ModInitializer  {
         ModParticles.register();
         CommandRegistrationCallback.EVENT.register(ModCommands::register);
         TrackedHandlers.register();
+        ModAttributes.register();
 
         // Classes
         ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "class"), CharacterClassArgument.class,
