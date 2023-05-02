@@ -4,6 +4,7 @@
   "package": "com.github.sweetsnowywitch.csmprpgkit.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ExperienceRewardMixin",
     "ComboMixin",
     "KillStreakMixin",
     "SingleKillMixin"

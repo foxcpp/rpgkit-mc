@@ -30,6 +30,7 @@ public class RestPerk extends Perk implements ServerTickablePerk {
         this.duration = DEFAULT_DURATION;
         this.amplifier = DEFAULT_AMPLIFIER;
         this.restTime = DEFAULT_REST_TIME;
+        this.timer = 0;
     }
 
     public RestPerk(Identifier typeId, @Nullable StatusEffect statusEffect, int duration, int amplifier, int restTime) {
@@ -38,6 +39,7 @@ public class RestPerk extends Perk implements ServerTickablePerk {
         this.duration = duration;
         this.amplifier = amplifier;
         this.restTime = restTime;
+        this.timer = 0;
     }
 
     @Override
@@ -87,14 +89,15 @@ public class RestPerk extends Perk implements ServerTickablePerk {
 
     @Override
     public void tick(ServerPlayerEntity entity) {
-        if (this.statusEffect == null) {
-            RPGKitMod.LOGGER.warn("RestPerk on {} with empty status effect", entity);
-            return;
-        }
 
         if (entity.getAttacking() == null && entity.getAttacker() == null) {
             this.timer++;
             if (this.timer >= this.restTime) {
+                if (this.statusEffect == null) {
+                    RPGKitMod.LOGGER.warn("RestPerk on {} with empty status effect", entity);
+                    return;
+                }
+
                 entity.addStatusEffect(new StatusEffectInstance(this.statusEffect, this.duration, this.amplifier,
                         false, false), entity);
             }

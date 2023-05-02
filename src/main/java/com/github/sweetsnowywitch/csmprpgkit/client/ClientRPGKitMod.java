@@ -1,6 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.client;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.classes.listener.AdvancementsListener;
 import com.github.sweetsnowywitch.csmprpgkit.classes.listener.ClassReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
@@ -50,13 +51,14 @@ public class ClientRPGKitMod implements ClientModInitializer {
     public void loadServerData(String jsonBlob) {
         RPGKitMod.LOGGER.info("Loading server data...");
 
-        HashMap<Identifier, JsonElement> classes;
+        HashMap<Identifier, JsonElement> classes, advancements;
         HashMap<Identifier, JsonElement> aspects, spells, reactions;
 
         try {
             var json = GSON.fromJson(jsonBlob, JsonObject.class);
 
             classes = fromJsonMap(json.getAsJsonObject("classes"));
+            advancements = fromJsonMap(json.getAsJsonObject("advancements"));
 
             aspects = fromJsonMap(json.getAsJsonObject("aspects"));
             spells = fromJsonMap(json.getAsJsonObject("spells"));
@@ -68,6 +70,7 @@ public class ClientRPGKitMod implements ClientModInitializer {
 
         try {
             ClassReloadListener.load(classes);
+            AdvancementsListener.load(advancements);
 
             AspectReloadListener.load(aspects);
             SpellReloadListener.load(spells);
