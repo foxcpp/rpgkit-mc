@@ -45,7 +45,7 @@ public abstract class ComboMixin extends PlayerEntity implements PlayerAttackPro
             var perk = (ComboPerk) rawPerk;
             if (perk.getCombo() == (this.getComboCount() % perk.getMaxCombo())) {
                 target.damage(DamageSource.player(this), (float) this.getAttributeValue(
-                        EntityAttributes.GENERIC_ATTACK_DAMAGE) + perk.getModifier());
+                        EntityAttributes.GENERIC_ATTACK_DAMAGE) * perk.getModifier());
             }
         }
     }

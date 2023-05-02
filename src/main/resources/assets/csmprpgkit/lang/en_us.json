@@ -19,5 +19,7 @@
   "csmprpgkit.magic.spell.csmprpgkit.generic": "Unnamed spell",
   "csmprpgkit.magic.spell.csmprpgkit.silence": "Spell: Silence",
   "csmprpgkit.magic.spell.csmprpgkit.ward": "Spell: Magic seal",
-  "csmprpgkit.magic.spell_build": "Building a spell..."
+  "csmprpgkit.magic.spell_build": "Building a spell...",
+  "csmprpgkit.advancement.root": "Hero of Cubes and Magic",
+  "csmprpgkit.advancement.root.desc": "Download CSMP RPGkit"
 }

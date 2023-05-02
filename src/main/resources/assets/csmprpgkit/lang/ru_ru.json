@@ -18,5 +18,7 @@
   "key.csmprpgkit.magic.spell_build": "Начать сборку заклинания",
   "csmprpgkit.magic.spell.csmprpgkit.generic": "Безымянное заклинание",
   "csmprpgkit.magic.spell.csmprpgkit.silence": "Заклинание: Молчание",
-  "csmprpgkit.magic.spell.csmprpgkit.ward": "Заклинание: Магическая печать"
+  "csmprpgkit.magic.spell.csmprpgkit.ward": "Заклинание: Магическая печать",
+  "csmprpgkit.advancement.root": "Герой Кубов и Магии",
+  "csmprpgkit.advancement.root.desc": "Установить CSMP RPGkit"
 }

@@ -33,7 +33,7 @@
           "type": "csmprpgkit:combo",
           "combo": 0,
           "maxCombo": 3,
-          "modifier": 10
+          "modifier": 2
         }
       ]
     }
