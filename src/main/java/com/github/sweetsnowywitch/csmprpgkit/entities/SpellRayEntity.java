@@ -4,6 +4,7 @@ import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
+import com.github.sweetsnowywitch.csmprpgkit.particle.GenericSpellParticleEffect;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -16,6 +17,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -42,6 +44,7 @@ public class SpellRayEntity extends Entity {
     public Vec3d aimOrigin;
 
     public int rayBaseColor = 0x00FFFFFF; // ARGB, calculated on client-side only
+    protected ParticleEffect particleEffect;
 
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -99,6 +102,7 @@ public class SpellRayEntity extends Entity {
 
         if (CAST.equals(data)) {
             this.rayBaseColor = SpellElement.calculateBaseColor(this.dataTracker.get(CAST).getFullRecipe());
+            this.particleEffect = new GenericSpellParticleEffect(this.rayBaseColor, 2);
         }
     }
 
@@ -188,16 +192,30 @@ public class SpellRayEntity extends Entity {
         return this.aimOrigin;
     }
 
+    protected void spawnParticles() {
+        if (this.age % 20 < 10) {
+            return;
+        }
+
+        double x = this.getX(), y = this.getY(), z = this.getZ();
+        var i = this.random.nextInt((int)this.getLength());
+        var rot = this.getRotationVector();
+        x += i*rot.x; y += i*rot.y; z += i*rot.z;
+        this.world.addParticle(this.particleEffect,
+            x, y, z, 0, 0, 0);
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        if (this.world.isClient) {
-            return;
-        }
-
         if (this.age >= this.maxAge) {
             this.discard();
+        }
+
+        if (this.world.isClient) {
+            this.spawnParticles();
+            return;
         }
 
         // Raycast to aim.

@@ -137,7 +137,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
             var velocity = new Vec3d(x - pos.getX(), y - pos.getY(), z - pos.getZ());
             velocity = velocity.multiply((velocity.length() / this.maxAge * 5f) / velocity.length());
             for (int i = 0; i < volume / 80 || i == 0; i++) {
-                this.world.addParticle(new GenericSpellParticleEffect(this.particleColor, this.maxAge),
+                this.world.addParticle(this.particleEffect,
                         pos.getX(), pos.getY(), pos.getZ(),
                         velocity.x, velocity.y, velocity.z);
             }

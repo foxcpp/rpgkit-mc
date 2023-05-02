@@ -15,6 +15,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -30,6 +31,7 @@ public abstract class MagicAreaEntity extends Entity {
     public static final TrackedData<Box> AREA = DataTracker.registerData(MagicAreaEntity.class, TrackedHandlers.BOX);
     public static final TrackedData<SpellCast> CAST = DataTracker.registerData(MagicAreaEntity.class, SpellCast.TRACKED_HANDLER);
     protected int particleColor;
+    protected ParticleEffect particleEffect;
 
     public MagicAreaEntity(EntityType<?> type, World world, Box area, int duration) {
         super(type, world);
@@ -85,6 +87,7 @@ public abstract class MagicAreaEntity extends Entity {
 
         if (CAST.equals(data)) {
             this.particleColor = SpellElement.calculateBaseColor(this.dataTracker.get(CAST).getFullRecipe());
+            this.particleEffect = new GenericSpellParticleEffect(this.particleColor, 10);
         }
     }
 
@@ -114,7 +117,7 @@ public abstract class MagicAreaEntity extends Entity {
         var volume = (area.maxX - area.minX) * (area.maxZ - area.minZ) * (area.maxY - area.minY);
 
         for (int i = 0; i < volume / 160 || i == 0; i++) {
-            this.world.addParticle(new GenericSpellParticleEffect(this.particleColor, 10),
+            this.world.addParticle(this.particleEffect,
                     RPGKitMod.RANDOM.nextDouble(area.minX, area.maxX),
                     RPGKitMod.RANDOM.nextDouble(area.minY, area.maxY),
                     RPGKitMod.RANDOM.nextDouble(area.minZ, area.maxZ),
