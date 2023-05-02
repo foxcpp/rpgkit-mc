@@ -3,12 +3,14 @@ package com.github.sweetsnowywitch.csmprpgkit.entities;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
+import com.github.sweetsnowywitch.csmprpgkit.particle.GenericSpellParticleEffect;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -23,6 +25,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
     private int maxAge = 3*20;
 
     public int baseColor = 0x00FFFFFF; // ARGB, calculated on client-side only
+    protected ParticleEffect particleEffect;
 
     public SpellChargeEntity(EntityType<? extends SpellChargeEntity> entityType, World world) {
         super(entityType, world);
@@ -55,6 +58,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
 
         if (CAST.equals(data)) {
             this.baseColor = SpellElement.calculateBaseColor(this.dataTracker.get(CAST).getFullRecipe());
+            this.particleEffect = new GenericSpellParticleEffect(this.baseColor, 10);
         }
     }
 
@@ -116,12 +120,18 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
         super.onBlockHit(bhr);
     }
 
+    protected void spawnParticles() {
+        this.world.addParticle(this.particleEffect,
+                this.getX(), this.getY(), this.getZ(),
+                0, 0, 0);
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        if (this.getVelocity().lengthSquared() > 0f) {
-
+        if (this.world.isClient && !this.inGround) {
+            this.spawnParticles();
         }
 
         if (this.inGround) {
