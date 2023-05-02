@@ -10,9 +10,30 @@
       },
       "perks": [
         {
-          "type": "csmprpgkit:status_effect",
-          "id": "minecraft:strength",
-          "amplifier": 1
+          "type": "csmprpgkit:kill_streak",
+          "id": "minecraft:generic.movement_speed",
+          "modifier": 0.1,
+          "penalty": 3,
+          "maxStreak": 10
+        },
+        {
+          "type": "csmprpgkit:single_kill",
+          "id": "minecraft:regeneration",
+          "duration": 200,
+          "amplifier": 0
+        },
+        {
+          "type": "csmprpgkit:rest",
+          "id": "minecraft:invisibility",
+          "duration": 60,
+          "amplifier": 0,
+          "restTime": 600
+        },
+        {
+          "type": "csmprpgkit:combo",
+          "combo": 0,
+          "maxCombo": 3,
+          "modifier": 10
         }
       ]
     }

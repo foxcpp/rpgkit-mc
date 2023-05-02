@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "item": "csmprpgkit:test_item"
+    },
+    "title": "Test",
+    "description": "Test desc",
+    "background": "csmprpgkit:textures/gui/advancements_bg.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed"
+    }
+  }
+}

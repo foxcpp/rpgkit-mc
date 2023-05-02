@@ -11,7 +11,11 @@
     "PlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "VibrationListenerAccessor",
-    "VibrationListenerMixin"
+    "VibrationListenerMixin",
+    "ExperienceRewardMixin",
+    "ComboMixin",
+    "KillStreakMixin",
+    "SingleKillMixin"
   ],
   "client": [
     "ClientPlayerEntityMixin",

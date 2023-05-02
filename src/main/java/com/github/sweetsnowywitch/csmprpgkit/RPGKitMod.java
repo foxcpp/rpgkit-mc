@@ -1,6 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit;
 
 import com.github.sweetsnowywitch.csmprpgkit.classes.abilities.ModAbilities;
+import com.github.sweetsnowywitch.csmprpgkit.classes.listener.AdvancementsListener;
 import com.github.sweetsnowywitch.csmprpgkit.classes.listener.ClassReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.classes.perks.ModPerks;
 import com.github.sweetsnowywitch.csmprpgkit.commands.AbilityArgument;
@@ -79,6 +80,7 @@ public class RPGKitMod implements ModInitializer  {
         ModAbilities.register();
         ModPerks.register();
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ClassReloadListener());
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new AdvancementsListener());
 
         // Magic
         ArgumentTypeRegistry.registerArgumentType(new Identifier(RPGKitMod.MOD_ID, "spell_form"), SpellFormArgument.class,
