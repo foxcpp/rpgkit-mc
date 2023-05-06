@@ -20,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,14 +149,14 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         return hasBuilder;
     }
 
-    public boolean hasCatalystBag() {
+    public @Nullable ItemStack getCatalystBag() {
         var inv = this.provider.getInventory();
         for (int i = 0; i < 9; i++) {
             if (inv.getStack(i).getItem().equals(ModItems.CATALYST_BAG)) {
-                return true;
+                return inv.getStack(i);
             }
         }
-        return false;
+        return null;
     }
 
     public void startBuild() {
@@ -181,6 +182,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
         var spell = new ItemStack(ModItems.SPELL_ITEM);
         EnchantmentHelper.set(Map.of(Enchantments.VANISHING_CURSE, 1), spell);
+        spell.addHideFlag(ItemStack.TooltipSection.ENCHANTMENTS);
         this.provider.getInventory().setStack(this.provider.getInventory().selectedSlot, spell);
 
         this.builder = new SpellBuilder(this.maxElements);
@@ -214,14 +216,15 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return;
         }
 
-        if (!this.hasCatalystBag()) {
+        ItemStack bag = this.getCatalystBag();
+        if (bag == null) {
             this.usingCatalystBag = false;
         } else {
             this.usingCatalystBag = !this.usingCatalystBag;
         }
 
         if (this.usingCatalystBag) {
-            this.availableElements = this.getAvailableCatalysts();
+            this.availableElements = this.getAvailableCatalysts(bag);
         } else {
             this.availableElements = ModRegistries.ASPECTS.values().stream().filter(
                     (a) -> a.isPrimary() && a.getKind() == Aspect.Kind.EFFECT
@@ -374,18 +377,15 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         this.performCast(this.builder.determineUseForm());
     }
 
-    private List<SpellElement> getAvailableCatalysts() {
+    private List<SpellElement> getAvailableCatalysts(ItemStack bag) {
         var elements = new ArrayList<SpellElement>(6);
-        var inv = this.provider.getInventory();
-        for (int i = 0; i < 9; i++) {
-            if (inv.getStack(i).getItem().equals(ModItems.CATALYST_BAG)) {
-                var bagInv = CatalystBagItem.getInventory(inv.getStack(i));
-                for (int j = 0; j < bagInv.size(); j++) {
-                    if (bagInv.getStack(j).isEmpty()) continue;
-                    elements.add(new ItemElement.Stack(bagInv.getStack(j), bagInv));
-                }
-            }
+
+        var bagInv = CatalystBagItem.getInventory(bag);
+        for (int j = 0; j < bagInv.size(); j++) {
+            if (bagInv.getStack(j).isEmpty()) continue;
+            elements.add(new ItemElement.Stack(bagInv.getStack(j), bagInv));
         }
+
         return elements;
     }
 
@@ -434,9 +434,15 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
     @Override
     public void serverTick() {
-        if (this.usingCatalystBag && !this.hasCatalystBag()) {
+        if (this.usingCatalystBag && this.getCatalystBag() == null) {
             this.usingCatalystBag = false;
             ModComponents.CAST.sync(this.provider);
+        }
+
+        var bag = this.getCatalystBag();
+        if (bag != null && CatalystBagItem.isOpen(bag) != this.usingCatalystBag) {
+            CatalystBagItem.setOpen(bag, this.usingCatalystBag);
+            this.provider.getInventory().markDirty();
         }
 
         if (this.activeCast == null) {

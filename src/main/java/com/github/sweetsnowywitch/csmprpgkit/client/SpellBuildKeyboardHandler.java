@@ -5,25 +5,43 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.InputUtil;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class SpellBuildKeyboardHandler implements ClientTickEvents.EndTick {
+    private InputUtil.Key areaCastKey = InputUtil.fromKeyCode(GLFW.GLFW_KEY_Q, -1);
+    private InputUtil.Key itemCastKey = InputUtil.fromKeyCode(GLFW.GLFW_KEY_F, -1);
+    private InputUtil.Key catalystBagKey = InputUtil.fromKeyCode(GLFW.GLFW_KEY_TAB, -1);
+
     private @Nullable InterceptableKeyboard keyboard = null;
 
     private boolean isActive(MinecraftClient client) {
         return client.player != null && client.player.getComponent(ModComponents.CAST).isBuilding();
     }
 
+    public InputUtil.Key getAreaCastKey() {
+        return areaCastKey;
+    }
+
+    public InputUtil.Key getItemCastKey() {
+        return itemCastKey;
+    }
+
+    public InputUtil.Key getCatalystBagKey() {
+        return catalystBagKey;
+    }
+
     private void setupKeyboard(MinecraftClient client) {
         this.keyboard = ((InterceptableKeyboard)client.keyboard);
+        this.keyboard.clear();
         for (int key = GLFW.GLFW_KEY_1; key <= GLFW.GLFW_KEY_9; key++) {
-            this.keyboard.intercept(key, (k) -> this.isActive(client));
+            this.keyboard.intercept(InputUtil.fromKeyCode(key, -1), (k) -> this.isActive(client));
         }
-        this.keyboard.intercept(GLFW.GLFW_KEY_Q, (k) -> this.isActive(client));
-        this.keyboard.intercept(GLFW.GLFW_KEY_F, (k) -> this.isActive(client));
-        this.keyboard.intercept(GLFW.GLFW_KEY_TAB, (k) -> this.isActive(client));
+        this.keyboard.intercept(areaCastKey, (k) -> this.isActive(client));
+        this.keyboard.intercept(itemCastKey, (k) -> this.isActive(client));
+        this.keyboard.intercept(catalystBagKey, (k) -> this.isActive(client));
     }
 
     @Override
@@ -49,18 +67,18 @@ public class SpellBuildKeyboardHandler implements ClientTickEvents.EndTick {
             return;
         }
 
-        int key;
-        while ((key = this.keyboard.popPressed()) != 0) {
+        InputUtil.Key key;
+        while ((key = this.keyboard.popPressed()) != InputUtil.UNKNOWN_KEY) {
             for (int aspKey = GLFW.GLFW_KEY_1; aspKey <= GLFW.GLFW_KEY_9; aspKey++) {
-                if (aspKey == key && (aspKey - GLFW.GLFW_KEY_1) < comp.getAvailableElements().size()) {
+                if (aspKey == key.getCode() && (aspKey - GLFW.GLFW_KEY_1) < comp.getAvailableElements().size()) {
                     comp.addElement(aspKey - GLFW.GLFW_KEY_1);
                 }
             }
 
-            if (key == GLFW.GLFW_KEY_TAB) {
+            if (key.getCode() == catalystBagKey.getCode()) {
                 comp.switchCatalystBag();
             }
-            if (key == GLFW.GLFW_KEY_Q) {
+            if (key.getCode() == areaCastKey.getCode()) {
                 comp.performAreaCast();
             }
         }

@@ -1,8 +1,11 @@
 package com.github.sweetsnowywitch.csmprpgkit.client;
 
+import net.minecraft.client.util.InputUtil;
+
 import java.util.function.Function;
 
 public interface InterceptableKeyboard {
-    void intercept(int key, Function<Integer, Boolean> isActive);
-    int popPressed();
+    void clear();
+    void intercept(InputUtil.Key key, Function<InputUtil.Key, Boolean> isActive);
+    InputUtil.Key popPressed();
 }

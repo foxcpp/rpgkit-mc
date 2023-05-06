@@ -114,6 +114,7 @@ public class RPGKitMod implements ModInitializer  {
 
         // Classes
         dataObject.add("classes", asJsonMap(ClassReloadListener.lastLoadedData));
+        dataObject.add("advancements", asJsonMap(AdvancementsListener.lastLoadedData));
 
         // Magic
         dataObject.add("aspects", asJsonMap(AspectReloadListener.lastLoadedData));

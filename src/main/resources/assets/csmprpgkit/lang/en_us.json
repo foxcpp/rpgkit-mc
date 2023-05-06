@@ -19,7 +19,13 @@
   "csmprpgkit.magic.spell.csmprpgkit.generic": "Unnamed spell",
   "csmprpgkit.magic.spell.csmprpgkit.silence": "Spell: Silence",
   "csmprpgkit.magic.spell.csmprpgkit.ward": "Spell: Magic seal",
-  "csmprpgkit.magic.spell_build": "Building a spell...",
+  "csmprpgkit.magic.spell_build": "",
+  "csmprpgkit.magic.no_elements": "No elements",
+  "csmprpgkit.magic.help.intro": "Add aspects using number keys (1-9)",
+  "csmprpgkit.magic.help.use_cast": "Use the item (right mouse click) to cast the spell normally.",
+  "csmprpgkit.magic.help.area_cast": "Press %s to cast the spell on area around you.",
+  "csmprpgkit.magic.help.self_cast": "Press %s to apply the spell to yourself.",
+  "csmprpgkit.magic.help.catalyst_bag": "If you have a catalyst bag, press %s to open it (you must have it in your hotbar)"
   "csmprpgkit.advancement.root": "Hero of Cubes and Magic",
   "csmprpgkit.advancement.root.desc": "Download CSMP RPGkit"
 }

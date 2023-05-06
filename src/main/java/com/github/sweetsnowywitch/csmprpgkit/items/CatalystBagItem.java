@@ -26,8 +26,9 @@ public class CatalystBagItem extends Item {
             }
 
             this.stack = stack;
-            if (stack.getNbt() != null) {
-                Inventories.readNbt(stack.getNbt(), this.stacks);
+            var nbt = stack.getNbt();
+            if (nbt != null) {
+                Inventories.readNbt(nbt, this.stacks);
             }
         }
 
@@ -42,6 +43,20 @@ public class CatalystBagItem extends Item {
         public boolean canPlayerUse(PlayerEntity player) {
             return player.getInventory().contains(this.stack) && this.stack.getItem().equals(ModItems.CATALYST_BAG);
         }
+
+        @Override
+        public void onOpen(PlayerEntity player) {
+            super.onOpen(player);
+            CatalystBagItem.setOpen(stack, true);
+            player.getInventory().markDirty();
+        }
+
+        @Override
+        public void onClose(PlayerEntity player) {
+            super.onClose(player);
+            CatalystBagItem.setOpen(stack, false);
+            player.getInventory().markDirty();
+        }
     }
 
     public CatalystBagItem(Settings settings) {
@@ -50,6 +65,18 @@ public class CatalystBagItem extends Item {
 
     public static Inventory getInventory(ItemStack stack) {
         return new BagInventory(stack);
+    }
+
+    public static boolean isOpen(ItemStack stack) {
+        if (stack.hasNbt()) {
+            assert stack.getNbt() != null;
+            return stack.getNbt().getBoolean("Open");
+        }
+        return false;
+    }
+
+    public static void setOpen(ItemStack stack, boolean val) {
+        stack.getOrCreateNbt().putBoolean("Open", val);
     }
 
     @Override

@@ -1,12 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.items;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.client.ClientRPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
-import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,6 +14,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -27,6 +24,8 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
+
+import java.util.List;
 
 public class SpellItem extends Item implements IAnimatable {
     public AnimationFactory factory = GeckoLibUtil.createFactory(this);
@@ -52,11 +51,12 @@ public class SpellItem extends Item implements IAnimatable {
     }
 
     @Override
-    public Text getName(ItemStack stack) {
-        if (!stack.hasNbt() && !stack.getNbt().contains("SpellTranslationKey")) {
-            return Text.translatable("csmprpgkit.magic.spell_build");
+    public String getTranslationKey(ItemStack stack) {
+        var nbt = stack.getNbt();
+        if (nbt == null || !nbt.contains("SpellTranslationKey")) {
+            return "csmprpgkit.magic.spell_build";
         }
-        return Text.translatable(stack.getNbt().getString("SpellTranslationKey"));
+        return nbt.getString("SpellTranslationKey");
     }
 
     @Override
