@@ -25,8 +25,7 @@
   "csmprpgkit.magic.help.use_cast": "Нажми ПКМ, чтобы применить заклинание (иногда нужно зажать, чтобы контролировать его)",
   "csmprpgkit.magic.help.area_cast": "Нажми %s, чтобы применить заклинание вокруг себя.",
   "csmprpgkit.magic.help.self_cast": "Нажми %s, чтобы применить заклинание к себе.",
-  "csmprpgkit.magic.help.catalyst_bag": "Если в хотбаре есть сумка с реагентами, нажми %s, чтобы открыть её."
-  "csmprpgkit.magic.spell.csmprpgkit.ward": "Заклинание: Магическая печать",
+  "csmprpgkit.magic.help.catalyst_bag": "Если в хотбаре есть сумка с реагентами, нажми %s, чтобы открыть её.",
   "csmprpgkit.advancement.root": "Герой Кубов и Магии",
   "csmprpgkit.advancement.root.desc": "Установить CSMP RPGkit"
 }
