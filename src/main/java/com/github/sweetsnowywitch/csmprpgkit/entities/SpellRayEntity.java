@@ -38,7 +38,7 @@ import java.util.Optional;
 public class SpellRayEntity extends Entity {
     // Populated only on logical server side.
     public ServerSpellCast cast = null;
-    private int maxAge = 3*20;
+    private int maxAge;
     public static final TrackedData<Float> LENGTH = DataTracker.registerData(SpellRayEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<SpellCast> CAST = DataTracker.registerData(SpellRayEntity.class, SpellCast.TRACKED_HANDLER);
     public Vec3d aimOrigin;
@@ -49,6 +49,7 @@ public class SpellRayEntity extends Entity {
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);
         this.ignoreCameraFrustum = true;
+        this.maxAge = 3*20;
     }
 
     public static SpellRayEntity empty(EntityType<?> type, World world) {
@@ -209,13 +210,13 @@ public class SpellRayEntity extends Entity {
     public void tick() {
         super.tick();
 
-        if (this.age >= this.maxAge) {
-            this.discard();
-        }
-
         if (this.world.isClient) {
             this.spawnParticles();
             return;
+        }
+
+        if (this.age >= this.maxAge) {
+            this.discard();
         }
 
         // Raycast to aim.
