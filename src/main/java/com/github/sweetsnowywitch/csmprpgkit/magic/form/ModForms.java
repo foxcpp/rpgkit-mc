@@ -28,6 +28,8 @@ public class ModForms {
                 SpellReaction.factoryFor(BlastForm.Reaction::new, BlastForm.Reaction::new));
 
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "charge"), CHARGE);
+        Registry.register(ModRegistries.SPELL_FORM_REACTIONS, Identifier.of(RPGKitMod.MOD_ID, "charge"),
+                SpellReaction.factoryFor(ChargeForm.Reaction::new, ChargeForm.Reaction::new));
 
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "hitscan"), HITSCAN);
     }

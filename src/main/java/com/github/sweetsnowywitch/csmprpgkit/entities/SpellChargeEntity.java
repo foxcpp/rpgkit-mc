@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.entities;
 
+import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
@@ -14,6 +15,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,8 +24,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
 
     // Populated only on logical server side.
     public ServerSpellCast cast = null;
-    private int maxAge = 3*20;
-
+    private float bounceFactor = 0.1f;
     public int baseColor = 0x00FFFFFF; // ARGB, calculated on client-side only
     protected ParticleEffect particleEffect;
 
@@ -49,7 +50,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
             this.cast = ServerSpellCast.readFromNbt(nbt.getCompound("Cast")); // full data for server
             this.dataTracker.set(CAST, this.cast); // sync some spell data to client
         }
-        this.maxAge = nbt.getInt("MaxAge");
+        this.bounceFactor = nbt.getFloat("BounceFactor");
     }
 
     @Override
@@ -75,7 +76,11 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
             this.dataTracker.get(CAST).writeToNbt(castNBT);
         }
         nbt.put("Cast", castNBT);
-        nbt.putInt("MaxAge", this.maxAge);
+        nbt.putFloat("BounceFactor", this.bounceFactor);
+    }
+
+    public void setBounceFactor(float bounceFactor) {
+        this.bounceFactor = bounceFactor;
     }
 
     public void setCast(@NotNull ServerSpellCast cast) {
@@ -109,12 +114,34 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
         this.cast.getSpell().onSingleEntityHit(this.cast, ehr.getEntity());
     }
 
+    private Vec3d bounceDirection(BlockHitResult bhr) {
+        var side = bhr.getSide();
+        var rotation = this.getVelocity();
+
+        var factor = this.cast.getCost(SpellElement.COST_INTERITIO) * 0.3f + 0.1f;
+        var degreesDelta = RPGKitMod.RANDOM.nextFloat(factor) - factor/2;
+
+        var bounce = switch (side.getAxis()) {
+            case X -> rotation.rotateX(180+degreesDelta);
+            case Y -> rotation.rotateY(180+degreesDelta);
+            case Z -> rotation.rotateZ(180+degreesDelta);
+        };
+        return bounce.multiply(-1);
+    }
+
     @Override
     protected void onBlockHit(BlockHitResult bhr) {
         this.calculateDimensions();
+        if (this.world.isClient) {
+            return;
+        }
 
-        if (!this.world.isClient) {
-            this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld)this.world, bhr.getBlockPos(), bhr.getSide());
+        var passThrough = this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld)this.world, bhr.getBlockPos(), bhr.getSide());
+        if (!passThrough) {
+            this.setVelocity(bounceDirection(bhr).multiply(this.bounceFactor));
+            if (this.getVelocity().lengthSquared() >= 0.01f) {
+                return;
+            }
         }
 
         super.onBlockHit(bhr);
@@ -134,7 +161,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
             this.spawnParticles();
         }
 
-        if (this.inGround) {
+        if (this.inGround && this.getVelocity().lengthSquared() <= 0.1f && this.inGroundTime >= 20) {
             this.discard();
         }
     }

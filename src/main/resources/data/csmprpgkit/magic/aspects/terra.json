@@ -37,6 +37,11 @@
     {
       "for_form": "csmprpgkit:area",
       "radius": 1
+    },
+    {
+      "for_form": "csmprpgkit:charge",
+      "velocity": 0.5,
+      "bounce_factor": -0.2
     }
   ]
 }
