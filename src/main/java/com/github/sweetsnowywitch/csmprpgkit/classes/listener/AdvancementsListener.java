@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.classes.listener;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.ServerDataSyncer;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -13,9 +14,9 @@ import net.minecraft.util.profiler.Profiler;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AdvancementsListener extends JsonDataLoader implements IdentifiableResourceReloadListener {
+public class AdvancementsListener extends JsonDataLoader implements IdentifiableResourceReloadListener, ServerDataSyncer.SyncableListener {
     private static final Gson GSON = new Gson();
-    public static Map<Identifier, JsonElement> lastLoadedData;
+    private Map<Identifier, JsonElement> lastLoadedData;
 
     public AdvancementsListener() {
         super(GSON, "classes/advancements");
@@ -28,10 +29,16 @@ public class AdvancementsListener extends JsonDataLoader implements Identifiable
 
     @Override
     protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-        load(prepared);
+        this.loadSynced(prepared);
     }
 
-    public static void load(Map<Identifier, JsonElement> prepared) {
+    @Override
+    public Map<Identifier, JsonElement> getLastLoadedData() {
+        return lastLoadedData;
+    }
+
+    @Override
+    public void loadSynced(Map<Identifier, JsonElement> prepared) {
         var advancements = new HashMap<Identifier, Integer>();
         //"minecraft:adventure/sleep_in_bed"
 
@@ -54,6 +61,6 @@ public class AdvancementsListener extends JsonDataLoader implements Identifiable
         ModRegistries.ADVANCEMENTS.clear();
         ModRegistries.ADVANCEMENTS.putAll(advancements);
         RPGKitMod.LOGGER.info("Loaded {} advancement definitions", advancements.size());
-        lastLoadedData = prepared;
+        this.lastLoadedData = prepared;
     }
 }

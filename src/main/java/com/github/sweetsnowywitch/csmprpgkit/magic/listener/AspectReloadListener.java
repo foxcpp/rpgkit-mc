@@ -2,10 +2,10 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.ServerDataSyncer;
 import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
@@ -18,20 +18,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AspectReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener {
-    private static Gson GSON = new Gson();
-    public static Map<Identifier, JsonElement> lastLoadedData;
+public class AspectReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener, ServerDataSyncer.SyncableListener {
+    private Map<Identifier, JsonElement> lastLoadedData;
 
     public AspectReloadListener() {
-        super(GSON, "magic/aspects");
+        super(RPGKitMod.GSON, "magic/aspects");
     }
 
     @Override
     protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-        load(prepared);
+        loadSynced(prepared);
     }
 
-    public static void load(Map<Identifier, JsonElement> prepared) {
+    public void loadSynced(Map<Identifier, JsonElement> prepared) {
         var aspects = new HashMap<Identifier, Aspect>();
 
         for (var ent : prepared.entrySet()) {
@@ -172,5 +171,10 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
     @Override
     public Collection<Identifier> getFabricDependencies() {
         return List.of();
+    }
+
+    @Override
+    public Map<Identifier, JsonElement> getLastLoadedData() {
+        return lastLoadedData;
     }
 }

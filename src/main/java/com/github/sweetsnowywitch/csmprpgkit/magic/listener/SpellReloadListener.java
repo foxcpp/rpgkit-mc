@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.ServerDataSyncer;
 import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
@@ -17,9 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpellReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener {
+public class SpellReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener, ServerDataSyncer.SyncableListener {
     private static Gson GSON = new Gson();
-    public static Map<Identifier, JsonElement> lastLoadedData;
+    private Map<Identifier, JsonElement> lastLoadedData;
 
     public SpellReloadListener() {
         super(GSON, "magic/spells");
@@ -27,10 +28,15 @@ public class SpellReloadListener extends JsonDataLoader implements IdentifiableR
 
     @Override
     protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-        load(prepared);
+        loadSynced(prepared);
     }
 
-    public static void load(Map<Identifier, JsonElement> prepared) {
+    @Override
+    public Map<Identifier, JsonElement> getLastLoadedData() {
+        return lastLoadedData;
+    }
+
+    public void loadSynced(Map<Identifier, JsonElement> prepared) {
         var spells = new HashMap<Identifier, Spell>();
         var spellRecipes = new SpellRecipeMap<Spell>();
 

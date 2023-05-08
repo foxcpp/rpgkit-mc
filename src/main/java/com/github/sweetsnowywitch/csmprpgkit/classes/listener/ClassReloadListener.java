@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.classes.listener;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.ServerDataSyncer;
 import com.github.sweetsnowywitch.csmprpgkit.classes.Ability;
 import com.github.sweetsnowywitch.csmprpgkit.classes.CharacterClass;
 import com.github.sweetsnowywitch.csmprpgkit.classes.Perk;
@@ -20,9 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ClassReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener {
+public class ClassReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener, ServerDataSyncer.SyncableListener {
     private static final Gson GSON = new Gson();
-    public static Map<Identifier, JsonElement> lastLoadedData;
+    private Map<Identifier, JsonElement> lastLoadedData;
 
     public ClassReloadListener() {
         super(GSON, "classes/classes");
@@ -30,10 +31,26 @@ public class ClassReloadListener extends JsonDataLoader implements IdentifiableR
 
     @Override
     protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-        load(prepared);
+        this.loadSynced(prepared);
     }
 
-    public static void load(Map<Identifier, JsonElement> prepared) {
+    @Override
+    public Identifier getFabricId() {
+        return Identifier.of(RPGKitMod.MOD_ID, "classes/classes");
+    }
+
+    @Override
+    public Collection<Identifier> getFabricDependencies() {
+        return List.of();
+    }
+
+    @Override
+    public Map<Identifier, JsonElement> getLastLoadedData() {
+        return lastLoadedData;
+    }
+
+    @Override
+    public void loadSynced(Map<Identifier, JsonElement> prepared) {
         var classes = new HashMap<Identifier, CharacterClass>();
 
         for (var classEnt : prepared.entrySet()) {
@@ -103,16 +120,6 @@ public class ClassReloadListener extends JsonDataLoader implements IdentifiableR
         ModRegistries.CLASSES.clear();
         ModRegistries.CLASSES.putAll(classes);
         RPGKitMod.LOGGER.info("Loaded {} class definitions", classes.size());
-        lastLoadedData = prepared;
-    }
-
-    @Override
-    public Identifier getFabricId() {
-        return Identifier.of(RPGKitMod.MOD_ID, "classes/classes");
-    }
-
-    @Override
-    public Collection<Identifier> getFabricDependencies() {
-        return List.of();
+        this.lastLoadedData = prepared;
     }
 }
