@@ -2,8 +2,8 @@ package com.github.sweetsnowywitch.csmprpgkit.components.chunk;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
@@ -13,7 +13,9 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
@@ -156,7 +158,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         var areasNBT = tag.getList("Areas", NbtElement.COMPOUND_TYPE);
         this.areas = new ArrayList<>(areasNBT.size());
         for (var el : areasNBT) {
-            var comp = (NbtCompound)el;
+            var comp = (NbtCompound) el;
 
             var effectID = Identifier.tryParse(comp.getString("EffectID"));
             if (effectID == null || effectID.getPath().equals("")) {

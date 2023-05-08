@@ -16,7 +16,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -64,7 +63,7 @@ public class PotionEffect extends SpellEffect {
         }
     }
 
-    public static final int DEFAULT_DURATION = 20*10;
+    public static final int DEFAULT_DURATION = 20 * 10;
     public static final int DEFAULT_AMPLIFIER = 1;
 
     private final StatusEffect statusEffect;
@@ -113,6 +112,7 @@ public class PotionEffect extends SpellEffect {
                 Objects.requireNonNull(Registry.STATUS_EFFECT.getId(this.statusEffect)).toString(),
                 this.baseAmplifier, this.baseDuration);
     }
+
     @Override
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
         if (this.statusEffect == null) {
@@ -133,10 +133,10 @@ public class PotionEffect extends SpellEffect {
             }
         }
 
-        var caster = ((ServerWorld)entity.getWorld()).getEntity(cast.getCasterUuid());
+        var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
 
         le.addStatusEffect(
-                new StatusEffectInstance(this.statusEffect, duration, (int)amplifier, false, false),
+                new StatusEffectInstance(this.statusEffect, duration, (int) amplifier, false, false),
                 caster
         );
 

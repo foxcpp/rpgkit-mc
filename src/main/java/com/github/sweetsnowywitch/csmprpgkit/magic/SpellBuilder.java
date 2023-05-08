@@ -2,7 +2,6 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -38,20 +37,20 @@ public class SpellBuilder {
         RPGKitMod.LOGGER.debug("SpellBuilder.addElement: {}", element);
 
         if (this.pendingElements.size() >= 2) {
-            var lastIndex = this.pendingElements.size()-1;
+            var lastIndex = this.pendingElements.size() - 1;
             var res = ModRegistries.ASPECT_RECIPES.tryMatch(List.of(
-                    this.pendingElements.get(lastIndex-1),
+                    this.pendingElements.get(lastIndex - 1),
                     this.pendingElements.get(lastIndex)
             ));
             if (res != null) {
                 RPGKitMod.LOGGER.debug("SpellBuilder.addElement: Aspects {}, {} merged into {}",
-                        this.pendingElements.get(lastIndex-1), this.pendingElements.get(lastIndex), res);
-                this.pendingElements.remove(this.pendingElements.size()-1);
-                this.pendingElements.remove(this.pendingElements.size()-1);
+                        this.pendingElements.get(lastIndex - 1), this.pendingElements.get(lastIndex), res);
+                this.pendingElements.remove(this.pendingElements.size() - 1);
+                this.pendingElements.remove(this.pendingElements.size() - 1);
                 this.pendingElements.add(res.result());
 
-                this.fullRecipe.remove(this.fullRecipe.size()-1);
-                this.fullRecipe.remove(this.fullRecipe.size()-1);
+                this.fullRecipe.remove(this.fullRecipe.size() - 1);
+                this.fullRecipe.remove(this.fullRecipe.size() - 1);
                 this.fullRecipe.add(res.result());
             }
         }

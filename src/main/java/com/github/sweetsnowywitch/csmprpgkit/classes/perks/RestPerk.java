@@ -11,8 +11,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 public class RestPerk extends Perk implements ServerTickablePerk {
     public static final int DEFAULT_DURATION = 20 * 10;
     public static final int DEFAULT_AMPLIFIER = 0;

@@ -12,17 +12,12 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 public abstract class MagicAreaEntity extends Entity {
     // Populated only on logical server side.
@@ -93,7 +88,7 @@ public abstract class MagicAreaEntity extends Entity {
 
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
-        return EntityDimensions.changing((float)this.dataTracker.get(AREA).getXLength(), (float)this.dataTracker.get(AREA).getYLength());
+        return EntityDimensions.changing((float) this.dataTracker.get(AREA).getXLength(), (float) this.dataTracker.get(AREA).getYLength());
     }
 
     public void setCast(@NotNull ServerSpellCast cast) {

@@ -1,9 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
-import com.github.sweetsnowywitch.csmprpgkit.JSONParameters;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,11 +15,11 @@ import java.util.function.Function;
  * SpellReaction is a base class for spell "reaction". Reaction
  * is a spell cast element that changes how its form or effect works, typically
  * by changing its parameters.
- *
  */
 public abstract class SpellReaction {
     public interface Factory {
         @Nullable SpellReaction createDefaultReaction(Identifier id);
+
         @Nullable SpellReaction createReactionFromJson(Identifier id, JsonObject obj);
     }
 
@@ -42,6 +42,7 @@ public abstract class SpellReaction {
     public boolean appliesTo(SpellEffect effect) {
         return false;
     }
+
     public boolean appliesTo(SpellForm form) {
         return false;
     }
@@ -93,6 +94,7 @@ public abstract class SpellReaction {
         return cost * this.getCostMultiplier(key) + this.getCostTerm(key);
     }
 
+    @MustBeInvokedByOverriders
     public void toJson(@NotNull JsonObject obj) {
         if (obj.has("costs")) {
             obj.remove("costs");

@@ -23,8 +23,6 @@ import com.github.sweetsnowywitch.csmprpgkit.screen.CatalystBagScreenHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -41,8 +39,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Random;
 
-public class RPGKitMod implements ModInitializer  {
+public class RPGKitMod implements ModInitializer {
     public static final Gson GSON = new Gson();
     public static final Random RANDOM = new Random();
     public static final String MOD_ID = "csmprpgkit";

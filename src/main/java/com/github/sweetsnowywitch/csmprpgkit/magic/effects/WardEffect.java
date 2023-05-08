@@ -3,7 +3,6 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.components.chunk.MagicEffectsComponent;
 import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
-import com.github.sweetsnowywitch.csmprpgkit.effects.MuteStatusEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
@@ -92,7 +91,7 @@ public class WardEffect extends SpellEffect {
     public WardEffect(Identifier id) {
         super(id);
         this.strength = 1;
-        this.duration = 30*20;
+        this.duration = 30 * 20;
         this.allowCaster = false;
     }
 
@@ -106,7 +105,7 @@ public class WardEffect extends SpellEffect {
         if (obj.has("duration")) {
             this.duration = obj.get("duration").getAsInt();
         } else {
-            this.duration = 30*20;
+            this.duration = 30 * 20;
         }
         if (obj.has("allow_caster")) {
             this.allowCaster = obj.get("allow_caster").getAsBoolean();
@@ -125,7 +124,7 @@ public class WardEffect extends SpellEffect {
             return false;
         }
 
-        var caster = ((ServerWorld)entity.getWorld()).getEntity(cast.getCasterUuid());
+        var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
 
         le.addStatusEffect(
                 new StatusEffectInstance(ModStatusEffects.SEALED,

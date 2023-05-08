@@ -1,16 +1,13 @@
 package com.github.sweetsnowywitch.csmprpgkit.screen;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.items.CatalystBagItem;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
-import net.fabricmc.fabric.impl.biome.modification.BuiltInRegistryKeys;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
@@ -18,11 +15,11 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 public class CatalystBagScreenHandler extends ScreenHandler {
     private final ScreenHandlerType<CatalystBagScreenHandler> type;
     private final Inventory inventory;
+
     public CatalystBagScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, new SimpleInventory(6));
     }

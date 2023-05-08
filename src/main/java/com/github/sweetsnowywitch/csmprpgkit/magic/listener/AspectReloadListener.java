@@ -13,7 +13,10 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AspectReloadListener extends JsonDataLoader implements IdentifiableResourceReloadListener {
     private static Gson GSON = new Gson();
@@ -74,7 +77,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                     for (JsonElement effectElement : model.getAsJsonArray("generic_reactions")) {
                         var obj = effectElement.getAsJsonObject();
 
-                        var reactionId = Identifier.of(ent.getKey().getNamespace(), ent.getKey().getPath()+"/generic_reaction_" + i);
+                        var reactionId = Identifier.of(ent.getKey().getNamespace(), ent.getKey().getPath() + "/generic_reaction_" + i);
 
                         SpellReaction reaction;
                         if (obj.has("for_effect")) {

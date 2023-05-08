@@ -5,11 +5,9 @@ import com.github.sweetsnowywitch.csmprpgkit.entities.SpellRayEntity;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
 import com.github.sweetsnowywitch.csmprpgkit.magic.*;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -54,13 +52,13 @@ public class RayForm extends SpellForm implements ChanneledForm {
 
     @Override
     public int getMaxChannelDuration(Spell cast, List<SpellReaction> reactions) {
-        return 5*20;
+        return 5 * 20;
     }
 
     @Override
     public void channelTick(ServerSpellCast cast, @NotNull Entity caster) {
         if (cast.customData.containsUuid("RayEntityUUID")) {
-            var ray = (SpellRayEntity)((ServerWorld)caster.getWorld()).getEntity(cast.customData.getUuid("RayEntityUUID"));
+            var ray = (SpellRayEntity) ((ServerWorld) caster.getWorld()).getEntity(cast.customData.getUuid("RayEntityUUID"));
             if (ray != null) {
                 ray.setAimOrigin(caster.getEyePos());
                 var pos = caster.getPos();

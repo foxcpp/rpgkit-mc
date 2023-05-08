@@ -2,9 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.classes.perks;
 
 import com.github.sweetsnowywitch.csmprpgkit.classes.Perk;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ComboPerk extends Perk {
     public static final int DEFAULT_COMBO = Integer.MAX_VALUE;
@@ -56,7 +54,7 @@ public class ComboPerk extends Perk {
         return obj;
     }
 
-    public int getCombo(){
+    public int getCombo() {
         return this.combo;
     }
 

@@ -1,11 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.entities;
 
-import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
 import com.github.sweetsnowywitch.csmprpgkit.particle.GenericSpellParticleEffect;
-import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -19,21 +17,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public class SpellRayEntity extends Entity {
     // Populated only on logical server side.
@@ -49,7 +40,7 @@ public class SpellRayEntity extends Entity {
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);
         this.ignoreCameraFrustum = true;
-        this.maxAge = 3*20;
+        this.maxAge = 3 * 20;
     }
 
     public static SpellRayEntity empty(EntityType<?> type, World world) {
@@ -143,7 +134,7 @@ public class SpellRayEntity extends Entity {
         }
 
         // Prevent first ray segment from accidentally colliding with caster.
-        Entity owner = ((ServerWorld)this.world).getEntity(this.cast.getCasterUuid());
+        Entity owner = ((ServerWorld) this.world).getEntity(this.cast.getCasterUuid());
         return owner == null || !owner.isConnectedThroughVehicle(entity);
     }
 
@@ -152,7 +143,7 @@ public class SpellRayEntity extends Entity {
         float length = this.dataTracker.get(LENGTH);
         var tip = this.getPos().add(this.getRotationVector().normalize().multiply(length));
         var diagonal = this.getPos().subtract(tip);
-        return EntityDimensions.changing((float)diagonal.x, (float)diagonal.y);
+        return EntityDimensions.changing((float) diagonal.x, (float) diagonal.y);
     }
 
     /**
@@ -165,7 +156,7 @@ public class SpellRayEntity extends Entity {
         if (this.cast == null) {
             return false;
         }
-        return this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld)this.world, bhr.getBlockPos(), bhr.getSide());
+        return this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld) this.world, bhr.getBlockPos(), bhr.getSide());
     }
 
     /**
@@ -199,11 +190,13 @@ public class SpellRayEntity extends Entity {
         }
 
         double x = this.getX(), y = this.getY(), z = this.getZ();
-        var i = this.random.nextInt((int)this.getLength());
+        var i = this.random.nextInt((int) this.getLength());
         var rot = this.getRotationVector();
-        x += i*rot.x; y += i*rot.y; z += i*rot.z;
+        x += i * rot.x;
+        y += i * rot.y;
+        z += i * rot.z;
         this.world.addParticle(this.particleEffect,
-            x, y, z, 0, 0, 0);
+                x, y, z, 0, 0, 0);
     }
 
     @Override
@@ -248,11 +241,11 @@ public class SpellRayEntity extends Entity {
                 new Box(raycastStart, raycastEnd), this::canHit);
         if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
             if (!this.onEntityHit(entHitResult)) {
-                this.dataTracker.set(LENGTH, (float)entHitResult.getPos().distanceTo(this.getPos()));
+                this.dataTracker.set(LENGTH, (float) entHitResult.getPos().distanceTo(this.getPos()));
             }
         } else if (hitResult.getType() != HitResult.Type.MISS) {
             if (!this.onBlockHit(hitResult)) {
-                this.dataTracker.set(LENGTH, (float)hitResult.getPos().distanceTo(this.getPos()));
+                this.dataTracker.set(LENGTH, (float) hitResult.getPos().distanceTo(this.getPos()));
             }
         } else {
             this.dataTracker.set(LENGTH, 50f);

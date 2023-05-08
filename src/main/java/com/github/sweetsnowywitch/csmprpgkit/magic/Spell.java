@@ -14,7 +14,6 @@ import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 
 public class Spell {
@@ -23,6 +22,7 @@ public class Spell {
     public static final Spell EMPTY = new Spell(new Identifier(RPGKitMod.MOD_ID, "empty"), ImmutableList.of(), null);
     private final ImmutableList<SpellEffect> effects;
     private final @Nullable SpellForm preferredUseForm;
+
     public Spell(@NotNull Identifier id, ImmutableList<SpellEffect> effects, @Nullable SpellForm preferredUseForm) {
         this.id = id;
         this.translationKey = id.toTranslationKey("csmprpgkit.magic.spell");

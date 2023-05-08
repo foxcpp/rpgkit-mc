@@ -3,7 +3,6 @@ package com.github.sweetsnowywitch.csmprpgkit.mixin;
 import com.github.sweetsnowywitch.csmprpgkit.magic.effects.MuteEffect;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.VibrationListener;
@@ -18,8 +17,8 @@ public class VibrationListenerMixin {
             method = "listen(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/event/GameEvent$Message;)Z",
             cancellable = true)
     public void listen(ServerWorld world, GameEvent.Message event, CallbackInfoReturnable<Boolean> cir) {
-        var me = (VibrationListener)(Object)this;
-        var cb = ((VibrationListenerAccessor)me).getCallback();
+        var me = (VibrationListener) (Object) this;
+        var cb = ((VibrationListenerAccessor) me).getCallback();
 
         if (cb instanceof LivingEntity le) {
             if (event.getEmitter().sourceEntity() != null && !MuteEffect.shouldHear(le, event.getEmitter().sourceEntity())) {

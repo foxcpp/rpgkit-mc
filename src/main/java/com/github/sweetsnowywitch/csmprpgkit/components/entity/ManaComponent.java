@@ -11,8 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.util.Random;
-
 public class ManaComponent implements AutoSyncedComponent, ServerTickingComponent {
     private final LivingEntity provider;
     private double value;
@@ -50,14 +48,14 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         ModComponents.MANA.sync(this.provider);
     }
 
-    public void spendMana(double cost){
+    public void spendMana(double cost) {
         if (this.provider instanceof PlayerEntity p && p.getAbilities().creativeMode) {
             return;
         }
 
         this.value -= cost;
         if (this.value < 0) {
-            var damage = (float)(-this.value * this.getHealthMultiplier());
+            var damage = (float) (-this.value * this.getHealthMultiplier());
             if (damage > this.provider.getHealth() - 0.5f) {
                 damage = this.provider.getHealth() - 0.5f;
             }

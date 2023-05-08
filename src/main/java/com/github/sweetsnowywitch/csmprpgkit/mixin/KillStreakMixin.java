@@ -1,9 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.mixin;
 
-import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.classes.perks.KillStreakPerk;
 import com.github.sweetsnowywitch.csmprpgkit.classes.perks.ModPerks;
-import com.github.sweetsnowywitch.csmprpgkit.classes.perks.SingleKillPerk;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;

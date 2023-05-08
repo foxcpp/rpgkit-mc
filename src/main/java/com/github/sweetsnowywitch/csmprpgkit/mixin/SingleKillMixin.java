@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.mixin;
 
-import com.github.sweetsnowywitch.csmprpgkit.classes.perks.ComboPerk;
 import com.github.sweetsnowywitch.csmprpgkit.classes.perks.ModPerks;
 import com.github.sweetsnowywitch.csmprpgkit.classes.perks.SingleKillPerk;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;

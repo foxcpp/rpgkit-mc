@@ -4,6 +4,7 @@ import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -37,6 +38,7 @@ public abstract class SpellForm {
      * @param world  Logical server world where cast is happening.
      * @param caster Entity that performs the cast, does not have to be LivingEntity.
      */
+    @MustBeInvokedByOverriders
     public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         cast.getSpell().startCast(cast, world, caster);
     }
@@ -44,9 +46,10 @@ public abstract class SpellForm {
     /**
      * Called when spell is interrupted/dissolved via external means.
      *
-     * @param cast   SpellCast object containing all info about how spell is cast.
-     * @param world  Logical server world where cast is happening.
+     * @param cast  SpellCast object containing all info about how spell is cast.
+     * @param world Logical server world where cast is happening.
      */
+    @MustBeInvokedByOverriders
     public void endCast(ServerSpellCast cast, ServerWorld world) {
         cast.getSpell().endCast(cast, world);
     }

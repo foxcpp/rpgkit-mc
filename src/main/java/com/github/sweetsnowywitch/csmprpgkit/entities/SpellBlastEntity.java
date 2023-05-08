@@ -3,7 +3,6 @@ package com.github.sweetsnowywitch.csmprpgkit.entities;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.TrackedHandlers;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.particle.GenericSpellParticleEffect;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -15,7 +14,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -37,13 +37,13 @@ public class SpellBlastEntity extends MagicAreaEntity {
     }
 
     public static SpellBlastEntity empty(EntityType<?> type, World world) {
-        return new SpellBlastEntity(type, world, Vec3d.ZERO, 1, 1, new Vec3d(0, 1, 0), 3*20);
+        return new SpellBlastEntity(type, world, Vec3d.ZERO, 1, 1, new Vec3d(0, 1, 0), 3 * 20);
     }
 
     public void moveArea(Vec3d origin, Vec3d direction, double distance, double radius) {
         this.dataTracker.set(MagicAreaEntity.AREA, this.computeArea(origin, direction, distance, radius));
         this.dataTracker.set(PARTICLE_ORIGIN, Optional.of(origin));
-        this.dataTracker.set(PARTICLE_SPREAD_AGE, this.age+5);
+        this.dataTracker.set(PARTICLE_SPREAD_AGE, this.age + 5);
         this.setBoundingBox(this.getArea());
         this.setPosition(origin);
     }
@@ -114,7 +114,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
         var box = this.getBoundingBox();
-        return EntityDimensions.changing((float)box.getXLength(), (float)box.getYLength());
+        return EntityDimensions.changing((float) box.getXLength(), (float) box.getYLength());
     }
 
     @Override
@@ -154,7 +154,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
             return;
         }
 
-        var cast = (ServerSpellCast)this.getCast();
+        var cast = (ServerSpellCast) this.getCast();
 
         for (var ent : this.prevTickSeen.entrySet()) {
             ent.setValue(false);

@@ -4,7 +4,7 @@ import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.google.gson.JsonObject;
-import net.minecraft.block.*;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
@@ -48,8 +48,8 @@ public class BoneMealEffect extends SpellEffect {
     @Override
     public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
         var bb = new BlockBox(
-                (int)box.minX, (int)box.minY, (int)box.minZ,
-                (int)box.maxX, (int)box.maxY, (int)box.maxZ
+                (int) box.minX, (int) box.minY, (int) box.minZ,
+                (int) box.maxX, (int) box.maxY, (int) box.maxZ
         );
 
         var pos = new BlockPos.Mutable(0, 0, 0);

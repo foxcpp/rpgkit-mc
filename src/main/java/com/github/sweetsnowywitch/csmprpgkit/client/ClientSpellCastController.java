@@ -1,7 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.client;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.*;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellBuildHandler;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCastController;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

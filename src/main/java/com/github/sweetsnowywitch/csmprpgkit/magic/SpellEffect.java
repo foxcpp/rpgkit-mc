@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -16,6 +15,7 @@ import java.util.function.Function;
 public abstract class SpellEffect {
     public interface Factory {
         SpellEffect createDefaultEffect(Identifier id);
+
         SpellEffect createEffectFromJSON(Identifier id, JsonObject obj);
     }
 
@@ -44,10 +44,16 @@ public abstract class SpellEffect {
         // Reserved for future use.
     }
 
-    public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {}
-    public void endCast(ServerSpellCast cast, ServerWorld world) {}
+    public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {
+    }
+
+    public void endCast(ServerSpellCast cast, ServerWorld world) {
+    }
+
     public abstract boolean onSingleEntityHit(ServerSpellCast cast, Entity entity);
+
     public abstract boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir);
+
     public abstract void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box);
 
     @Override

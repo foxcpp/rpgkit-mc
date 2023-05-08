@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.mixin;
 
-import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -13,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EntityMixin {
     @Inject(at = @At("HEAD"), method = "isSilent()Z", cancellable = true)
     public void isSilent(CallbackInfoReturnable<Boolean> cir) {
-        var ent = ((Entity)(Object)this);
+        var ent = ((Entity) (Object) this);
         if (ent instanceof LivingEntity le) {
             if (le.hasStatusEffect(ModStatusEffects.MUTE)) {
                 cir.setReturnValue(true);
@@ -23,7 +22,7 @@ public class EntityMixin {
 
     @Inject(at = @At("HEAD"), method = "occludeVibrationSignals()Z", cancellable = true)
     public void occludeVibrationSignals(CallbackInfoReturnable<Boolean> cir) {
-        var ent = ((Entity)(Object)this);
+        var ent = ((Entity) (Object) this);
         if (ent instanceof LivingEntity le) {
             if (le.hasStatusEffect(ModStatusEffects.MUTE)) {
                 cir.setReturnValue(true);

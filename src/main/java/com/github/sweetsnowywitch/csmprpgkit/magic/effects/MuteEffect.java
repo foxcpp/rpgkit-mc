@@ -1,8 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
-import com.github.sweetsnowywitch.csmprpgkit.components.chunk.MagicEffectsComponent;
 import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
 import com.github.sweetsnowywitch.csmprpgkit.effects.MuteStatusEffect;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
@@ -16,7 +14,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +28,7 @@ public class MuteEffect extends SpellEffect {
 
     public MuteEffect(Identifier id) {
         super(id);
-        this.duration = 60*20;
+        this.duration = 60 * 20;
         this.muteInside = true;
     }
 
@@ -37,7 +38,7 @@ public class MuteEffect extends SpellEffect {
         if (obj.has("duration")) {
             this.duration = obj.get("duration").getAsInt();
         } else {
-            this.duration = 60*20;
+            this.duration = 60 * 20;
         }
 
         if (obj.has("mute_inside")) {
@@ -53,7 +54,7 @@ public class MuteEffect extends SpellEffect {
             return false;
         }
 
-        var caster = ((ServerWorld)entity.getWorld()).getEntity(cast.getCasterUuid());
+        var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
 
         le.addStatusEffect(
                 new StatusEffectInstance(ModStatusEffects.MUTE,
@@ -137,7 +138,7 @@ public class MuteEffect extends SpellEffect {
         var barriers = world.getOtherEntities(except, Box.of(pos, 20, 20, 20),
                 ent -> ent instanceof SoundBarrierEntity);
         for (var e : barriers) {
-            var barrier = (SoundBarrierEntity)e;
+            var barrier = (SoundBarrierEntity) e;
 
             if (barrier.getArea().contains(hearerPos)) {
                 if (!barrier.getArea().contains(pos)) {

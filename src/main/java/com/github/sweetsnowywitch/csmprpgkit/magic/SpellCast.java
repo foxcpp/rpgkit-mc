@@ -5,22 +5,18 @@ import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.TrackedDataHandler;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * ClientSpellCast is a limited data object representing what both client
@@ -45,7 +41,7 @@ public class SpellCast {
     };
 
     public static final SpellCast EMPTY = new SpellCast(ModForms.SELF, Spell.EMPTY,
-                                              List.of(), Map.of(), List.of(), Vec3d.ZERO);
+            List.of(), Map.of(), List.of(), Vec3d.ZERO);
 
     protected final SpellForm form;
     protected final Spell spell;
@@ -56,7 +52,7 @@ public class SpellCast {
 
     public SpellCast(SpellForm form, Spell spell, List<SpellReaction> reactions,
                      Map<String, Float> costs, List<SpellElement> fullRecipe,
-                            Vec3d startPos) {
+                     Vec3d startPos) {
         this.form = form;
         this.spell = spell;
         this.reactions = ImmutableList.copyOf(reactions);
@@ -67,7 +63,8 @@ public class SpellCast {
 
     protected SpellCast(NbtCompound nbt) {
         var formID = Identifier.tryParse(nbt.getString("Form"));
-        if (formID == null) throw new IllegalArgumentException("malformed form identifier in NBT: %s".formatted(nbt.getString("form")));
+        if (formID == null)
+            throw new IllegalArgumentException("malformed form identifier in NBT: %s".formatted(nbt.getString("form")));
         var form = ModRegistries.SPELL_FORMS.get(formID);
         if (form == null) {
             RPGKitMod.LOGGER.warn("Unknown form ID in NBT, replacing with SELF: {}", formID);
@@ -89,7 +86,8 @@ public class SpellCast {
         var formReactionsNbt = nbt.getList("Reactions", NbtElement.STRING_TYPE);
         for (var element : formReactionsNbt) {
             var reactionID = Identifier.tryParse(element.asString());
-            if (reactionID == null) throw new IllegalArgumentException("malformed reaction identifier in NBT: %s".formatted(element.asString()));
+            if (reactionID == null)
+                throw new IllegalArgumentException("malformed reaction identifier in NBT: %s".formatted(element.asString()));
             var reaction = ModRegistries.REACTIONS.get(reactionID);
             if (reaction == null) {
                 RPGKitMod.LOGGER.warn("Unknown reaction ID in NBT, discarding: {}", reactionID);
@@ -128,7 +126,8 @@ public class SpellCast {
 
     public void writeToNbt(NbtCompound nbt) {
         var formID = ModRegistries.SPELL_FORMS.getId(this.form);
-        if (formID == null) throw new IllegalStateException("writeToNbt called with unregistered spell form: %s".formatted(this.form));
+        if (formID == null)
+            throw new IllegalStateException("writeToNbt called with unregistered spell form: %s".formatted(this.form));
         nbt.putString("Form", formID.toString());
 
         var spellNBT = new NbtCompound();
@@ -167,6 +166,7 @@ public class SpellCast {
     public Spell getSpell() {
         return spell;
     }
+
     public ImmutableList<SpellReaction> getReactions() {
         return this.reactions;
     }

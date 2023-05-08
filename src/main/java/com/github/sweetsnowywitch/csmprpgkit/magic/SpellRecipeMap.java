@@ -7,10 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -33,6 +31,7 @@ public class SpellRecipeMap<T> {
             }
             return new Element(null, ingredient, consume);
         }
+
         public JsonObject toJson() throws IllegalStateException {
             if (aspect != null) {
                 Identifier aspectId = null;
@@ -55,7 +54,10 @@ public class SpellRecipeMap<T> {
             }
         }
     }
-    public record Recipe<T>(ImmutableList<Element> elements, T result) {}
+
+    public record Recipe<T>(ImmutableList<Element> elements, T result) {
+    }
+
     private final List<Recipe<T>> recipes = new ArrayList<>();
 
     public void addRecipe(ImmutableList<Element> elements, T result) {

@@ -1,12 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.mixin;
 
-import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
-import com.github.sweetsnowywitch.csmprpgkit.effects.MuteStatusEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.effects.MuteEffect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;

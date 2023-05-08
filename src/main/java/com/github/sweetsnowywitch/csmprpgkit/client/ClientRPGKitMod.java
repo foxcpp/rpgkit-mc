@@ -3,8 +3,8 @@ package com.github.sweetsnowywitch.csmprpgkit.client;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.classes.listener.AdvancementsListener;
 import com.github.sweetsnowywitch.csmprpgkit.classes.listener.ClassReloadListener;
-import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ActiveCastOverlay;
+import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.particle.GenericSpellParticle;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.ModRenderers;
 import com.github.sweetsnowywitch.csmprpgkit.client.render.SpellItemRenderer;
@@ -30,6 +30,7 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
@@ -38,10 +39,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 
@@ -52,10 +51,10 @@ public class ClientRPGKitMod implements ClientModInitializer {
     public static final Gson GSON = new Gson();
 
     public static final KeyBinding ACTIVATE_SPELL_BUILD_KEY = new KeyBinding(
-            "key."+RPGKitMod.MOD_ID+".magic.spell_build",
+            "key." + RPGKitMod.MOD_ID + ".magic.spell_build",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_F,
-            "category."+RPGKitMod.MOD_ID+".magic"
+            "category." + RPGKitMod.MOD_ID + ".magic"
     );
 
     public static final SpellBuildKeyboardHandler SPELL_BUILD_KEYBOARD_HANDLER = new SpellBuildKeyboardHandler();
@@ -94,7 +93,7 @@ public class ClientRPGKitMod implements ClientModInitializer {
             if (entity == null) {
                 return 0f;
             }
-            var pe = (PlayerEntity)entity;
+            var pe = (PlayerEntity) entity;
             var comp = pe.getComponent(ModComponents.CAST);
             if (!comp.isBuilding() || !stack.equals(comp.getCatalystBag())) {
                 return 0f;
@@ -112,7 +111,7 @@ public class ClientRPGKitMod implements ClientModInitializer {
         HandledScreens.register(RPGKitMod.CATALYST_BAG_SCREEN_HANDLER, CatalystBagScreen::new);
 
         ClientPlayNetworking.registerGlobalReceiver(RPGKitMod.SERVER_DATA_SYNC_PACKET_ID, (client, handler, buf, responseSender) -> {
-            var jsonBlob = buf.readString(1024*1024);
+            var jsonBlob = buf.readString(1024 * 1024);
             client.execute(() -> this.loadServerData(jsonBlob));
         });
     }
