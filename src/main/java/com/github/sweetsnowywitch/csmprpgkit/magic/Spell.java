@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,12 +85,14 @@ public class Spell {
         return this.translationKey;
     }
 
+    @MustBeInvokedByOverriders
     public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {
         for (var effect : this.effects) {
             effect.startCast(cast, world, caster);
         }
     }
 
+    @MustBeInvokedByOverriders
     public void endCast(ServerSpellCast cast, ServerWorld world) {
         for (var effect : this.effects) {
             effect.endCast(cast, world);

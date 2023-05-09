@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -74,6 +75,7 @@ public abstract class SpellEffect {
         return Objects.hash(id);
     }
 
+    @MustBeInvokedByOverriders
     public void toJson(JsonObject obj) {
         // Reserved for future use.
     }

@@ -10,13 +10,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
 public class SpellArea {
     @FunctionalInterface
     public interface Factory {
-        SpellArea createAreaFromNbt(Identifier effectID, NbtCompound comp);
+        @NotNull
+        SpellArea createAreaFromNbt(Identifier effectID, @NotNull NbtCompound comp);
     }
 
     public static Factory factoryFor(BiFunction<Identifier, NbtCompound, SpellArea> nbt) {

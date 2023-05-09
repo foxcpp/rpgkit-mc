@@ -13,16 +13,10 @@ public class SelfForm extends SpellForm {
     }
 
     @Override
-    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+    public void startCast(@NotNull ServerSpellCast cast, @NotNull ServerWorld world, @NotNull Entity caster) {
+        super.startCast(cast, world, caster);
         for (var effect : cast.getSpell().getEffects()) {
             effect.onSingleEntityHit(cast, caster);
-        }
-    }
-
-    @Override
-    public void endCast(ServerSpellCast cast, ServerWorld world) {
-        for (var effect : cast.getSpell().getEffects()) {
-            effect.endCast(cast, world);
         }
     }
 }

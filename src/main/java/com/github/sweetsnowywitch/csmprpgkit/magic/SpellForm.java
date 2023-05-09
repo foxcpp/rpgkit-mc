@@ -50,7 +50,7 @@ public abstract class SpellForm {
      * @param world Logical server world where cast is happening.
      */
     @MustBeInvokedByOverriders
-    public void endCast(ServerSpellCast cast, ServerWorld world) {
+    public void endCast(@NotNull ServerSpellCast cast, @NotNull ServerWorld world) {
         cast.getSpell().endCast(cast, world);
     }
 

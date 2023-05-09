@@ -31,9 +31,9 @@ public class SpellChargeRenderer extends EntityRenderer<SpellChargeEntity> {
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(this.getTexture(entity)));
 
         this.model.render(matrices, vertexConsumer, light, 0,
-                ColorHelper.Argb.getRed(entity.baseColor)/255f,
-                ColorHelper.Argb.getGreen(entity.baseColor)/255f,
-                ColorHelper.Argb.getBlue(entity.baseColor)/255f, 1.0f);
+                ColorHelper.Argb.getRed(entity.baseColor) / 255f,
+                ColorHelper.Argb.getGreen(entity.baseColor) / 255f,
+                ColorHelper.Argb.getBlue(entity.baseColor) / 255f, 1.0f);
         matrices.pop();
 
     }

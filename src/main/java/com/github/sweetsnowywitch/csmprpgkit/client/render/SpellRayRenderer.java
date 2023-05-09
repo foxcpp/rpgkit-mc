@@ -37,7 +37,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
         var buffer = vertexConsumers.getBuffer(RenderLayer.getLightning());
 
         var argbStart = entity.rayBaseColor | 128 << 24;
-        var argbEnd =   entity.rayBaseColor | 128 << 24;
+        var argbEnd = entity.rayBaseColor | 128 << 24;
 
         renderBeam(matrices, buffer, argbStart, argbEnd,
                 height, 0, 0,
@@ -62,13 +62,13 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
         var normal = entry.getNormalMatrix();
 
         renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
-                centerX-radius, centerZ-radius, centerX-radius, centerZ+radius);
+                centerX - radius, centerZ - radius, centerX - radius, centerZ + radius);
         renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
-                centerX-radius, centerZ+radius, centerX+radius, centerZ+radius);
+                centerX - radius, centerZ + radius, centerX + radius, centerZ + radius);
         renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
-                centerX+radius, centerZ+radius, centerX+radius, centerZ-radius);
+                centerX + radius, centerZ + radius, centerX + radius, centerZ - radius);
         renderBeamFace(position, normal, buffer, height, 0, argbStart, argbEnd,
-                centerX+radius, centerZ-radius, centerX-radius, centerZ-radius);
+                centerX + radius, centerZ - radius, centerX - radius, centerZ - radius);
     }
 
     private void renderBeamFace(Matrix4f position, Matrix3f normal, VertexConsumer buffer,
@@ -84,7 +84,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
                 normal(normal, 0, 1, 0).
                 next();
         buffer.
-                vertex(position, x1, yOffset+height, z1).
+                vertex(position, x1, yOffset + height, z1).
                 color(argbEnd).
                 texture(0, 1).
                 overlay(OverlayTexture.DEFAULT_UV).
@@ -92,7 +92,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
                 normal(normal, 0, 1, 0).
                 next();
         buffer.
-                vertex(position, x2, yOffset+height, z2).
+                vertex(position, x2, yOffset + height, z2).
                 color(argbEnd).
                 texture(0, 1).
                 overlay(OverlayTexture.DEFAULT_UV).
