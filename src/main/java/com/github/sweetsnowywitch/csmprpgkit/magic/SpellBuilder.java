@@ -3,14 +3,16 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 import java.util.function.Function;
 
 public class SpellBuilder {
+    private final @NotNull Entity caster;
     private final int maxElements;
     private final List<SpellElement> fullRecipe;
     private final List<SpellElement> pendingElements;
@@ -18,7 +20,8 @@ public class SpellBuilder {
     private final List<SpellReaction> reactions;
     private final Map<String, Float> spellAspectCosts;
 
-    public SpellBuilder(int maxElements) {
+    public SpellBuilder(@NotNull Entity caster, int maxElements) {
+        this.caster = caster;
         this.maxElements = maxElements;
         this.fullRecipe = new ArrayList<>();
         this.pendingElements = new ArrayList<>();
@@ -65,7 +68,7 @@ public class SpellBuilder {
         if (spell != null) {
             return spell.result();
         }
-        return new GenericSpell(ImmutableList.copyOf(this.pendingElements));
+        return new GenericSpell(this, ImmutableList.copyOf(this.pendingElements));
     }
 
     public void finishSpell() {
@@ -78,7 +81,7 @@ public class SpellBuilder {
             this.spell = spell.result();
             this.consumeElements(this.pendingElements, (i) -> spell.elements().get(i).consume());
         } else {
-            var generic = new GenericSpell(ImmutableList.copyOf(this.pendingElements));
+            var generic = new GenericSpell(this, ImmutableList.copyOf(this.pendingElements));
             this.reactions.addAll(generic.getForcedEffectReactions());
             this.spell = generic;
         }
@@ -133,7 +136,7 @@ public class SpellBuilder {
         }
     }
 
-    public ServerSpellCast toServerCast(@NotNull LivingEntity caster, @NotNull SpellForm form) {
+    public ServerSpellCast toServerCast(@NotNull SpellForm form) {
         if (this.spell == null) {
             this.finishSpell();
         }
@@ -143,7 +146,7 @@ public class SpellBuilder {
         RPGKitMod.LOGGER.info("{} casting spell {} with form {} and reactions {} (elements: {})",
                 caster, this.spell, form, this.reactions, this.fullRecipe);
         RPGKitMod.LOGGER.debug("Cast costs: {}", costs);
-        return new ServerSpellCast(form, this.spell, caster, this.reactions,
+        return new ServerSpellCast(form, this.spell, this.caster, this.reactions,
                 costs, this.fullRecipe, caster.getPos());
     }
 
@@ -186,5 +189,9 @@ public class SpellBuilder {
 
     public int getMaxElements() {
         return maxElements;
+    }
+
+    public @Nullable Entity getCaster() {
+        return this.caster;
     }
 }

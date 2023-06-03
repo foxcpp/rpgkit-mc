@@ -15,7 +15,10 @@
       "velocity": 0.2
     },
     {
-      "type": "csmprpgkit:extinguish"
+      "type": "csmprpgkit:extinguish",
+      "condition": {
+        "first_element": true
+      }
     }
   ],
   "generic_reactions": [

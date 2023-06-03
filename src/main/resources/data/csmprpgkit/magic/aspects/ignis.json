@@ -11,17 +11,33 @@
   },
   "generic_effects": [
     {
-      "type": "csmprpgkit:fire"
+      "type": "csmprpgkit:fire",
+      "condition": {
+        "first_element": true
+      }
     },
     {
       "type": "csmprpgkit:damage",
-      "damage_dealt": 3
+      "damage_dealt": 3,
+      "condition": {
+        "first_element": true
+      }
     }
   ],
   "generic_reactions": [
     {
       "for_effect": "csmprpgkit:damage",
-      "damage_dealt": 5
+      "damage_dealt": 5,
+      "condition": {
+        "first_element": true
+      }
+    },
+    {
+      "for_effect": "csmprpgkit:damage",
+      "damage_dealt": 1,
+      "condition": {
+        "first_element": false
+      }
     },
     {
       "for_form": "csmprpgkit:blast",

@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
 public class ChargeForm extends SpellForm {
@@ -61,13 +62,10 @@ public class ChargeForm extends SpellForm {
                 bounceFactor += r.bounceVelocityFactor;
             }
         }
-
-        if (bounceFactor < 0.1f) {
-            bounceFactor = 0.1f;
+        if (velocity <= 0.5f) {
+            velocity = 0.5f;
         }
-        if (bounceFactor > 1f) {
-            bounceFactor = 1f;
-        }
+        bounceFactor = MathHelper.clamp(bounceFactor, 0.1f, 1f);
 
         var charge = new SpellChargeEntity(ModEntities.SPELL_CHARGE, world);
         cast.customData.putUuid("ChargeEntityUUID", charge.getUuid());

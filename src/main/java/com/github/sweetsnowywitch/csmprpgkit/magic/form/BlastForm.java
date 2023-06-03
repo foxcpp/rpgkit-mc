@@ -75,6 +75,12 @@ public class BlastForm extends SpellForm implements ChanneledForm {
                 radius += r.radius;
             }
         }
+        if (distance <= 3) {
+            distance = 3;
+        }
+        if (radius <= 0) {
+            radius = 1.25;
+        }
 
         var blast = new SpellBlastEntity(ModEntities.SPELL_BLAST, world, pos,
                 distance, radius, caster.getRotationVector(), 5);
@@ -90,7 +96,7 @@ public class BlastForm extends SpellForm implements ChanneledForm {
     }
 
     @Override
-    public void endCast(ServerSpellCast cast, ServerWorld world) {
+    public void endCast(@NotNull ServerSpellCast cast, @NotNull ServerWorld world) {
         super.endCast(cast, world);
 
         if (cast.customData.contains("BlastEntityUUID")) {
@@ -103,13 +109,13 @@ public class BlastForm extends SpellForm implements ChanneledForm {
 
     @Override
     public int getMaxChannelDuration(Spell cast, List<SpellReaction> reactions) {
-        return 4*20;
+        return 4 * 20;
     }
 
     @Override
     public void channelTick(ServerSpellCast cast, @NotNull Entity caster) {
         if (cast.customData.containsUuid("BlastEntityUUID")) {
-            var blast = (SpellBlastEntity)((ServerWorld)caster.getWorld()).getEntity(cast.customData.getUuid("BlastEntityUUID"));
+            var blast = (SpellBlastEntity) ((ServerWorld) caster.getWorld()).getEntity(cast.customData.getUuid("BlastEntityUUID"));
             if (blast != null) {
                 var pos = caster.getPos();
                 if (caster instanceof PlayerEntity pe) {
@@ -127,7 +133,7 @@ public class BlastForm extends SpellForm implements ChanneledForm {
 
                 var intersection = previousArea.intersection(blast.getArea());
                 if (intersection.getAverageSideLength() < 2) {
-                    cast.getSpell().onAreaHit(cast, (ServerWorld)caster.getWorld(), intersection);
+                    cast.getSpell().onAreaHit(cast, (ServerWorld) caster.getWorld(), intersection);
                 }
             }
         }

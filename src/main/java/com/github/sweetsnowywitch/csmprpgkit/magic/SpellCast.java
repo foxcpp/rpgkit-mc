@@ -55,7 +55,18 @@ public class SpellCast {
                      Vec3d startPos) {
         this.form = form;
         this.spell = spell;
-        this.reactions = ImmutableList.copyOf(reactions);
+        this.reactions = ImmutableList.copyOf(reactions.stream().filter(r -> {
+            // Drop unused reactions to reduce object size.
+            if (r.appliesTo(form)) {
+                return true;
+            }
+            for (var el : spell.getEffects()) {
+                if (r.appliesTo(el)) {
+                    return true;
+                }
+            }
+            return false;
+        }).iterator());
         this.costs = ImmutableMap.copyOf(costs);
         this.fullRecipe = ImmutableList.copyOf(fullRecipe);
         this.startPos = startPos;

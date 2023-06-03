@@ -169,6 +169,7 @@ public class WardEffect extends SpellEffect {
 
     @Override
     public void toJson(JsonObject obj) {
+        super.toJson(obj);
         obj.addProperty("strength", this.strength);
         obj.addProperty("duration", this.duration);
         obj.addProperty("allow_caster", this.allowCaster);

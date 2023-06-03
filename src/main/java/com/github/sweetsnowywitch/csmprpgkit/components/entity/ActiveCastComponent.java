@@ -74,7 +74,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             this.availableElements.clear();
             var list = tag.getList("AvailableElements", NbtElement.COMPOUND_TYPE);
             for (var el : list) {
-                var elNBT = (NbtCompound)el;
+                var elNBT = (NbtCompound) el;
                 this.availableElements.add(SpellElement.readFromNbt(elNBT));
             }
         }
@@ -82,7 +82,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             this.pendingElements.clear();
             var list = tag.getList("PendingElements", NbtElement.COMPOUND_TYPE);
             for (var el : list) {
-                var elNBT = (NbtCompound)el;
+                var elNBT = (NbtCompound) el;
                 this.pendingElements.add(SpellElement.readFromNbt(elNBT));
             }
         }
@@ -90,7 +90,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         this.maxElements = tag.getInt("MaxElements");
 
         if (!this.provider.world.isClient && this.hasBuilder) {
-            this.builder = new SpellBuilder(this.maxElements);
+            this.builder = new SpellBuilder(this.provider, this.maxElements);
             // TODO: Recheck if items can still be used.
             for (var element : this.pendingElements) {
                 this.builder.addElement(element);
@@ -185,7 +185,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         spell.addHideFlag(ItemStack.TooltipSection.ENCHANTMENTS);
         this.provider.getInventory().setStack(this.provider.getInventory().selectedSlot, spell);
 
-        this.builder = new SpellBuilder(this.maxElements);
+        this.builder = new SpellBuilder(this.provider, this.maxElements);
         this.hasBuilder = true;
         this.usingCatalystBag = false;
         this.pendingElements = List.of();
@@ -290,7 +290,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return;
         }
 
-        var cast = this.builder.toServerCast(this.provider, form);
+        var cast = this.builder.toServerCast(form);
         cast.perform((ServerWorld) this.provider.world);
 
         if (form instanceof ChanneledForm cf) {
@@ -417,8 +417,8 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
     }
 
     private void endCast() {
-        var cast = (ServerSpellCast)this.activeCast;
-        cast.getForm().endCast(cast, (ServerWorld)this.provider.world);
+        var cast = (ServerSpellCast) this.activeCast;
+        cast.getForm().endCast(cast, (ServerWorld) this.provider.world);
         this.activeCast = null;
         this.hasActiveCast = false;
         this.channelAge = 0;
@@ -448,7 +448,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (this.activeCast == null) {
             return;
         }
-        var cast = (ServerSpellCast)this.activeCast;
+        var cast = (ServerSpellCast) this.activeCast;
 
         if (this.isChanneling()) {
             if (!(cast.getForm() instanceof ChanneledForm cf)) {
@@ -461,9 +461,9 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             this.channelAge++;
 
             if (this.channelAge > 10) {
-                var caster = cast.getCaster((ServerWorld)this.provider.world);
+                var caster = cast.getCaster((ServerWorld) this.provider.world);
                 if (caster instanceof ServerPlayerEntity spe) {
-                    spe.getComponent(ModComponents.MANA).spendMana(cast.getCost(SpellElement.COST_MAGICAE)/20);
+                    spe.getComponent(ModComponents.MANA).spendMana(cast.getCost(SpellElement.COST_MAGICAE) / 20);
                 }
             }
 

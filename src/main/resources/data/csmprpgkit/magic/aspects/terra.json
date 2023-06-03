@@ -12,21 +12,38 @@
   "generic_effects": [
     {
       "type": "csmprpgkit:damage",
-      "damage_dealt": 5
+      "damage_dealt": 5,
+      "condition": {
+        "first_element": true
+      }
     },
     {
       "type": "csmprpgkit:potion",
       "id": "minecraft:slowness",
-      "duration": 5
+      "duration": 5,
+      "condition": {
+        "first_element": true
+      }
     }
   ],
   "generic_reactions": [
     {
       "for_effect": "csmprpgkit:damage",
-      "damage_dealt": 3
+      "damage_dealt": 3,
+      "condition": {
+        "first_element": true
+      }
+    },
+    {
+      "for_effect": "csmprpgkit:damage",
+      "damage_dealt": 1,
+      "condition": {
+        "first_element": false
+      }
     },
     {
       "for_effect": "csmprpgkit:potion",
+      "id": "minecraft:slowness",
       "amplifier": 0.3
     },
     {

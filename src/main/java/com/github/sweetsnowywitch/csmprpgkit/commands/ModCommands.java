@@ -40,11 +40,11 @@ public class ModCommands {
         var castNode = literal("cast")
                 .requires(src -> src.hasPermissionLevel(2))
                 .then(argument("form", spellForm())
-                .then(argument("elements", string())
-                .executes(context -> cast(
-                        context.getSource(),
-                        SpellFormArgument.getSpellForm("form", context),
-                        context.getArgument("elements", String.class)))))
+                        .then(argument("elements", string())
+                                .executes(context -> cast(
+                                        context.getSource(),
+                                        SpellFormArgument.getSpellForm("form", context),
+                                        context.getArgument("elements", String.class)))))
                 .build();
 
         var expNode = literal("exp")
@@ -58,11 +58,11 @@ public class ModCommands {
         var expAddNode = literal("add")
                 .requires(src -> src.hasPermissionLevel(2))
                 .then(argument("target", players())
-                .then(argument("amount", integer(0))
-                .executes(context -> expAdd(
-                        context.getSource(), getPlayers(context, "target"),
-                        getInteger(context, "amount")
-                ))))
+                        .then(argument("amount", integer(0))
+                                .executes(context -> expAdd(
+                                        context.getSource(), getPlayers(context, "target"),
+                                        getInteger(context, "amount")
+                                ))))
                 .build();
         var expResetNode = literal("reset")
                 .requires(src -> src.hasPermissionLevel(2))
@@ -83,16 +83,16 @@ public class ModCommands {
                 .build();
         var classLevelUpNode = literal("levelup")
                 .then(argument("class", characterClass())
-                .then(argument("target", player())
-                        .requires(src -> src.hasPermissionLevel(2))
-                        .executes(context -> classLevelUp(context.getSource(),
-                                getPlayer(context, "target"),
-                                getCharacterClass("class", context))))
-                .executes(context -> classLevelUp(
-                        context.getSource(),
-                        context.getSource().getPlayerOrThrow(),
-                        getCharacterClass("class", context)
-                )))
+                        .then(argument("target", player())
+                                .requires(src -> src.hasPermissionLevel(2))
+                                .executes(context -> classLevelUp(context.getSource(),
+                                        getPlayer(context, "target"),
+                                        getCharacterClass("class", context))))
+                        .executes(context -> classLevelUp(
+                                context.getSource(),
+                                context.getSource().getPlayerOrThrow(),
+                                getCharacterClass("class", context)
+                        )))
                 .build();
         var classReset = literal("reset")
                 .requires(src -> src.hasPermissionLevel(2))
@@ -198,7 +198,7 @@ public class ModCommands {
         final String[] parts = elements.split(",");
         final PlayerEntity player = source.getPlayerOrThrow();
 
-        final var builder = new SpellBuilder(5);
+        final var builder = new SpellBuilder(player, 5);
 
         for (String part : parts) {
             Identifier id;
@@ -224,7 +224,7 @@ public class ModCommands {
         builder.finishSpell();
         // TODO: Add ability to apply reactions.
 
-        builder.toServerCast(player, form).perform(source.getWorld());
+        builder.toServerCast(form).perform(source.getWorld());
 
         return 1;
     }

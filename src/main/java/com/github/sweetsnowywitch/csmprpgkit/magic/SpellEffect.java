@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
+import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
@@ -8,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -35,14 +37,29 @@ public abstract class SpellEffect {
     }
 
     public final Identifier id;
+    private final @Nullable SpellBuildCondition condition;
 
     protected SpellEffect(Identifier id) {
         this.id = id;
+        this.condition = null;
     }
 
     protected SpellEffect(Identifier id, JsonObject obj) {
         this.id = id;
-        // Reserved for future use.
+
+        if (obj.has("condition")) {
+            this.condition = SpellBuildCondition.fromJson(obj.getAsJsonObject("condition"));
+        } else {
+            this.condition = null;
+        }
+    }
+
+    public boolean shouldAdd(SpellBuilder builder, @Nullable SpellElement source) {
+        if (this.condition != null) {
+            return this.condition.shouldAdd(builder, source);
+        }
+
+        return true;
     }
 
     public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {
@@ -77,6 +94,16 @@ public abstract class SpellEffect {
 
     @MustBeInvokedByOverriders
     public void toJson(JsonObject obj) {
+        obj.addProperty("type", this.id.toString());
         // Reserved for future use.
+    }
+
+    public static SpellEffect fromJson(JsonObject obj) {
+        var effectId = new Identifier(obj.get("type").getAsString());
+        var effect = ModRegistries.SPELL_EFFECTS.get(effectId);
+        if (effect == null) {
+            throw new IllegalArgumentException("unknown effect: %s".formatted(effectId.toString()));
+        }
+        return effect.createEffectFromJSON(effectId, obj);
     }
 }

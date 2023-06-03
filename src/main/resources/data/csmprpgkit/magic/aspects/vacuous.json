@@ -20,26 +20,56 @@
   "generic_effects": [
     {
       "type": "csmprpgkit:push_away",
-      "velocity": -1
+      "velocity": -1,
+      "condition": {
+        "first_element": true
+      }
     },
     {
       "type": "csmprpgkit:damage",
-      "damage_dealt": 5
+      "damage_dealt": 5,
+      "condition": {
+        "first_element": true
+      }
     }
   ],
   "generic_reactions": [
     {
       "for_effect": "csmprpgkit:push_away",
-      "velocity": -2
+      "velocity": -2,
+      "condition": {
+        "first_element": true
+      }
     },
     {
       "for_form": "csmprpgkit:blast",
       "distance": 2,
-      "radius": 0.25
+      "radius": 0.25,
+      "condition": {
+        "first_element": true
+      }
     },
     {
       "for_form": "csmprpgkit:area",
-      "radius": 1
+      "radius": 1,
+      "condition": {
+        "first_element": true
+      }
+    },
+    {
+      "for_form": "csmprpgkit:blast",
+      "distance": -1,
+      "radius": -0.25,
+      "condition": {
+        "first_element": false
+      }
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "radius": -1,
+      "condition": {
+        "first_element": false
+      }
     }
   ]
 }

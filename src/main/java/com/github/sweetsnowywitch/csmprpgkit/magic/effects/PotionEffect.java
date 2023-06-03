@@ -16,22 +16,38 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public class PotionEffect extends SpellEffect {
     public static class Reaction extends SpellReaction {
+        private final @Nullable StatusEffect effect;
         private final double amplifier;
         private final int durationTicks;
 
         public Reaction(Identifier id) {
             super(id);
+            this.effect = null;
             this.amplifier = 1;
             this.durationTicks = 0;
         }
 
         public Reaction(Identifier id, JsonObject obj) {
             super(id, obj);
+
+            if (obj.has("id")) {
+                var effectId = new Identifier(obj.get("id").getAsString());
+                var effect = Registry.STATUS_EFFECT.get(effectId);
+                RPGKitMod.LOGGER.debug("PotionEffect.Reaction populated with potion effect {}", effectId);
+                if (effect == null) {
+                    throw new IllegalStateException("unknown potion effect");
+                }
+                this.effect = effect;
+            } else {
+                this.effect = null;
+            }
+
             if (obj.has("amplifier")) {
                 this.amplifier = obj.get("amplifier").getAsDouble();
             } else {
@@ -50,6 +66,16 @@ public class PotionEffect extends SpellEffect {
         }
 
         public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
+
+            if (this.effect != null) {
+                var id = Registry.STATUS_EFFECT.getId(this.effect);
+                if (id == null) {
+                    throw new IllegalStateException("potion effect with unregistered effect");
+                }
+                obj.addProperty("id", id.toString());
+            }
+
             obj.addProperty("amplifier", this.amplifier);
             obj.addProperty("duration", this.durationTicks);
         }
@@ -78,7 +104,7 @@ public class PotionEffect extends SpellEffect {
     }
 
     public PotionEffect(Identifier id, JsonObject obj) {
-        super(id);
+        super(id, obj);
 
         if (obj.has("id")) {
             var effectId = new Identifier(obj.get("id").getAsString());
@@ -127,10 +153,16 @@ public class PotionEffect extends SpellEffect {
         var duration = this.baseDuration;
 
         for (var reaction : cast.getReactions()) {
-            if (reaction instanceof Reaction r) {
+            if (reaction instanceof Reaction r && (r.effect == null || r.effect.equals(this.statusEffect))) {
                 amplifier += r.amplifier;
                 duration += r.durationTicks;
             }
+        }
+        if (amplifier <= 0) {
+            amplifier = 0;
+        }
+        if (duration <= 2) {
+            duration = 2;
         }
 
         var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
@@ -155,6 +187,7 @@ public class PotionEffect extends SpellEffect {
 
     @Override
     public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
         if (this.statusEffect != null) {
             var id = Registry.STATUS_EFFECT.getId(this.statusEffect);
             if (id == null) {

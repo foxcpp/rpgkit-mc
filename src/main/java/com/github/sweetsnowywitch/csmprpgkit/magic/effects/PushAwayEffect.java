@@ -50,7 +50,7 @@ public class PushAwayEffect extends SpellEffect {
     }
 
     public PushAwayEffect(Identifier id, JsonObject obj) {
-        super(id);
+        super(id, obj);
 
         if (obj.has("velocity")) {
             this.velocity = obj.get("velocity").getAsDouble();
@@ -80,6 +80,7 @@ public class PushAwayEffect extends SpellEffect {
 
     @Override
     public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
         obj.addProperty("velocity", this.velocity);
     }
 }

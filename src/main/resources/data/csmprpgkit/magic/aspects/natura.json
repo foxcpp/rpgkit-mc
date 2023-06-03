@@ -18,16 +18,26 @@
       "type": "csmprpgkit:potion",
       "id": "minecraft:regeneration",
       "duration": 3,
-      "amplifier": 1
+      "amplifier": 1,
+      "condition": {
+        "first_element": true
+      }
     },
     {
-      "type": "csmprpgkit:bone_meal"
+      "type": "csmprpgkit:bone_meal",
+      "condition": {
+        "first_element": true
+      }
     }
   ],
   "generic_reactions": [
     {
       "for_effect": "csmprpgkit:potion",
-      "duration": 3
+      "id": "minecraft:regeneration",
+      "duration": 3,
+      "condition": {
+        "first_element": true
+      }
     }
   ]
 }

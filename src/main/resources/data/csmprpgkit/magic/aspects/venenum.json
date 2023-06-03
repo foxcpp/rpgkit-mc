@@ -18,7 +18,10 @@
       "type": "csmprpgkit:potion",
       "id": "minecraft:poison",
       "duration": 3,
-      "amplifier": 1
+      "amplifier": 1,
+      "condition": {
+        "first_element": true
+      }
     },
     {
       "type": "csmprpgkit:damage",
@@ -28,6 +31,7 @@
   "generic_reactions": [
     {
       "for_effect": "csmprpgkit:potion",
+      "id": "minecraft:poison",
       "duration": 4,
       "amplifier": 1
     },

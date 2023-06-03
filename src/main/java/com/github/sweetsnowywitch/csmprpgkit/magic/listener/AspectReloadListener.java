@@ -13,6 +13,10 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +32,18 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
     @Override
     protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
         loadSynced(prepared);
+    }
+
+    private static String sha256(String text) {
+        try {
+            var messageDigest = MessageDigest.getInstance("SHA-256");
+            var hash = messageDigest.digest(text.getBytes(StandardCharsets.UTF_8));
+
+            return String.format("%064x", new BigInteger(1, hash));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void loadSynced(Map<Identifier, JsonElement> prepared) {
@@ -59,14 +75,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                 ImmutableList.Builder<SpellEffect> genericEffects = ImmutableList.builder();
                 if (model.has("generic_effects")) {
                     for (JsonElement effectElement : model.getAsJsonArray("generic_effects")) {
-                        var obj = effectElement.getAsJsonObject();
-
-                        var effectId = new Identifier(obj.get("type").getAsString());
-                        var effect = ModRegistries.SPELL_EFFECTS.get(effectId);
-                        if (effect == null) {
-                            throw new IllegalArgumentException("unknown effect: %s".formatted(effectId.toString()));
-                        }
-                        genericEffects.add(effect.createEffectFromJSON(effectId, obj));
+                        genericEffects.add(SpellEffect.fromJson(effectElement.getAsJsonObject()));
                     }
                 }
 
@@ -76,7 +85,8 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                     for (JsonElement effectElement : model.getAsJsonArray("generic_reactions")) {
                         var obj = effectElement.getAsJsonObject();
 
-                        var reactionId = Identifier.of(ent.getKey().getNamespace(), ent.getKey().getPath() + "/generic_reaction_" + i);
+                        var reactionHash = sha256(RPGKitMod.GSON.toJson(obj));
+                        var reactionId = Identifier.of(ent.getKey().getNamespace(), ent.getKey().getPath() + "/generic_reaction_" + reactionHash);
 
                         SpellReaction reaction;
                         if (obj.has("for_effect")) {

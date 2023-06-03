@@ -33,7 +33,7 @@ public class ServerSpellCast extends SpellCast {
         this.customData = new NbtCompound();
     }
 
-    public ServerSpellCast(SpellForm form, Spell spell, @NotNull LivingEntity caster,
+    public ServerSpellCast(SpellForm form, Spell spell, @NotNull Entity caster,
                            List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
                            Vec3d startPos) {
         super(form, spell, reactions, costs, fullRecipe, startPos);
@@ -56,7 +56,7 @@ public class ServerSpellCast extends SpellCast {
     }
 
     public void perform(ServerWorld world) {
-        var caster = (LivingEntity)world.getEntity(this.casterUuid);
+        var caster = (LivingEntity) world.getEntity(this.casterUuid);
 
         if (caster == null) {
             RPGKitMod.LOGGER.error("ServerSpellCast.perform is called but caster entity is missing in world");
@@ -66,10 +66,10 @@ public class ServerSpellCast extends SpellCast {
         this.form.startCast(this, world, caster);
 
         if (caster instanceof PlayerEntity player) {
-            var cost = this.costs.getOrDefault(SpellElement.COST_MAGICAE, (float)0);
+            var cost = this.costs.getOrDefault(SpellElement.COST_MAGICAE, (float) 0);
             if (cost != null) {
                 RPGKitMod.LOGGER.debug("Consuming {} mana points of {}", cost, player);
-                player.getComponent(ModComponents.MANA).spendMana((int)((float)cost));
+                player.getComponent(ModComponents.MANA).spendMana((int) ((float) cost));
             }
         }
     }

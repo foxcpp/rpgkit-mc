@@ -33,7 +33,7 @@ public class MuteEffect extends SpellEffect {
     }
 
     public MuteEffect(Identifier id, JsonObject obj) {
-        super(id);
+        super(id, obj);
 
         if (obj.has("duration")) {
             this.duration = obj.get("duration").getAsInt();
@@ -79,6 +79,7 @@ public class MuteEffect extends SpellEffect {
 
     @Override
     public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
         obj.addProperty("duration", this.duration);
         obj.addProperty("mute_inside", this.muteInside);
     }

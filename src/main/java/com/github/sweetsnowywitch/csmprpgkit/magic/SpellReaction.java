@@ -38,6 +38,7 @@ public abstract class SpellReaction {
     public final Identifier id;
     private final ImmutableMap<String, Float> costMultipliers;
     private final ImmutableMap<String, Float> costTerms;
+    private final @Nullable SpellBuildCondition condition;
 
     public boolean appliesTo(SpellEffect effect) {
         return false;
@@ -51,6 +52,7 @@ public abstract class SpellReaction {
         this.id = id;
         this.costMultipliers = ImmutableMap.of();
         this.costTerms = ImmutableMap.of();
+        this.condition = null;
     }
 
     public SpellReaction(Identifier id, JsonObject obj) {
@@ -74,12 +76,20 @@ public abstract class SpellReaction {
 
         this.costTerms = costTerms.build();
         this.costMultipliers = costMultipliers.build();
+
+        if (obj.has("condition")) {
+            this.condition = SpellBuildCondition.fromJson(obj.getAsJsonObject("condition"));
+        } else {
+            this.condition = null;
+        }
     }
 
-    public SpellReaction(Identifier id, ImmutableMap<String, Float> costMultipliers, ImmutableMap<String, Float> costTerms) {
-        this.id = id;
-        this.costMultipliers = costMultipliers;
-        this.costTerms = costTerms;
+    public boolean shouldAdd(SpellBuilder builder, @Nullable SpellElement source) {
+        if (this.condition != null) {
+            return this.condition.shouldAdd(builder, source);
+        }
+
+        return true;
     }
 
     public float getCostMultiplier(String key) {

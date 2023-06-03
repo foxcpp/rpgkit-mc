@@ -35,12 +35,17 @@ public class SpellRayEntity extends Entity {
     public Vec3d aimOrigin;
 
     public int rayBaseColor = 0x00FFFFFF; // ARGB, calculated on client-side only
-    protected ParticleEffect particleEffect;
+    protected ParticleEffect particleEffect; // calcualted on client-side only
+    private Vec3d previousBlockHit;
+    private Entity previousEntityHit;
 
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);
         this.ignoreCameraFrustum = true;
         this.maxAge = 3 * 20;
+
+        this.previousBlockHit = null;
+        this.previousEntityHit = null;
     }
 
     public static SpellRayEntity empty(EntityType<?> type, World world) {
@@ -189,8 +194,14 @@ public class SpellRayEntity extends Entity {
             return;
         }
 
+        var len = this.getLength();
+
+        if (len <= 1) {
+            return;
+        }
+
         double x = this.getX(), y = this.getY(), z = this.getZ();
-        var i = this.random.nextInt((int) this.getLength());
+        var i = this.random.nextInt((int) len);
         var rot = this.getRotationVector();
         x += i * rot.x;
         y += i * rot.y;
@@ -240,13 +251,29 @@ public class SpellRayEntity extends Entity {
         entHitResult = ProjectileUtil.getEntityCollision(world, this, raycastStart, raycastEnd,
                 new Box(raycastStart, raycastEnd), this::canHit);
         if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
+            // Skip hits to make effect spam less significant.
+            if (this.previousEntityHit != null && entHitResult.getEntity().equals(this.previousEntityHit)) {
+                return;
+            }
+
             if (!this.onEntityHit(entHitResult)) {
                 this.dataTracker.set(LENGTH, (float) entHitResult.getPos().distanceTo(this.getPos()));
             }
+
+            this.previousBlockHit = null;
+            this.previousEntityHit = entHitResult.getEntity();
         } else if (hitResult.getType() != HitResult.Type.MISS) {
+            // Skip hits to make effect spam less significant.
+            if (this.previousBlockHit != null && hitResult.getPos().squaredDistanceTo(this.previousBlockHit) <= 1) {
+                return;
+            }
+
             if (!this.onBlockHit(hitResult)) {
                 this.dataTracker.set(LENGTH, (float) hitResult.getPos().distanceTo(this.getPos()));
             }
+
+            this.previousBlockHit = hitResult.getPos();
+            this.previousEntityHit = null;
         } else {
             this.dataTracker.set(LENGTH, 50f);
         }

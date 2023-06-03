@@ -64,8 +64,11 @@ public class AreaForm extends SpellForm {
                 radius += r.radius;
             }
         }
+        if (radius <= 2) {
+            radius = 2;
+        }
 
-        var area = Box.of(caster.getPos(), radius*2, radius*2, radius*2);
+        var area = Box.of(caster.getPos(), radius * 2, radius * 2, radius * 2);
 
         for (var ent : world.getOtherEntities(caster, area)) {
             if (ent instanceof MagicAreaEntity) { // TODO: Magic field interactions.
@@ -79,8 +82,8 @@ public class AreaForm extends SpellForm {
         var volume = (area.maxX - area.minX) * (area.maxZ - area.minZ) * (area.maxY - area.minY);
         var center = area.getCenter();
         world.spawnParticles(new GenericSpellParticleEffect(SpellElement.calculateBaseColor(cast.getFullRecipe()), 10),
-                center.getX(), center.getY(), center.getZ(), (int)(volume / 40 + 1),
-                area.getXLength()/2, area.getYLength()/2, area.getZLength()/2, 0);
+                center.getX(), center.getY(), center.getZ(), (int) (volume / 40 + 1),
+                area.getXLength() / 2, area.getYLength() / 2, area.getZLength() / 2, 0);
     }
 
     @Override

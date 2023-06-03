@@ -26,7 +26,7 @@ public class ExtinguishEffect extends SpellEffect {
     }
 
     public ExtinguishEffect(Identifier id, JsonObject obj) {
-        super(id);
+        super(id, obj);
         if (obj.has("area_coverage")) {
             this.areaCoverage = obj.get("area_coverage").getAsFloat();
         } else {
@@ -49,8 +49,8 @@ public class ExtinguishEffect extends SpellEffect {
     @Override
     public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
         var bb = new BlockBox(
-                (int)box.minX, (int)box.minY, (int)box.minZ,
-                (int)box.maxX, (int)box.maxY, (int)box.maxZ
+                (int) box.minX, (int) box.minY, (int) box.minZ,
+                (int) box.maxX, (int) box.maxY, (int) box.maxZ
         );
 
         var pos = new BlockPos.Mutable(0, 0, 0);
@@ -85,6 +85,7 @@ public class ExtinguishEffect extends SpellEffect {
 
     @Override
     public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
         obj.addProperty("area_coverage", this.areaCoverage);
     }
 

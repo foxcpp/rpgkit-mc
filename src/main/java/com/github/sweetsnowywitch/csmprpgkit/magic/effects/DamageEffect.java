@@ -55,7 +55,7 @@ public class DamageEffect extends SpellEffect {
     }
 
     public DamageEffect(Identifier id, JsonObject obj) {
-        super(id);
+        super(id, obj);
 
         if (obj.has("damage_dealt")) {
             this.damageDealt = obj.get("damage_dealt").getAsInt();
@@ -76,6 +76,9 @@ public class DamageEffect extends SpellEffect {
             if (reaction instanceof DamageEffect.Reaction r) {
                 damageDealt += r.damageDealt;
             }
+        }
+        if (damageDealt <= 1) {
+            damageDealt = 1;
         }
 
         le.damage(DamageSource.MAGIC, damageDealt);

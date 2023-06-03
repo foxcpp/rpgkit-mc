@@ -27,7 +27,7 @@ public class BoneMealEffect extends SpellEffect {
     }
 
     public BoneMealEffect(Identifier id, JsonObject obj) {
-        super(id);
+        super(id, obj);
         if (obj.has("area_coverage")) {
             this.areaCoverage = obj.get("area_coverage").getAsFloat();
         } else {
@@ -84,6 +84,7 @@ public class BoneMealEffect extends SpellEffect {
 
     @Override
     public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
         obj.addProperty("area_coverage", this.areaCoverage);
     }
 
