@@ -13,7 +13,9 @@ public class ModEntities {
                     SpellRayEntity::empty).
             dimensions(EntityDimensions.changing(0.42f, 0.42f)).build();
     public static final EntityType<SoundBarrierEntity> SOUND_BARRIER = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
-                    SoundBarrierEntity::empty).build();
+            SoundBarrierEntity::empty).build();
+    public static final EntityType<PersistentMagicEntity> PERSISTENT_MAGIC = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
+            PersistentMagicEntity::empty).build();
     public static final EntityType<SpellBlastEntity> SPELL_BLAST = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
             SpellBlastEntity::empty).build();
     public static final EntityType<SpellChargeEntity> SPELL_CHARGE = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
@@ -24,5 +26,7 @@ public class ModEntities {
         Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "spell_blast"), SPELL_BLAST);
         Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "spell_charge"), SPELL_CHARGE);
         Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "sound_barrier"), SOUND_BARRIER);
+        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMod.MOD_ID, "persistent_magic"), PERSISTENT_MAGIC);
+
     }
 }

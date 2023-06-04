@@ -1,6 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.form;
 
 import com.github.sweetsnowywitch.csmprpgkit.entities.MagicAreaEntity;
+import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
+import com.github.sweetsnowywitch.csmprpgkit.entities.PersistentMagicEntity;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
@@ -17,10 +19,14 @@ import org.jetbrains.annotations.NotNull;
 public class AreaForm extends SpellForm {
     public static class Reaction extends SpellReaction {
         public final double radius;
+        public final int persistenceDuration;
+        public final int effectActivations;
 
         public Reaction(Identifier id) {
             super(id);
             this.radius = 0;
+            this.persistenceDuration = 1;
+            this.effectActivations = 0;
         }
 
         public Reaction(Identifier id, JsonObject obj) {
@@ -31,17 +37,37 @@ public class AreaForm extends SpellForm {
             } else {
                 this.radius = 0;
             }
+
+            if (obj.has("persistence_duration_mul")) {
+                this.persistenceDuration = obj.get("persistence_duration_mul").getAsInt();
+            } else {
+                this.persistenceDuration = 1;
+            }
+
+            if (obj.has("persistence_activations")) {
+                this.effectActivations = obj.get("persistence_activations").getAsInt();
+            } else {
+                this.effectActivations = 0;
+            }
+        }
+
+        @Override
+        public boolean appliesTo(SpellForm form) {
+            return form instanceof AreaForm;
         }
 
         @Override
         public void toJson(@NotNull JsonObject obj) {
             super.toJson(obj);
             obj.addProperty("radius", this.radius);
+            obj.addProperty("persistence_duration_mul", this.persistenceDuration);
+            obj.addProperty("persistence_activations", this.effectActivations);
         }
 
         @Override
         public String toString() {
             return "AreaForm.Reaction[" +
+                    "persistenceDuration=" + persistenceDuration + ", " +
                     "radius=" + radius +
                     ']';
         }
@@ -59,9 +85,13 @@ public class AreaForm extends SpellForm {
         super.startCast(cast, world, caster);
 
         double radius = 2;
+        int persistenceDuration = 1;
+        int effectActivations = 1;
         for (var reaction : cast.getReactions()) {
             if (reaction instanceof Reaction r) {
                 radius += r.radius;
+                persistenceDuration *= r.persistenceDuration;
+                effectActivations += r.effectActivations;
             }
         }
         if (radius <= 2) {
@@ -84,6 +114,14 @@ public class AreaForm extends SpellForm {
         world.spawnParticles(new GenericSpellParticleEffect(SpellElement.calculateBaseColor(cast.getFullRecipe()), 10),
                 center.getX(), center.getY(), center.getZ(), (int) (volume / 40 + 1),
                 area.getXLength() / 2, area.getYLength() / 2, area.getZLength() / 2, 0);
+
+        if (persistenceDuration > 1) {
+            var persistent = new PersistentMagicEntity(ModEntities.PERSISTENT_MAGIC, world, area,
+                    persistenceDuration, persistenceDuration / effectActivations);
+            persistent.setCast(cast);
+            cast.customData.putUuid("PersistentAreaEntityUUID", persistent.getUuid());
+            world.spawnEntity(persistent);
+        }
     }
 
     @Override

@@ -38,6 +38,13 @@
     {
       "for_effect": "csmprpgkit:damage",
       "damage_dealt": 1
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "persistence_activations": 20,
+      "condition": {
+        "first_element": true
+      }
     }
   ]
 }

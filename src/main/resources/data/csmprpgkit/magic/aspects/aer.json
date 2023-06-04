@@ -33,7 +33,15 @@
     },
     {
       "for_form": "csmprpgkit:area",
-      "radius": 1
+      "radius": 1,
+      "persistence_activations": 4
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "persistence_activations": 10,
+      "condition": {
+        "first_element": true
+      }
     }
   ]
 }

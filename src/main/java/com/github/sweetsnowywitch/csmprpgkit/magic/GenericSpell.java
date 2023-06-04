@@ -53,16 +53,11 @@ public class GenericSpell extends Spell {
     }
 
     private static ImmutableList<SpellReaction> computeReactions(BiPredicate<SpellReaction, SpellElement> allowedReactions, List<SpellElement> elements) {
-        HashSet<SpellElement> seen = new HashSet<>(elements.size());
         ImmutableList.Builder<SpellReaction> reactions = ImmutableList.builder();
         for (var element : elements) {
-            if (seen.contains(element)) {
-                reactions.addAll(element.getGenericReactions().stream().
-                        filter(reaction -> allowedReactions.test(reaction, element)).
-                        iterator());
-            } else {
-                seen.add(element);
-            }
+            reactions.addAll(element.getGenericReactions().stream().
+                    filter(reaction -> allowedReactions.test(reaction, element)).
+                    iterator());
         }
         return reactions.build();
     }

@@ -99,7 +99,11 @@ public abstract class SpellEffect {
     }
 
     public static SpellEffect fromJson(JsonObject obj) {
-        var effectId = new Identifier(obj.get("type").getAsString());
+        var type = obj.get("type");
+        if (type == null) {
+            throw new IllegalArgumentException("missing type field in spell effect definition");
+        }
+        var effectId = new Identifier(type.getAsString());
         var effect = ModRegistries.SPELL_EFFECTS.get(effectId);
         if (effect == null) {
             throw new IllegalArgumentException("unknown effect: %s".formatted(effectId.toString()));

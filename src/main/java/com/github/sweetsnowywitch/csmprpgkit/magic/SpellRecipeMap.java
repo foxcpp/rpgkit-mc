@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +56,12 @@ public class SpellRecipeMap<T> {
         }
     }
 
-    public record Recipe<T>(ImmutableList<Element> elements, T result) {
+    public record Recipe<T>(@NotNull ImmutableList<Element> elements, @NotNull T result) {
     }
 
     private final List<Recipe<T>> recipes = new ArrayList<>();
 
-    public void addRecipe(ImmutableList<Element> elements, T result) {
+    public void addRecipe(@NotNull ImmutableList<Element> elements, @NotNull T result) {
         recipes.add(new Recipe<T>(elements, result));
     }
 
@@ -72,17 +73,17 @@ public class SpellRecipeMap<T> {
         this.recipes.clear();
     }
 
-    public Recipe<T> tryMatch(List<SpellElement> elements) {
+    public @Nullable Recipe<T> tryMatch(List<SpellElement> elements) {
         return this.tryMatch(elements, null);
     }
 
-    public Recipe<T> tryMatch(List<SpellElement> elements, Predicate<T> includeOnly) {
+    public @Nullable Recipe<T> tryMatch(List<SpellElement> elements, @Nullable Predicate<T> includeOnly) {
         var res = this.tryMatchInner(elements, includeOnly, false);
         if (res.size() == 0) return null;
         return res.get(0);
     }
 
-    public List<Recipe<T>> tryMatchMultiple(List<SpellElement> elements, Predicate<T> includeOnly) {
+    public List<Recipe<T>> tryMatchMultiple(List<SpellElement> elements, @Nullable Predicate<T> includeOnly) {
         return this.tryMatchInner(elements, includeOnly, true);
     }
 
@@ -90,7 +91,7 @@ public class SpellRecipeMap<T> {
         return this.tryMatchInner(elements, null, true);
     }
 
-    private List<Recipe<T>> tryMatchInner(List<SpellElement> elements, Predicate<T> includeOnly, boolean multiple) {
+    private List<Recipe<T>> tryMatchInner(List<SpellElement> elements, @Nullable Predicate<T> includeOnly, boolean multiple) {
         var res = new ArrayList<Recipe<T>>();
         for (Recipe<T> recipe : recipes) {
             if (includeOnly != null && !includeOnly.test(recipe.result)) {

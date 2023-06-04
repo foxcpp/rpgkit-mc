@@ -61,6 +61,13 @@
       "condition": {
         "first_element": false
       }
+    },
+    {
+      "for_form": "csmprpgkit:area",
+      "persistence_activations": 2,
+      "condition": {
+        "first_element": true
+      }
     }
   ]
 }

@@ -24,5 +24,14 @@
       "type": "csmprpgkit:damage",
       "damage_dealt": 1
     }
+  ],
+  "generic_reactions": [
+    {
+      "for_form": "csmprpgkit:area",
+      "persistence_activations": 2,
+      "condition": {
+        "first_element": true
+      }
+    }
   ]
 }

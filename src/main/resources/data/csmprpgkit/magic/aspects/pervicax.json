@@ -1,0 +1,34 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "22"
+  },
+  "recipes": [
+    [
+      "csmprpgkit:tempus",
+      "csmprpgkit:terra"
+    ]
+  ],
+  "use_form": {
+    "id": "csmprpgkit:ray",
+    "weight": 2
+  },
+  "generic_effects": [
+  ],
+  "generic_reactions": [
+    {
+      "for_form": "csmprpgkit:area",
+      "persistence_duration_mul": 15,
+      "condition": {
+        "first_element": false
+      }
+    },
+    {
+      "for_effect": "csmprpgkit:potion",
+      "duration": 25,
+      "condition": {
+        "first_element": false
+      }
+    }
+  ]
+}
