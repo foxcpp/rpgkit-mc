@@ -48,6 +48,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
 
     public void loadSynced(Map<Identifier, JsonElement> prepared) {
         var aspects = new HashMap<Identifier, Aspect>();
+        var genericReactionsMap = new HashMap<Identifier, SpellReaction>();
 
         for (var ent : prepared.entrySet()) {
             try {
@@ -86,7 +87,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                         var obj = effectElement.getAsJsonObject();
 
                         var reactionHash = sha256(RPGKitMod.GSON.toJson(obj));
-                        var reactionId = Identifier.of(ent.getKey().getNamespace(), ent.getKey().getPath() + "/generic_reaction_" + reactionHash);
+                        var reactionId = Identifier.of(ent.getKey().getNamespace(), "generic_reaction/" + ent.getKey().getPath() + "/" + reactionHash);
 
                         SpellReaction reaction;
                         if (obj.has("for_effect")) {
@@ -110,6 +111,7 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                             throw new IllegalArgumentException("reaction cannot be defined for that form/effect");
                         }
                         genericReactions.add(reaction);
+                        genericReactionsMap.put(reactionId, reaction);
                         i++;
                     }
                 }
@@ -134,7 +136,10 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
         }
 
         ModRegistries.ASPECTS.clear();
+        ModRegistries.REACTIONS.keySet().removeIf(key -> key.getPath().startsWith("generic_reaction"));
         ModRegistries.ASPECTS.putAll(aspects);
+        ModRegistries.REACTIONS.putAll(genericReactionsMap);
+
         RPGKitMod.LOGGER.info("Loaded {} aspect definitions", aspects.size());
 
         var recipes = new SpellRecipeMap<Aspect>();
