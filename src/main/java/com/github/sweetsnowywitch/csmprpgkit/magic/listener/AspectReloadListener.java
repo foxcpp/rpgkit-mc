@@ -160,7 +160,11 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
                             RPGKitMod.LOGGER.error("Aspect {} recipe cannot contain more than 2 other aspects, ignoring", ent.getKey());
                             continue;
                         }
-                        recipes.addRecipe(recipeBuilder.build(), ModRegistries.ASPECTS.get(ent.getKey()));
+                        var asp = ModRegistries.ASPECTS.get(ent.getKey());
+                        if (asp == null) { // If aspect load failed for some reason.
+                            continue;
+                        }
+                        recipes.addRecipe(recipeBuilder.build(), asp);
                     }
                 }
             } catch (Exception e) {
