@@ -1,7 +1,10 @@
 {
   "kind": "effect",
   "costs": {
-    "magicae": "22"
+    "magicae": "22",
+    "regeneratio": "1.25",
+    "mutatio": "1.8",
+    "interitio": "6"
   },
   "recipes": [
     [

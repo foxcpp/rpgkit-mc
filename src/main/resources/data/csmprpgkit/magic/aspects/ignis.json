@@ -2,7 +2,10 @@
   "kind": "effect",
   "order": 4,
   "costs": {
-    "magicae": "11"
+    "magicae": "11",
+    "regeneratio": "1",
+    "mutatio": "1.25",
+    "interitio": "2"
   },
   "color": "ff6600",
   "use_form": {
