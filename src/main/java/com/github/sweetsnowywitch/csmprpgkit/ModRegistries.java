@@ -41,7 +41,8 @@ public class ModRegistries {
     public static final SpellRecipeMap<SpellReaction> REACTION_RECIPES = new SpellRecipeMap<>();
     public static final SpellRecipeMap<Spell> SPELL_RECIPES = new SpellRecipeMap<>();
     public static final Map<Identifier, Map<String, Float>> ITEM_COSTS = new HashMap<>();
+    public static final Map<Identifier, ItemTransmuteMapping> TRANSMUTE_MAPPINGS = new HashMap<>();
 
     public static final BiMap<Identifier, CharacterClass> CLASSES = HashBiMap.create();
-    public static final BiMap<Identifier, Integer>  ADVANCEMENTS = HashBiMap.create();
+    public static final BiMap<Identifier, Integer> ADVANCEMENTS = HashBiMap.create();
 }

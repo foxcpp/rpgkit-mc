@@ -1,0 +1,22 @@
+{
+  "type": "item",
+  "mappings": [
+    {
+      "ingredient": {
+        "item": "minecraft:stick"
+      },
+      "weight": 0.2,
+      "replacement": "minecraft:torch"
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:stick"
+      },
+      "weight": 0.8,
+      "replacement": "minecraft:air"
+    }
+  ],
+  "default": {
+    "replacement": "minecraft:coal"
+  }
+}

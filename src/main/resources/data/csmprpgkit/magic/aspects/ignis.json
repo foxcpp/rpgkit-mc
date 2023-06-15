@@ -25,6 +25,13 @@
       "condition": {
         "first_element": true
       }
+    },
+    {
+      "type": "csmprpgkit:transmute_item",
+      "mapping": "csmprpgkit:burn",
+      "condition": {
+        "first_element": true
+      }
     }
   ],
   "generic_reactions": [

@@ -34,7 +34,7 @@ public class SpellBuildKeyboardHandler implements ClientTickEvents.EndTick {
     }
 
     private void setupKeyboard(MinecraftClient client) {
-        this.keyboard = ((InterceptableKeyboard)client.keyboard);
+        this.keyboard = ((InterceptableKeyboard) client.keyboard);
         this.keyboard.clear();
         for (int key = GLFW.GLFW_KEY_1; key <= GLFW.GLFW_KEY_9; key++) {
             this.keyboard.intercept(InputUtil.fromKeyCode(key, -1), (k) -> this.isActive(client));
@@ -75,11 +75,14 @@ public class SpellBuildKeyboardHandler implements ClientTickEvents.EndTick {
                 }
             }
 
-            if (key.getCode() == catalystBagKey.getCode()) {
-                comp.switchCatalystBag();
-            }
             if (key.getCode() == areaCastKey.getCode()) {
                 comp.performAreaCast();
+            }
+            if (key.getCode() == itemCastKey.getCode()) {
+                comp.performItemCast();
+            }
+            if (key.getCode() == catalystBagKey.getCode()) {
+                comp.switchCatalystBag();
             }
         }
     }

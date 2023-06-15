@@ -18,6 +18,7 @@ public class ModEffects {
     public static final SpellEffect.Factory EXTINGUISH = SpellEffect.factoryFor(ExtinguishEffect::new, ExtinguishEffect::new);
     public static final SpellEffect.Factory BONE_MEAL = SpellEffect.factoryFor(BoneMealEffect::new, BoneMealEffect::new);
     public static final SpellEffect.Factory EXPLOSION = SpellEffect.factoryFor(ExplosionEffect::new, ExplosionEffect::new);
+    public static final SpellEffect.Factory TRANSFORM_ITEM = SpellEffect.factoryFor(TransmuteItemEffect::new, TransmuteItemEffect::new);
 
     public static void register() {
         Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "potion"), POTION);
@@ -42,5 +43,6 @@ public class ModEffects {
         Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "extinguish"), EXTINGUISH);
         Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "bone_meal"), BONE_MEAL);
         Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "explosion"), EXPLOSION);
+        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "transmute_item"), TRANSFORM_ITEM);
     }
 }

@@ -14,6 +14,8 @@ public class ModForms {
     public static final SpellForm BLAST = new BlastForm();
     public static final SpellForm CHARGE = new ChargeForm();
     public static final SpellForm HITSCAN = new HitscanForm();
+    public static final SpellForm ITEM = new ItemForm();
+
     public static void register() {
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "self"), SELF);
 
@@ -32,5 +34,6 @@ public class ModForms {
                 SpellReaction.factoryFor(ChargeForm.Reaction::new, ChargeForm.Reaction::new));
 
         Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "hitscan"), HITSCAN);
+        Registry.register(ModRegistries.SPELL_FORMS, Identifier.of(RPGKitMod.MOD_ID, "item"), ITEM);
     }
 }

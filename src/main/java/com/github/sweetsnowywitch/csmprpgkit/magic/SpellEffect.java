@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -73,6 +74,10 @@ public abstract class SpellEffect {
     public abstract boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir);
 
     public abstract void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box);
+
+    public ItemStack onItemHit(ServerSpellCast cast, ServerWorld world, @Nullable Entity holder, ItemStack stack) {
+        return stack;
+    }
 
     @Override
     public String toString() {

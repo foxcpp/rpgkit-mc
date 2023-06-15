@@ -97,6 +97,9 @@ public class SpellReloadListener extends JsonDataLoader implements IdentifiableR
 
     @Override
     public Collection<Identifier> getFabricDependencies() {
-        return List.of(new Identifier(RPGKitMod.MOD_ID, "magic/aspects"));
+        return List.of(
+                new Identifier(RPGKitMod.MOD_ID, "magic/aspects"),
+                new Identifier(RPGKitMod.MOD_ID, "magic/transmute_mapping")
+        );
     }
 }

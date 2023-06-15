@@ -346,7 +346,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return;
         }
 
-        throw new IllegalStateException("not implemented yet");
+        this.performCast(ModForms.ITEM);
     }
 
     public void performAreaCast() {

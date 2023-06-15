@@ -5,6 +5,8 @@ import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -100,6 +102,11 @@ public class Spell {
     }
 
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+        if (entity instanceof ItemEntity ie) {
+            var replacement = this.onItemHit(cast, (ServerWorld) entity.getWorld(), entity, ie.getStack());
+            ie.setStack(replacement);
+        }
+
         var passThrough = true;
         for (var effect : this.effects) {
             passThrough = effect.onSingleEntityHit(cast, entity) && passThrough;
@@ -119,5 +126,12 @@ public class Spell {
         for (var effect : this.effects) {
             effect.onAreaHit(cast, world, box);
         }
+    }
+
+    public ItemStack onItemHit(ServerSpellCast cast, ServerWorld world, @Nullable Entity holder, ItemStack stack) {
+        for (var effect : this.effects) {
+            stack = effect.onItemHit(cast, world, holder, stack);
+        }
+        return stack;
     }
 }
