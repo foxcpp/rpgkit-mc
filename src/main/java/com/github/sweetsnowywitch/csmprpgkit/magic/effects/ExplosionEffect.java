@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
+import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.google.gson.JsonObject;
@@ -46,11 +47,14 @@ public class ExplosionEffect extends SpellEffect {
     private final boolean dropBlocks;
     private final boolean breakBlocks;
 
+    private final float powerMultiplier;
+
     public ExplosionEffect(Identifier id) {
         super(id);
         this.blastResistanceDecrease = 0f;
         this.dropBlocks = false;
-        this.breakBlocks = false;
+        this.breakBlocks = true;
+        this.powerMultiplier = 0.05f;
     }
 
     public ExplosionEffect(Identifier id, JsonObject obj) {
@@ -61,11 +65,17 @@ public class ExplosionEffect extends SpellEffect {
             this.blastResistanceDecrease = 0f;
         }
         this.dropBlocks = obj.has("drop_blocks") && obj.get("drop_blocks").getAsBoolean();
-        this.breakBlocks = obj.has("break_blocks") && obj.get("break_blocks").getAsBoolean();
+        this.breakBlocks = !obj.has("break_blocks") || obj.get("break_blocks").getAsBoolean();
+        if (obj.has("power_multiplier")) {
+            this.powerMultiplier = obj.get("power_multiplier").getAsFloat();
+        } else {
+            this.powerMultiplier = 0.4f;
+        }
     }
 
     @Override
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+        this.onAreaHit(cast, (ServerWorld) entity.getWorld(), Box.of(entity.getPos(), 4, 4, 4));
         return false;
     }
 
@@ -87,7 +97,9 @@ public class ExplosionEffect extends SpellEffect {
         }
 
         var center = box.getCenter();
-        var power = 0.25 * box.getXLength() * box.getYLength() * box.getZLength();
+        var power = this.powerMultiplier * Math.min(box.getXLength(), box.getZLength());
+
+        RPGKitMod.LOGGER.debug("Created spell explosion at {} with power {} (break blocks = {}, blast resistance - {})", center, power, breakBlocks, blastResistanceDecrease);
 
         world.createExplosion(caster, damageSource, new Behavior(this.blastResistanceDecrease, this.breakBlocks),
                 center.x, center.y, center.z, (float) power, false, Explosion.DestructionType.DESTROY);

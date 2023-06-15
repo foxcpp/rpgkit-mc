@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.form;
 
+import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.entities.MagicAreaEntity;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.entities.PersistentMagicEntity;
@@ -99,6 +100,8 @@ public class AreaForm extends SpellForm {
         }
 
         var area = Box.of(caster.getPos(), radius * 2, radius * 2, radius * 2);
+
+        RPGKitMod.LOGGER.debug("Spell affects area {}", area);
 
         for (var ent : world.getOtherEntities(caster, area)) {
             if (ent instanceof MagicAreaEntity) { // TODO: Magic field interactions.

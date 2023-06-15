@@ -19,6 +19,7 @@
   "generic_effects": [
     {
       "type": "csmprpgkit:explosion",
+      "power_multiplier": 0.23,
       "condition": {
         "first_element": true
       }
