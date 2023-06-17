@@ -458,6 +458,13 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             }
 
             cf.channelTick(cast, this.provider);
+
+            for (var effect : cast.getSpell().getEffects()) {
+                if (effect instanceof SpellEffect.Channeled c) {
+                    c.onChannelTick(cast, (ServerWorld) this.provider.world);
+                }
+            }
+
             this.channelAge++;
 
             if (this.channelAge > 10) {

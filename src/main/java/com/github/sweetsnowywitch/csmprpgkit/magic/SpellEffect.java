@@ -17,6 +17,24 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public abstract class SpellEffect {
+    public interface Channeled {
+        default void onChannelTick(ServerSpellCast cast, ServerWorld world) {
+
+        }
+
+        default void onSingleEntityHold(ServerSpellCast cast, Entity entity) {
+
+        }
+
+        default void onSingleBlockHold(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+
+        }
+
+        default void onAreaHold(ServerSpellCast cast, ServerWorld world, Box box) {
+
+        }
+    }
+
     public interface Factory {
         SpellEffect createDefaultEffect(Identifier id);
 

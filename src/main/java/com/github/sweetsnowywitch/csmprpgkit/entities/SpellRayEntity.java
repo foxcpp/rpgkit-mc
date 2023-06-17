@@ -253,6 +253,7 @@ public class SpellRayEntity extends Entity {
         if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
             // Skip hits to make effect spam less significant.
             if (this.previousEntityHit != null && entHitResult.getEntity().equals(this.previousEntityHit)) {
+                this.cast.getSpell().onSingleEntityHold(this.cast, entHitResult.getEntity());
                 return;
             }
 

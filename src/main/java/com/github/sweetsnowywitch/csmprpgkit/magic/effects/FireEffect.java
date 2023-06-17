@@ -50,7 +50,7 @@ public class FireEffect extends SpellEffect {
                 (int) box.maxX, (int) box.maxY, (int) box.maxZ
         );
 
-        var startPos = cast.getStartPos();
+        var startPos = cast.getOriginPos();
         var pos = new BlockPos.Mutable(0, 0, 0);
         for (int y = bb.getMinY(); y <= bb.getMaxY(); y++) {
             for (int x = bb.getMinX(); x <= bb.getMaxX(); x++) {

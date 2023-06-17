@@ -134,4 +134,20 @@ public class Spell {
         }
         return stack;
     }
+
+    public void onSingleEntityHold(ServerSpellCast cast, Entity entity) {
+        for (var effect : this.effects) {
+            if (effect instanceof SpellEffect.Channeled c) {
+                c.onSingleEntityHold(cast, entity);
+            }
+        }
+    }
+
+    public void onSingleBlockHold(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+        for (var effect : this.effects) {
+            if (effect instanceof SpellEffect.Channeled c) {
+                c.onSingleBlockHold(cast, world, pos, dir);
+            }
+        }
+    }
 }

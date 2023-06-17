@@ -26,8 +26,8 @@ public class ServerSpellCast extends SpellCast {
 
     public ServerSpellCast(SpellForm form, Spell spell, UUID casterID, List<SpellReaction> formReactions,
                            List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
-                           Vec3d startPos) {
-        super(form, spell, reactions, costs, fullRecipe, startPos);
+                           Vec3d startPos, float startYaw, float startPitch) {
+        super(form, spell, reactions, costs, fullRecipe, startPos, startYaw, startPitch);
 
         this.casterUuid = casterID;
         this.customData = new NbtCompound();
@@ -35,8 +35,8 @@ public class ServerSpellCast extends SpellCast {
 
     public ServerSpellCast(SpellForm form, Spell spell, @NotNull Entity caster,
                            List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
-                           Vec3d startPos) {
-        super(form, spell, reactions, costs, fullRecipe, startPos);
+                           Vec3d startPos, float startYaw, float startPitch) {
+        super(form, spell, reactions, costs, fullRecipe, startPos, startYaw, startPitch);
 
         if (caster.getWorld().isClient) {
             throw new IllegalStateException("cannot instantiate ServerSpellCast on logical client");

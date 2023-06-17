@@ -61,7 +61,7 @@ public class PushAwayEffect extends SpellEffect {
 
     @Override
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
-        var direction = entity.getPos().subtract(cast.getStartPos()).normalize();
+        var direction = entity.getPos().subtract(cast.getOriginPos()).normalize();
 
         entity.setVelocity(entity.getVelocity().add(direction.multiply(this.velocity)));
         return false;

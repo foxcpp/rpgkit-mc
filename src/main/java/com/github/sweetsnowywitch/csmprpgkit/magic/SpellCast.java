@@ -41,18 +41,19 @@ public class SpellCast {
     };
 
     public static final SpellCast EMPTY = new SpellCast(ModForms.SELF, Spell.EMPTY,
-            List.of(), Map.of(), List.of(), Vec3d.ZERO);
+            List.of(), Map.of(), List.of(), Vec3d.ZERO, 0, 0);
 
     protected final SpellForm form;
     protected final Spell spell;
     protected final ImmutableList<SpellReaction> reactions;
     protected final ImmutableMap<String, Float> costs;
     protected final ImmutableList<SpellElement> fullRecipe;
-    protected final Vec3d startPos;
+    protected Vec3d originPos;
+    protected float originYaw, originPitch;
 
     public SpellCast(SpellForm form, Spell spell, List<SpellReaction> reactions,
                      Map<String, Float> costs, List<SpellElement> fullRecipe,
-                     Vec3d startPos) {
+                     Vec3d originPos, float originYaw, float originPitch) {
         this.form = form;
         this.spell = spell;
         this.reactions = ImmutableList.copyOf(reactions.stream().filter(r -> {
@@ -69,7 +70,9 @@ public class SpellCast {
         }).iterator());
         this.costs = ImmutableMap.copyOf(costs);
         this.fullRecipe = ImmutableList.copyOf(fullRecipe);
-        this.startPos = startPos;
+        this.originPos = originPos;
+        this.originYaw = originYaw;
+        this.originPitch = originPitch;
     }
 
     protected SpellCast(NbtCompound nbt) {
@@ -128,7 +131,9 @@ public class SpellCast {
         this.reactions = reactions.build();
         this.costs = costs.build();
         this.fullRecipe = fullRecipe.build();
-        this.startPos = new Vec3d(nbt.getDouble("StartX"), nbt.getDouble("StartY"), nbt.getDouble("StartZ"));
+        this.originPos = new Vec3d(nbt.getDouble("StartX"), nbt.getDouble("StartY"), nbt.getDouble("StartZ"));
+        this.originYaw = nbt.getFloat("Yaw");
+        this.originPitch = nbt.getFloat("Pitch");
     }
 
     public static SpellCast readFromNbt(NbtCompound nbt) {
@@ -165,9 +170,11 @@ public class SpellCast {
         }
         nbt.put("Recipe", fullRecipe);
 
-        nbt.putDouble("StartX", this.startPos.x);
-        nbt.putDouble("StartY", this.startPos.y);
-        nbt.putDouble("StartZ", this.startPos.z);
+        nbt.putDouble("StartX", this.originPos.x);
+        nbt.putDouble("StartY", this.originPos.y);
+        nbt.putDouble("StartZ", this.originPos.z);
+        nbt.putFloat("OriginYaw", this.originYaw);
+        nbt.putFloat("OriginPitch", this.originPitch);
     }
 
     public SpellForm getForm() {
@@ -190,11 +197,28 @@ public class SpellCast {
         return this.fullRecipe;
     }
 
-    public Vec3d getStartPos() {
-        return this.startPos;
+    public Vec3d getOriginPos() {
+        return this.originPos;
+    }
+
+    public float getOriginYaw() {
+        return this.originYaw;
+    }
+
+    public float getOriginPitch() {
+        return this.originPitch;
     }
 
     public boolean isChanneled() {
         return this.getForm() instanceof ChanneledForm;
+    }
+
+    public void updateOrigin(Vec3d pos) {
+        this.originPos = pos;
+    }
+
+    public void updateOriginRotation(float yaw, float pitch) {
+        this.originYaw = yaw;
+        this.originPitch = pitch;
     }
 }

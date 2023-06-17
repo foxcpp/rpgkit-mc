@@ -170,6 +170,8 @@ public class SpellBlastEntity extends MagicAreaEntity {
             }
             if (!this.prevTickSeen.containsKey(ent.getId())) {
                 this.cast.getSpell().onSingleEntityHit(this.cast, ent);
+            } else {
+                this.cast.getSpell().onSingleEntityHold(this.cast, ent);
             }
             this.prevTickSeen.put(ent.getId(), true);
         }

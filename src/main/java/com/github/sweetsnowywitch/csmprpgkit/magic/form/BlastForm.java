@@ -128,6 +128,8 @@ public class BlastForm extends SpellForm implements ChanneledForm {
 
                 var previousArea = blast.getArea();
 
+                cast.updateOrigin(pos);
+                cast.updateOriginRotation(caster.getHeadYaw(), caster.getPitch());
                 blast.moveArea(pos, caster.getRotationVector(), distance, radius);
                 blast.increaseMaxAge(5);
 

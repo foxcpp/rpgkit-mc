@@ -63,7 +63,7 @@ public class TransmuteItemEffect extends SpellEffect {
 
         var lcb = new LootContext.Builder(world);
         lcb.luck(0.5f);
-        lcb.parameter(LootContextParameters.ORIGIN, cast.getStartPos());
+        lcb.parameter(LootContextParameters.ORIGIN, cast.getOriginPos());
         Entity thisEntity;
         if (holder != null) {
             thisEntity = holder;

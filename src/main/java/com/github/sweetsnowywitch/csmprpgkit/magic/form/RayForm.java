@@ -69,6 +69,8 @@ public class RayForm extends SpellForm implements ChanneledForm {
                 ray.setPosition(pos);
                 ray.setYaw(caster.getHeadYaw());
                 ray.setPitch(caster.getPitch());
+                cast.updateOrigin(pos);
+                cast.updateOriginRotation(caster.getHeadYaw(), caster.getPitch());
                 ray.setMaxAge(ray.age + 5);
             }
         }
