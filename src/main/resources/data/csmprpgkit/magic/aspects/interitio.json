@@ -13,34 +13,7 @@
     "weight": 1
   },
   "generic_effects": [
-    {
-      "type": "csmprpgkit:damage",
-      "damage_dealt": 5,
-      "condition": {
-        "first_element": true
-      }
-    }
   ],
   "generic_reactions": [
-    {
-      "for_effect": "csmprpgkit:damage",
-      "damage_dealt": 3,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "for_form": "csmprpgkit:blast",
-      "distance": 2,
-      "radius": 0.25
-    },
-    {
-      "for_form": "csmprpgkit:area",
-      "radius": 1,
-      "persistence_activations": 2,
-      "condition": {
-        "first_element": true
-      }
-    }
   ]
 }

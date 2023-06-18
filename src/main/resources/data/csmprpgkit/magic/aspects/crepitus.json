@@ -7,35 +7,13 @@
     "interitio": "6"
   },
   "recipes": [
-    [
-      "csmprpgkit:ignis",
-      "csmprpgkit:interitio"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:blast",
     "weight": 1
   },
   "generic_effects": [
-    {
-      "type": "csmprpgkit:explosion",
-      "power_multiplier": 0.23,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "type": "csmprpgkit:damage",
-      "damage_dealt": 1
-    }
   ],
   "generic_reactions": [
-    {
-      "for_form": "csmprpgkit:area",
-      "persistence_activations": 2,
-      "condition": {
-        "first_element": true
-      }
-    }
   ]
 }

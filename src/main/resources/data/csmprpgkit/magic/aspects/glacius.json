@@ -7,70 +7,13 @@
     "interitio": "1"
   },
   "recipes": [
-    [
-      "csmprpgkit:aqua",
-      "csmprpgkit:terra"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:charge",
     "weight": 2
   },
   "generic_effects": [
-    {
-      "type": "csmprpgkit:potion",
-      "id": "minecraft:slowness",
-      "duration": 3,
-      "amplifier": 1,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "type": "csmprpgkit:damage",
-      "damage_dealt": 5,
-      "condition": {
-        "first_element": true
-      }
-    }
   ],
   "generic_reactions": [
-    {
-      "for_effect": "csmprpgkit:potion",
-      "id": "minecraft:slowness",
-      "duration": 3,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "for_effect": "csmprpgkit:damage",
-      "damage_dealt": 3,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "for_form": "csmprpgkit:blast",
-      "distance": -1,
-      "radius": -0.25,
-      "condition": {
-        "first_element": false
-      }
-    },
-    {
-      "for_form": "csmprpgkit:area",
-      "radius": -1,
-      "condition": {
-        "first_element": false
-      }
-    },
-    {
-      "for_form": "csmprpgkit:area",
-      "persistence_activations": 2,
-      "condition": {
-        "first_element": true
-      }
-    }
   ]
 }

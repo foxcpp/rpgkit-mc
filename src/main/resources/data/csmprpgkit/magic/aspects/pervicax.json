@@ -7,10 +7,6 @@
     "interitio": "1.6"
   },
   "recipes": [
-    [
-      "csmprpgkit:tempus",
-      "csmprpgkit:terra"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:ray",
@@ -19,19 +15,5 @@
   "generic_effects": [
   ],
   "generic_reactions": [
-    {
-      "for_form": "csmprpgkit:area",
-      "persistence_duration_mul": 15,
-      "condition": {
-        "first_element": false
-      }
-    },
-    {
-      "for_effect": "csmprpgkit:potion",
-      "duration": 25,
-      "condition": {
-        "first_element": false
-      }
-    }
   ]
 }

@@ -7,47 +7,13 @@
     "interitio": "1.22"
   },
   "recipes": [
-    [
-      "csmprpgkit:terra",
-      "csmprpgkit:aqua"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:ray",
     "weight": 2
   },
   "generic_effects": [
-    {
-      "type": "csmprpgkit:potion",
-      "id": "minecraft:regeneration",
-      "duration": 3,
-      "amplifier": 1,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "type": "csmprpgkit:bone_meal",
-      "condition": {
-        "first_element": true
-      }
-    }
   ],
   "generic_reactions": [
-    {
-      "for_effect": "csmprpgkit:potion",
-      "id": "minecraft:regeneration",
-      "duration": 3,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "for_form": "csmprpgkit:area",
-      "persistence_activations": 2,
-      "condition": {
-        "first_element": true
-      }
-    }
   ]
 }

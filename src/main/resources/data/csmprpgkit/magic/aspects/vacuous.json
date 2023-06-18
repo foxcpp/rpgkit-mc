@@ -7,72 +7,13 @@
     "interitio": "3.2"
   },
   "recipes": [
-    [
-      "csmprpgkit:terra",
-      "csmprpgkit:ignis"
-    ],
-    [
-      "csmprpgkit:ignis",
-      "csmprpgkit:terra"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:charge",
     "weight": 2
   },
   "generic_effects": [
-    {
-      "type": "csmprpgkit:push_away",
-      "velocity": -1,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "type": "csmprpgkit:damage",
-      "damage_dealt": 5,
-      "condition": {
-        "first_element": true
-      }
-    }
   ],
   "generic_reactions": [
-    {
-      "for_effect": "csmprpgkit:push_away",
-      "velocity": -2,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "for_form": "csmprpgkit:blast",
-      "distance": 2,
-      "radius": 0.25,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "for_form": "csmprpgkit:area",
-      "radius": 1,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "for_form": "csmprpgkit:blast",
-      "distance": -1,
-      "radius": -0.25,
-      "condition": {
-        "first_element": false
-      }
-    },
-    {
-      "for_form": "csmprpgkit:area",
-      "radius": -1,
-      "condition": {
-        "first_element": false
-      }
-    }
   ]
 }

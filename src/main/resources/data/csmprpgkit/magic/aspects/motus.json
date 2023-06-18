@@ -7,14 +7,6 @@
     "interitio": "0.5"
   },
   "recipes": [
-    [
-      "csmprpgkit:aer",
-      "csmprpgkit:ordino"
-    ],
-    [
-      "csmprpgkit:terra",
-      "csmprpgkit:aer"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:ray",

@@ -7,10 +7,6 @@
     "interitio": "0.75"
   },
   "recipes": [
-    [
-      "csmprpgkit:motus",
-      "csmprpgkit:aqua"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:ray",

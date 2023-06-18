@@ -7,47 +7,13 @@
     "interitio": "5.4"
   },
   "recipes": [
-    [
-      "csmprpgkit:natura",
-      "csmprpgkit:interitio"
-    ]
   ],
   "use_form": {
     "id": "csmprpgkit:blast",
     "weight": 1
   },
   "generic_effects": [
-    {
-      "type": "csmprpgkit:potion",
-      "id": "minecraft:poison",
-      "duration": 3,
-      "amplifier": 1,
-      "condition": {
-        "first_element": true
-      }
-    },
-    {
-      "type": "csmprpgkit:damage",
-      "damage_dealt": 1
-    }
   ],
   "generic_reactions": [
-    {
-      "for_effect": "csmprpgkit:potion",
-      "id": "minecraft:poison",
-      "duration": 4,
-      "amplifier": 1
-    },
-    {
-      "for_effect": "csmprpgkit:damage",
-      "damage_dealt": 1
-    },
-    {
-      "for_form": "csmprpgkit:area",
-      "persistence_activations": 20,
-      "condition": {
-        "first_element": true
-      }
-    }
   ]
 }
