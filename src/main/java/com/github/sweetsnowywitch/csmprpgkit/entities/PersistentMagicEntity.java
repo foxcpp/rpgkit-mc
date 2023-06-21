@@ -45,8 +45,15 @@ public class PersistentMagicEntity extends MagicAreaEntity {
     public void tick() {
         super.tick();
 
-        if (!this.world.isClient && this.age % this.effectInterval == 0) {
+        if (!this.world.isClient && (this.effectInterval == 0 || this.age % this.effectInterval == 0)) {
             this.cast.getSpell().onAreaHit(this.cast, (ServerWorld) world, this.getArea());
+
+            for (var ent : world.getOtherEntities(this, this.getArea())) {
+                if (ent instanceof MagicAreaEntity) { // TODO: Magic field interactions.
+                    continue;
+                }
+                cast.getSpell().onSingleEntityHit(cast, ent);
+            }
         }
     }
 }

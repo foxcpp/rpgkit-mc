@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
+import com.github.sweetsnowywitch.csmprpgkit.MovementUtils;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
@@ -17,16 +18,20 @@ public class PushEffect extends SpellEffect {
     public enum EffectVector {
         TOWARDS_ORIGIN,
         FROM_ORIGIN,
+        FORWARD,
         COUNTERCLOCKWISE,
+        CLOCKWISE,
         UP,
         DOWN,
         ZERO;
 
-        public Vec3d direction(Vec3d target, Vec3d origin) {
+        public Vec3d direction(Vec3d target, Vec3d origin, Vec3d direction) {
             return switch (this) {
-                case TOWARDS_ORIGIN -> origin.subtract(target).normalize();
-                case FROM_ORIGIN -> target.subtract(origin).normalize();
+                case TOWARDS_ORIGIN -> origin.subtract(target);
+                case FROM_ORIGIN -> target.subtract(origin);
+                case FORWARD -> direction;
                 case COUNTERCLOCKWISE -> target.subtract(origin).crossProduct(new Vec3d(0, -1, 0));
+                case CLOCKWISE -> target.subtract(origin).crossProduct(new Vec3d(0, 1, 0));
                 case UP -> new Vec3d(0, 0.5, 0);
                 case DOWN -> new Vec3d(0, -1, 0);
                 case ZERO -> Vec3d.ZERO;
@@ -100,36 +105,37 @@ public class PushEffect extends SpellEffect {
 
     @Override
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+        var castDirection = MovementUtils.rotationVector(cast.getOriginPitch(), cast.getOriginYaw());
         double velocity = this.velocity;
-        Vec3d direction = null;
+        Vec3d effectDirection = null;
         for (var reaction : cast.getReactions()) {
             if (reaction instanceof Reaction r) {
                 velocity += r.velocity;
-                if (direction != null) {
-                    direction = direction.add(r.vector.direction(entity.getPos(), cast.getOriginPos()));
+                if (effectDirection != null) {
+                    effectDirection = effectDirection.add(r.vector.direction(entity.getPos(), cast.getOriginPos(), castDirection));
                 } else {
-                    direction = r.vector.direction(entity.getPos(), cast.getOriginPos());
+                    effectDirection = r.vector.direction(entity.getPos(), cast.getOriginPos(), castDirection);
                 }
             }
         }
-        if (direction == null) {
-            direction = this.vector.direction(entity.getPos(), cast.getOriginPos());
+        if (effectDirection == null) {
+            effectDirection = this.vector.direction(entity.getPos(), cast.getOriginPos(), castDirection);
         }
-        var velocityVec = direction.multiply(velocity / direction.length());
+        var effectVelocityVec = effectDirection.multiply(velocity / effectDirection.length());
         var currentVelocity = entity.getVelocity();
 
         entity.velocityDirty = true;
         entity.velocityModified = true;
-        if (currentVelocity.y + velocityVec.y > 0) {
+        if (currentVelocity.y + effectVelocityVec.y > 0) {
             entity.setVelocity(
-                    currentVelocity.x + velocityVec.x,
-                    Math.max(1, (currentVelocity.y + velocityVec.y) / 4),
-                    currentVelocity.z + velocityVec.z);
+                    currentVelocity.x + effectVelocityVec.x,
+                    Math.max(1, (currentVelocity.y + effectVelocityVec.y) / 4),
+                    currentVelocity.z + effectVelocityVec.z);
         } else {
             entity.setVelocity(
-                    currentVelocity.x + velocityVec.x,
-                    currentVelocity.y + velocityVec.y,
-                    currentVelocity.z + velocityVec.z);
+                    currentVelocity.x + effectVelocityVec.x,
+                    currentVelocity.y + effectVelocityVec.y,
+                    currentVelocity.z + effectVelocityVec.z);
         }
         return false;
     }
