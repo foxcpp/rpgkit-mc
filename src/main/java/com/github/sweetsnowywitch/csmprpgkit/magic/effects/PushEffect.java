@@ -1,6 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
-import com.github.sweetsnowywitch.csmprpgkit.MovementUtils;
+import com.github.sweetsnowywitch.csmprpgkit.VectorUtils;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
@@ -43,11 +43,13 @@ public class PushEffect extends SpellEffect {
 
         public final double velocity;
         public final EffectVector vector;
+        public final boolean disregardCurrentVelocity;
 
         public Reaction(Identifier id) {
             super(id);
             this.velocity = 0;
             this.vector = EffectVector.FROM_ORIGIN;
+            this.disregardCurrentVelocity = false;
         }
 
         public Reaction(Identifier id, JsonObject obj) {
@@ -62,12 +64,15 @@ public class PushEffect extends SpellEffect {
             } else {
                 this.vector = EffectVector.FROM_ORIGIN;
             }
+            this.disregardCurrentVelocity = obj.has("disregard_current_velocity") &&
+                    obj.get("disregard_current_velocity").getAsBoolean();
         }
 
         public void toJson(@NotNull JsonObject obj) {
             super.toJson(obj);
             obj.addProperty("velocity", this.velocity);
             obj.addProperty("vector", this.vector.name().toLowerCase());
+            obj.addProperty("disregard_current_velocity", this.disregardCurrentVelocity);
         }
 
         @Override
@@ -81,11 +86,13 @@ public class PushEffect extends SpellEffect {
 
     private final double velocity;
     private final EffectVector vector;
+    public final boolean disregardCurrentVelocity;
 
     public PushEffect(Identifier id) {
         super(id);
         this.velocity = 3;
         this.vector = EffectVector.FROM_ORIGIN;
+        this.disregardCurrentVelocity = false;
     }
 
     public PushEffect(Identifier id, JsonObject obj) {
@@ -101,13 +108,16 @@ public class PushEffect extends SpellEffect {
         } else {
             this.vector = EffectVector.FROM_ORIGIN;
         }
+        this.disregardCurrentVelocity = obj.has("disregard_current_velocity") &&
+                obj.get("disregard_current_velocity").getAsBoolean();
     }
 
     @Override
     public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
-        var castDirection = MovementUtils.rotationVector(cast.getOriginPitch(), cast.getOriginYaw());
+        var castDirection = VectorUtils.direction(cast.getOriginPitch(), cast.getOriginYaw());
         double velocity = this.velocity;
         Vec3d effectDirection = null;
+        boolean disregardCurrentVelocity = this.disregardCurrentVelocity;
         for (var reaction : cast.getReactions()) {
             if (reaction instanceof Reaction r) {
                 velocity += r.velocity;
@@ -116,6 +126,7 @@ public class PushEffect extends SpellEffect {
                 } else {
                     effectDirection = r.vector.direction(entity.getPos(), cast.getOriginPos(), castDirection);
                 }
+                disregardCurrentVelocity = disregardCurrentVelocity || r.disregardCurrentVelocity;
             }
         }
         if (effectDirection == null) {
@@ -123,6 +134,9 @@ public class PushEffect extends SpellEffect {
         }
         var effectVelocityVec = effectDirection.multiply(velocity / effectDirection.length());
         var currentVelocity = entity.getVelocity();
+        if (disregardCurrentVelocity) {
+            currentVelocity = Vec3d.ZERO;
+        }
 
         entity.velocityDirty = true;
         entity.velocityModified = true;
