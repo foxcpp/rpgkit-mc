@@ -1,0 +1,30 @@
+{
+  "kind": "effect",
+  "order": 3,
+  "costs": {
+    "magicae": "3",
+    "regeneratio": "0.25",
+    "mutatio": "1",
+    "interitio": "0.5"
+  },
+  "color": "D5A6BD",
+  "use_form": {
+    "id": "rpgkitmagic:blast",
+    "weight": 1
+  },
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:damage",
+      "damage": 1,
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:damage",
+          "damage": 1
+        }
+      ]
+    }
+  ]
+}

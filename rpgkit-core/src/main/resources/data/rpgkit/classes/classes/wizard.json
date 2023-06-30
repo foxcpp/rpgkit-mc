@@ -1,0 +1,12 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "proficiency": [
+        "rpgkit:magic"
+      ],
+      "abilities": {},
+      "perks": []
+    }
+  ]
+}

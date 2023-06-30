@@ -1,0 +1,19 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "11",
+    "regeneratio": "2.8",
+    "mutatio": "2.4",
+    "interitio": "1.22"
+  },
+  "recipes": [
+  ],
+  "use_form": {
+    "id": "rpgkitmagic:ray",
+    "weight": 2
+  },
+  "generic_effects": [
+  ],
+  "generic_reactions": [
+  ]
+}

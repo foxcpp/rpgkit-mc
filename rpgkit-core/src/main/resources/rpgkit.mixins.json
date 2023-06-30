@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.sweetsnowywitch.rpgkit.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ComboMixin",
+    "KillStreakMixin",
+    "SingleKillMixin"
+  ],
+  "client": [
+    "KeyboardMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

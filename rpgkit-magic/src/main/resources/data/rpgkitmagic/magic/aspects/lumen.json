@@ -1,0 +1,23 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "24",
+    "regeneratio": "4",
+    "mutatio": "3",
+    "interitio": "2.25"
+  },
+  "recipes": [
+    [
+      "rpgkitmagic:ignis",
+      "rpgkitmagic:ordino"
+    ]
+  ],
+  "use_form": {
+    "id": "rpgkitmagic:ray",
+    "weight": 2
+  },
+  "generic_effects": [
+  ],
+  "generic_reactions": [
+  ]
+}

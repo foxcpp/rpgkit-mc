@@ -1,0 +1,19 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "22",
+    "regeneratio": "1.4",
+    "mutatio": "2.7",
+    "interitio": "5.4"
+  },
+  "recipes": [
+  ],
+  "use_form": {
+    "id": "rpgkitmagic:blast",
+    "weight": 1
+  },
+  "generic_effects": [
+  ],
+  "generic_reactions": [
+  ]
+}

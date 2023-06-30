@@ -1,0 +1,18 @@
+{
+  "commands.rpgkit.unknown_spell_element": "Unknown element (no such aspect or item)",
+  "rpgkit.class.rpgkit.warrior": "Warrior",
+  "rpgkit.class.rpgkit.wizard": "Wizard",
+  "item.rpgkit.catalyst_bag": "Catalyst Bag",
+  "rpgkit.magic.must_have_mana": "You need magic energy to cast spells",
+  "rpgkit.magic.must_have_empty_hand": "You need an empty hand to cast spells",
+  "category.rpgkit.magic": "RPGKit Magic",
+  "key.rpgkit.magic.spell_build": "Start spell building",
+  "rpgkit.magic.spell.rpgkit.generic": "Unnamed spell",
+  "rpgkit.magic.spell_build": "",
+  "rpgkit.magic.no_elements": "No elements",
+  "rpgkit.magic.help.intro": "Add aspects using number keys (1-9)",
+  "rpgkit.magic.help.use_cast": "Use the item (right mouse click) to cast the spell normally.",
+  "rpgkit.magic.help.area_cast": "Press %s to cast the spell on area around you.",
+  "rpgkit.magic.help.self_cast": "Press %s to apply the spell to yourself.",
+  "rpgkit.magic.help.catalyst_bag": "If you have a catalyst bag, press %s to open it (you must have it in your hotbar)"
+}

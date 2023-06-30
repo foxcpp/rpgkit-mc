@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "rpgkitmagic:item/catalyst_bag_open_1"
+  }
+}

@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "csmprpgkit:item/catalyst_bag_open_1"
-  }
-}

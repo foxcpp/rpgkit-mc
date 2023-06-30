@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "rpgkitmagic:item/catalyst_bag_closed"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "open": 1
+      },
+      "model": "rpgkitmagic:item/catalyst_bag_open"
+    }
+  ]
+}

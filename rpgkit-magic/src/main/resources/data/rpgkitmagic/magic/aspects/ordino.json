@@ -1,0 +1,14 @@
+{
+  "kind": "effect",
+  "order": 5,
+  "costs": {
+    "magicae": "13",
+    "regeneratio": "3",
+    "mutatio": "2",
+    "interitio": "0.25"
+  },
+  "use_form": {
+    "id": "rpgkitmagic:ray",
+    "weight": 2
+  }
+}

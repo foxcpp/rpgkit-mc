@@ -1,0 +1,19 @@
+{
+  "kind": "effect",
+  "order": 6,
+  "costs": {
+    "magicae": "11",
+    "regeneratio": "0.1",
+    "mutatio": "0.2",
+    "interitio": "4"
+  },
+  "color": 2631720,
+  "use_form": {
+    "id": "rpgkitmagic:blast",
+    "weight": 1
+  },
+  "generic_effects": [
+  ],
+  "generic_reactions": [
+  ]
+}

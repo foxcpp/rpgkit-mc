@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "rpgkit-core",
+  "version": "${version}",
+  "name": "RPGKit - Core Components",
+  "description": "Multi-purpose data-driven RPG mod (core components)",
+  "authors": [
+    "SweetSnowyWitch",
+    {
+      "name": "foxcpp",
+      "contact": {
+        "homepage": "https://github.com/foxcpp",
+        "email": "fox.cpp@disroot.org"
+      }
+    },
+    "4K (default4k)"
+  ],
+  "contact": {
+    "repo": "https://github.com/SweetSnowyWitch/cryotherapy-smp"
+  },
+  "license": "MIT",
+  "icon": "assets/rpgkit/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.github.sweetsnowywitch.rpgkit.client.ClientRPGKitMod"
+    ],
+    "main": [
+      "com.github.sweetsnowywitch.rpgkit.RPGKitMod"
+    ],
+    "cardinal-components": [
+      "com.github.sweetsnowywitch.rpgkit.components.ModComponents"
+    ]
+  },
+  "custom": {
+    "cardinal-components": [
+      "rpgkit:abilities",
+      "rpgkit:class"
+    ]
+  },
+  "mixins": [
+    "rpgkit.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.13",
+    "fabric": "*",
+    "minecraft": "1.19.2"
+  }
+}

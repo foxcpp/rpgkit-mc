@@ -1,0 +1,41 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "proficiency": [
+        "rpgkit:strength"
+      ],
+      "abilities": {
+        "rpgkit:strength": 1
+      },
+      "perks": [
+        {
+          "type": "rpgkit:kill_streak",
+          "id": "minecraft:generic.movement_speed",
+          "modifier": 0.1,
+          "penalty": 3,
+          "maxStreak": 10
+        },
+        {
+          "type": "rpgkit:single_kill",
+          "id": "minecraft:regeneration",
+          "duration": 200,
+          "amplifier": 0
+        },
+        {
+          "type": "rpgkit:rest",
+          "id": "minecraft:invisibility",
+          "duration": 60,
+          "amplifier": 0,
+          "restTime": 600
+        },
+        {
+          "type": "rpgkit:combo",
+          "combo": 0,
+          "maxCombo": 3,
+          "modifier": 2
+        }
+      ]
+    }
+  ]
+}

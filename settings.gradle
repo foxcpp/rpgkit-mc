@@ -7,3 +7,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+rootProject.name = "rpgkit"
+
+include "rpgkit-core"
+include "rpgkit-csmp"
+include "rpgkit-magic"

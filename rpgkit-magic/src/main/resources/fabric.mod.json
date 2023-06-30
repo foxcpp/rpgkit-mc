@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "id": "rpgkit-magic",
+  "version": "${version}",
+  "name": "RPGKit - Magic",
+  "description": "Data-driven elemental magic system",
+  "authors": [
+    "SweetSnowyWitch",
+    {
+      "name": "foxcpp",
+      "contact": {
+        "homepage": "https://github.com/foxcpp",
+        "email": "fox.cpp@disroot.org"
+      }
+    },
+    "4K (default4k)"
+  ],
+  "contact": {
+    "issues": "https://github.com/SweetSnowyWitch/cryotherapy-smp/issues",
+    "sources": "https://github.com/SweetSnowyWitch/cryotherapy-smp"
+  },
+  "license": "MIT",
+  "icon": "assets/rpgkitmagic/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.github.sweetsnowywitch.rpgkit.magic.client.ClientRPGKitMagicMod"
+    ],
+    "main": [
+      "com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod"
+    ],
+    "cardinal-components": [
+      "com.github.sweetsnowywitch.rpgkit.magic.components.ModComponents"
+    ]
+  },
+  "custom": {
+    "cardinal-components": [
+      "rpgkitmagic:mana",
+      "rpgkitmagic:cast",
+      "rpgkitmagic:chunk_magic_effects"
+    ]
+  },
+  "mixins": [
+    "rpgkitmagic.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.13",
+    "fabric": "*",
+    "minecraft": "1.19.2",
+    "rpgkit-core": "0.1-snapshot"
+  }
+}
