@@ -55,6 +55,10 @@ public class TransmuteItemEffect extends ItemEffect {
                 return TypedActionResult.pass(stack);
             }
 
+            if (stack.isEmpty()) {
+                return TypedActionResult.pass(stack);
+            }
+
             var lcb = new LootContext.Builder(world);
             lcb.luck(0.5f);
             lcb.parameter(LootContextParameters.ORIGIN, cast.getOriginPos());

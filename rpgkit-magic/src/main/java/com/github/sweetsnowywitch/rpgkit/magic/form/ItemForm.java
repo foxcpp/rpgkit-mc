@@ -26,14 +26,10 @@ public class ItemForm extends SpellForm {
                 targetStack = items.iterator().next();
             }
         }
-        if (targetStack == null || targetStack.isEmpty()) {
-            ModForms.SELF.startCast(cast, world, caster);
-            return;
-        }
 
         super.startCast(cast, world, caster);
 
-        var res = cast.getSpell().useOnItem(cast, world, targetStack, null, caster);
+        var res = cast.getSpell().useOnItem(cast, world, targetStack, /* TODO */ null, caster);
         caster.equipStack(EquipmentSlot.OFFHAND, res.getValue());
     }
 
