@@ -1,4 +1,4 @@
-package com.github.sweetsnowywitch.rpgkit.magic;
+package com.github.sweetsnowywitch.rpgkit.magic.json;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
 import com.google.gson.JsonElement;

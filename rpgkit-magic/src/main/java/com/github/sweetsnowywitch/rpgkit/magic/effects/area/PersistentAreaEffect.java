@@ -1,9 +1,9 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.area;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
-import com.github.sweetsnowywitch.rpgkit.magic.IntModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.AreaEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.json.IntModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.Spell;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellBuildCondition;

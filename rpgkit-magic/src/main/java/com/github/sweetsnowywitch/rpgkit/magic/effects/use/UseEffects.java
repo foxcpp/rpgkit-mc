@@ -19,6 +19,8 @@ public class UseEffects {
     public static final UseEffect.JsonFactory EXTINGUISH = ExtinguishEffect::new;
     public static final UseEffect.JsonFactory BONE_MEAL = BoneMealEffect::new;
     public static final UseEffect.JsonFactory EXPLOSION = ExplosionEffect::new;
+    public static final UseEffect.JsonFactory PLACE_BLOCK = PlaceBlockEffect::new;
+    public static final UseEffect.JsonFactory BREAK_BLOCK = BreakBlockEffect::new;
 
     public static void register() {
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "potion"), POTION);
@@ -30,6 +32,8 @@ public class UseEffects {
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "extinguish"), EXTINGUISH);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "bone_meal"), BONE_MEAL);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "explosion"), EXPLOSION);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "place_block"), PLACE_BLOCK);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "break_block"), BREAK_BLOCK);
 
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "potion"), PotionEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "damage"), DamageEffect.Reaction::new);
