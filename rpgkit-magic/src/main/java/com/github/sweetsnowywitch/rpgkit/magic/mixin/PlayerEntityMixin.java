@@ -1,6 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.mixin;
 
-import com.github.sweetsnowywitch.rpgkit.magic.effects.ModStatusEffects;
+import com.github.sweetsnowywitch.rpgkit.magic.statuseffects.ModStatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import org.spongepowered.asm.mixin.Mixin;

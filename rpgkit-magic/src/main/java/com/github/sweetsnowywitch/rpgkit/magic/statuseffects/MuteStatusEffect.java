@@ -1,4 +1,4 @@
-package com.github.sweetsnowywitch.rpgkit.magic.effects;
+package com.github.sweetsnowywitch.rpgkit.magic.statuseffects;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;

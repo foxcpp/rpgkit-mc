@@ -1,12 +1,12 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use.special;
 
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
-import com.github.sweetsnowywitch.rpgkit.magic.effects.ModStatusEffects;
-import com.github.sweetsnowywitch.rpgkit.magic.effects.MuteStatusEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.use.SimpleUseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.SoundBarrierEntity;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
+import com.github.sweetsnowywitch.rpgkit.magic.statuseffects.ModStatusEffects;
+import com.github.sweetsnowywitch.rpgkit.magic.statuseffects.MuteStatusEffect;
 import com.google.gson.JsonObject;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;

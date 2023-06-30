@@ -1,6 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.mixin;
 
-import com.github.sweetsnowywitch.rpgkit.magic.effects.SealedStatusEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.statuseffects.SealedStatusEffect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;

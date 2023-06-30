@@ -1,4 +1,4 @@
-package com.github.sweetsnowywitch.rpgkit.magic.effects;
+package com.github.sweetsnowywitch.rpgkit.magic.statuseffects;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
