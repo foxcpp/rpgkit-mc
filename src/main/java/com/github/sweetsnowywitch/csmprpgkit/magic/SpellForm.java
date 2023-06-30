@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
@@ -39,8 +38,8 @@ public abstract class SpellForm {
      * @param caster Entity that performs the cast, does not have to be LivingEntity.
      */
     @MustBeInvokedByOverriders
-    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
-        cast.getSpell().startCast(cast, world, caster);
+    public void startCast(@NotNull ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+
     }
 
     /**
@@ -51,11 +50,11 @@ public abstract class SpellForm {
      */
     @MustBeInvokedByOverriders
     public void endCast(@NotNull ServerSpellCast cast, @NotNull ServerWorld world) {
-        cast.getSpell().endCast(cast, world);
+        
     }
 
     public String toString() {
-        var id = ModRegistries.SPELL_FORMS.getId(this);
+        var id = MagicRegistries.FORMS.getId(this);
         if (id == null) {
             throw new IllegalStateException("toString called to unregistered SpellForm");
         }

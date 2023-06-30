@@ -3,14 +3,15 @@ package com.github.sweetsnowywitch.csmprpgkit.magic.form;
 import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.entities.SpellRayEntity;
 import com.github.sweetsnowywitch.csmprpgkit.items.ModItems;
-import com.github.sweetsnowywitch.csmprpgkit.magic.*;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ChanneledForm;
+import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
+import com.github.sweetsnowywitch.csmprpgkit.magic.Spell;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class RayForm extends SpellForm implements ChanneledForm {
     public RayForm() {
@@ -18,7 +19,7 @@ public class RayForm extends SpellForm implements ChanneledForm {
     }
 
     @Override
-    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+    public void startCast(@NotNull ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         var ray = new SpellRayEntity(ModEntities.SPELL_RAY, world);
         cast.customData.putUuid("RayEntityUUID", ray.getUuid());
         ray.setCast(cast);
@@ -32,14 +33,14 @@ public class RayForm extends SpellForm implements ChanneledForm {
         ray.setPosition(pos);
         ray.setYaw(caster.getHeadYaw());
         ray.setPitch(caster.getPitch());
-        ray.setMaxAge(this.getMaxChannelDuration(cast.getSpell(), cast.getReactions()));
+        ray.setMaxAge(this.getMaxChannelDuration(cast.getSpell()));
         world.spawnEntity(ray);
 
         super.startCast(cast, world, caster);
     }
 
     @Override
-    public void endCast(ServerSpellCast cast, ServerWorld world) {
+    public void endCast(@NotNull ServerSpellCast cast, @NotNull ServerWorld world) {
         super.endCast(cast, world);
 
         if (cast.customData.contains("RayEntityUUID")) {
@@ -51,7 +52,7 @@ public class RayForm extends SpellForm implements ChanneledForm {
     }
 
     @Override
-    public int getMaxChannelDuration(Spell cast, List<SpellReaction> reactions) {
+    public int getMaxChannelDuration(Spell cast) {
         return 5 * 20;
     }
 

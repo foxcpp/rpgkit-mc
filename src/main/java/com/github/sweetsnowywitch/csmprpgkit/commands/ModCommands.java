@@ -1,9 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.commands;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.classes.CharacterClass;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
+import com.github.sweetsnowywitch.csmprpgkit.magic.MagicRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellBuilder;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellElement;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
@@ -208,7 +208,7 @@ public class ModCommands {
                 throw new SimpleCommandExceptionType(Text.translatable("commands.csmprpgkit.unknown_spell_element")).create();
             }
 
-            var asp = ModRegistries.ASPECTS.get(id);
+            var asp = MagicRegistries.ASPECTS.get(id);
             if (asp != null) {
                 builder.addElement(SpellElement.of(asp));
             } else {

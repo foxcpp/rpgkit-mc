@@ -1,153 +1,142 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
+import com.github.sweetsnowywitch.csmprpgkit.JsonHelpers;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.AreaEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.ItemEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public class Spell {
-    public final Identifier id;
-    private final String translationKey;
-    public static final Spell EMPTY = new Spell(new Identifier(RPGKitMod.MOD_ID, "empty"), ImmutableList.of(), null);
-    private final ImmutableList<SpellEffect> effects;
-    private final @Nullable SpellForm preferredUseForm;
 
-    public Spell(@NotNull Identifier id, ImmutableList<SpellEffect> effects, @Nullable SpellForm preferredUseForm) {
-        this.id = id;
-        this.translationKey = id.toTranslationKey("csmprpgkit.magic.spell");
-        this.effects = effects;
-        this.preferredUseForm = preferredUseForm;
+    public static final Spell EMPTY = new Spell();
+    private final ImmutableList<ItemEffect.Used> itemEffects;
+    private final ImmutableList<AreaEffect.Used> areaEffects;
+    private final ImmutableList<UseEffect.Used> useEffects;
+    private final ImmutableList<SpellReaction> formReactions;
+    private final SpellForm useForm;
+
+    private Spell() {
+        this.itemEffects = ImmutableList.of();
+        this.areaEffects = ImmutableList.of();
+        this.useEffects = ImmutableList.of();
+        this.formReactions = ImmutableList.of();
+        this.useForm = ModForms.RAY;
     }
 
-    public ImmutableList<SpellEffect> getEffects() {
-        return effects;
+    public Spell(ImmutableList<ItemEffect.Used> item,
+                 ImmutableList<AreaEffect.Used> area,
+                 ImmutableList<UseEffect.Used> interact,
+                 ImmutableList<SpellReaction> formReactions, SpellForm useForm) {
+        this.itemEffects = item;
+        this.areaEffects = area;
+        this.useEffects = interact;
+        this.formReactions = formReactions;
+        this.useForm = useForm;
     }
 
-    @Override
-    public String toString() {
-        return this.id.toString();
+    public Spell(ImmutableList<UseEffect.Used> interact,
+                 ImmutableList<SpellReaction> formReactions, SpellForm useForm) {
+        this.itemEffects = ImmutableList.of();
+        this.areaEffects = ImmutableList.of();
+        this.useEffects = interact;
+        this.formReactions = formReactions;
+        this.useForm = useForm;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Spell spell = (Spell) o;
-        return Objects.equals(id, spell.id);
-    }
+    public Spell(JsonObject obj) {
+        this.itemEffects = JsonHelpers.fromJsonList(obj.getAsJsonArray("item_effects"), ItemEffect.Used::fromJson);
+        this.areaEffects = JsonHelpers.fromJsonList(obj.getAsJsonArray("area_effects"), AreaEffect.Used::fromJson);
+        this.useEffects = JsonHelpers.fromJsonList(obj.getAsJsonArray("use_effects"), UseEffect.Used::fromJson);
+        this.formReactions = JsonHelpers.fromJsonList(obj.getAsJsonArray("form_reactions"), SpellReaction::fromJson);
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    public static Spell readFromNbt(NbtCompound comp) {
-        var id = Identifier.tryParse(comp.getString("Id"));
-        if (id == null) {
-            throw new IllegalArgumentException("Malformed spell identifier in NBT: %s".formatted(comp.getString("Id")));
+        var useFormId = new Identifier(obj.get("use_form").getAsString());
+        var useForm = MagicRegistries.FORMS.get(useFormId);
+        if (useForm == null) {
+            RPGKitMod.LOGGER.warn("Unknown use form in loaded Spell, replacing with RAY: {}", useFormId);
+            useForm = ModForms.RAY;
         }
-        var spell = ModRegistries.SPELLS.get(id);
-        if (spell == null) {
-            throw new IllegalArgumentException("Unknown spell identifier in NBT: %s".formatted(comp.getString("Id")));
-        }
-        return spell.withNbt(comp);
+        this.useForm = useForm;
     }
 
-    protected Spell withNbt(NbtCompound comp) {
-        return this;
+    public void toJson(@NotNull JsonObject obj) {
+        obj.add("item_effects", JsonHelpers.toJsonList(this.itemEffects));
+        obj.add("area_effects", JsonHelpers.toJsonList(this.areaEffects));
+        obj.add("use_effects", JsonHelpers.toJsonList(this.useEffects));
+        obj.add("form_reactions", JsonHelpers.toJsonList(this.formReactions));
+        obj.addProperty("use_form", Objects.requireNonNull(MagicRegistries.FORMS.getId(this.useForm)).toString());
     }
 
-    public void writeToNbt(NbtCompound comp) {
-        comp.putString("Id", this.id.toString());
-    }
-
-    public ImmutableList<SpellReaction> getForcedEffectReactions() {
-        return ImmutableList.of();
-    }
-
-    public @NotNull SpellForm determineUseForm() {
-        return Objects.requireNonNullElse(this.preferredUseForm, ModForms.RAY);
-    }
-
-    public String getTranslationKey() {
-        return this.translationKey;
-    }
-
-    @MustBeInvokedByOverriders
-    public void startCast(ServerSpellCast cast, ServerWorld world, Entity caster) {
-        for (var effect : this.effects) {
-            effect.startCast(cast, world, caster);
-        }
-    }
-
-    @MustBeInvokedByOverriders
-    public void endCast(ServerSpellCast cast, ServerWorld world) {
-        for (var effect : this.effects) {
-            effect.endCast(cast, world);
-        }
-    }
-
-    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
-        if (entity instanceof ItemEntity ie) {
-            var replacement = this.onItemHit(cast, (ServerWorld) entity.getWorld(), entity, ie.getStack());
-            ie.setStack(replacement);
-        }
-
-        var passThrough = true;
-        for (var effect : this.effects) {
-            passThrough = effect.onSingleEntityHit(cast, entity) && passThrough;
-        }
-        return passThrough;
-    }
-
-    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        var passThrough = true;
-        for (var effect : this.effects) {
-            passThrough = effect.onSingleBlockHit(cast, world, pos, dir) && passThrough;
-        }
-        return passThrough;
-    }
-
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
-        for (var effect : this.effects) {
-            effect.onAreaHit(cast, world, box);
-        }
-    }
-
-    public ItemStack onItemHit(ServerSpellCast cast, ServerWorld world, @Nullable Entity holder, ItemStack stack) {
-        for (var effect : this.effects) {
-            stack = effect.onItemHit(cast, world, holder, stack);
-        }
-        return stack;
-    }
-
-    public void onSingleEntityHold(ServerSpellCast cast, Entity entity) {
-        for (var effect : this.effects) {
-            if (effect instanceof SpellEffect.Channeled c) {
-                c.onSingleEntityHold(cast, entity);
+    public ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaEffect.AreaCollider collider) {
+        ActionResult lastResult = ActionResult.SUCCESS;
+        for (var eff : this.areaEffects) {
+            lastResult = eff.useOnArea(cast, world, boundingBox, origin, collider);
+            if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
+                break;
             }
         }
+        return lastResult;
     }
 
-    public void onSingleBlockHold(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        for (var effect : this.effects) {
-            if (effect instanceof SpellEffect.Channeled c) {
-                c.onSingleBlockHold(cast, world, pos, dir);
+    public TypedActionResult<ItemStack> useOnItem(ServerSpellCast cast, ServerWorld world, ItemStack stack, @Nullable Inventory container, @Nullable Entity holder) {
+        TypedActionResult<ItemStack> lastResult = TypedActionResult.success(stack);
+        for (var eff : this.itemEffects) {
+            lastResult = eff.useOnItem(cast, world, stack, container, holder);
+            if (lastResult.getResult().equals(ActionResult.CONSUME) || lastResult.getResult().equals(ActionResult.FAIL)) {
+                break;
             }
         }
+        return lastResult;
+    }
+
+    public boolean canInteract(ServerSpellCast cast) {
+        return true; // TODO
+    }
+
+    public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
+        ActionResult lastResult = ActionResult.CONSUME;
+        for (var eff : this.useEffects) {
+            lastResult = eff.useOnBlock(cast, world, pos, direction);
+            if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
+                break;
+            }
+        }
+        return lastResult;
+    }
+
+    public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
+        ActionResult lastResult = ActionResult.CONSUME;
+        for (var eff : this.useEffects) {
+            lastResult = eff.useOnEntity(cast, entity);
+            if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
+                break;
+            }
+        }
+        return lastResult;
+    }
+
+    public SpellForm getUseForm() {
+        return this.useForm;
+    }
+
+    public ImmutableList<SpellReaction> getFormReactions() {
+        return formReactions;
     }
 }

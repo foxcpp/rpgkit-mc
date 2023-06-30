@@ -1,48 +1,13 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
-import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.area.AreaEffects;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.item.ItemEffects;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.use.UseEffects;
 
 public class ModEffects {
-    public static final SpellEffect.Factory POTION = SpellEffect.factoryFor(PotionEffect::new, PotionEffect::new);
-    public static final SpellEffect.Factory DAMAGE = SpellEffect.factoryFor(DamageEffect::new, DamageEffect::new);
-    public static final SpellEffect.Factory MUTE = SpellEffect.factoryFor(MuteEffect::new, MuteEffect::new);
-    public static final SpellEffect.Factory PUSH = SpellEffect.factoryFor(PushEffect::new, PushEffect::new);
-    public static final SpellEffect.Factory WARD = SpellEffect.factoryFor(WardEffect::new, WardEffect::new);
-    public static final SpellEffect.Factory FIRE = SpellEffect.factoryFor(FireEffect::new, FireEffect::new);
-    public static final SpellEffect.Factory EXTINGUISH = SpellEffect.factoryFor(ExtinguishEffect::new, ExtinguishEffect::new);
-    public static final SpellEffect.Factory BONE_MEAL = SpellEffect.factoryFor(BoneMealEffect::new, BoneMealEffect::new);
-    public static final SpellEffect.Factory EXPLOSION = SpellEffect.factoryFor(ExplosionEffect::new, ExplosionEffect::new);
-    public static final SpellEffect.Factory TRANSFORM_ITEM = SpellEffect.factoryFor(TransmuteItemEffect::new, TransmuteItemEffect::new);
-
     public static void register() {
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "potion"), POTION);
-        Registry.register(ModRegistries.SPELL_EFFECT_REACTIONS, new Identifier(RPGKitMod.MOD_ID, "potion"),
-                SpellReaction.factoryFor(PotionEffect.Reaction::new, PotionEffect.Reaction::new));
-
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "damage"), DAMAGE);
-        Registry.register(ModRegistries.SPELL_EFFECT_REACTIONS, new Identifier(RPGKitMod.MOD_ID, "damage"),
-                SpellReaction.factoryFor(DamageEffect.Reaction::new, DamageEffect.Reaction::new));
-
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "push"), PUSH);
-        Registry.register(ModRegistries.SPELL_EFFECT_REACTIONS, new Identifier(RPGKitMod.MOD_ID, "push"),
-                SpellReaction.factoryFor(PushEffect.Reaction::new, PushEffect.Reaction::new));
-
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "ward"), WARD);
-        Registry.register(ModRegistries.SPELL_EFFECT_AREAS, new Identifier(RPGKitMod.MOD_ID, "ward"),
-                SpellArea.factoryFor(WardEffect.Area::new));
-        WardEffect.registerListener();
-
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "mute"), MUTE);
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "fire"), FIRE);
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "extinguish"), EXTINGUISH);
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "bone_meal"), BONE_MEAL);
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "explosion"), EXPLOSION);
-        Registry.register(ModRegistries.SPELL_EFFECTS, new Identifier(RPGKitMod.MOD_ID, "transmute_item"), TRANSFORM_ITEM);
+        UseEffects.register();
+        AreaEffects.register();
+        ItemEffects.register();
     }
 }

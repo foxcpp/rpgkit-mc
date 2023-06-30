@@ -16,8 +16,6 @@ import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
 import com.github.sweetsnowywitch.csmprpgkit.magic.effects.ModEffects;
 import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.AspectReloadListener;
-import com.github.sweetsnowywitch.csmprpgkit.magic.listener.ReactionReloadListener;
-import com.github.sweetsnowywitch.csmprpgkit.magic.listener.SpellReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.magic.listener.TransmuteMappingReloadListener;
 import com.github.sweetsnowywitch.csmprpgkit.particle.ModParticles;
 import com.github.sweetsnowywitch.csmprpgkit.screen.CatalystBagScreenHandler;
@@ -77,8 +75,6 @@ public class RPGKitMod implements ModInitializer {
         ModForms.register();
         ModStatusEffects.register();
         DATA_SYNCER.registerListener(new AspectReloadListener());
-        DATA_SYNCER.registerListener(new SpellReloadListener());
-        DATA_SYNCER.registerListener(new ReactionReloadListener());
         DATA_SYNCER.registerListener(new TransmuteMappingReloadListener());
         Registry.register(Registry.SCREEN_HANDLER, Identifier.of(RPGKitMod.MOD_ID, "catalyst_bag"), CATALYST_BAG_SCREEN_HANDLER);
         SERVER_SPELL_BUILD_HANDLER.register();

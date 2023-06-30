@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,14 +17,8 @@ public class ChargeForm extends SpellForm {
         private final float bounceVelocityFactor;
         private final float velocity;
 
-        public Reaction(Identifier id) {
-            super(id);
-            this.bounceVelocityFactor = 0f;
-            this.velocity = 0f;
-        }
-
-        public Reaction(Identifier id, JsonObject obj) {
-            super(id, obj);
+        public Reaction(JsonObject obj) {
+            super(obj);
 
             if (obj.has("bounce_velocity_factor")) {
                 this.bounceVelocityFactor = obj.get("bounce_velocity_factor").getAsFloat();
@@ -53,10 +46,10 @@ public class ChargeForm extends SpellForm {
     }
 
     @Override
-    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+    public void startCast(@NotNull ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         var velocity = 1f;
         var bounceFactor = 0.2f;
-        for (var reaction : cast.getReactions()) {
+        for (var reaction : cast.getSpell().getFormReactions()) {
             if (reaction instanceof Reaction r) {
                 velocity += r.velocity;
                 bounceFactor += r.bounceVelocityFactor;
@@ -79,7 +72,7 @@ public class ChargeForm extends SpellForm {
     }
 
     @Override
-    public void endCast(ServerSpellCast cast, ServerWorld world) {
+    public void endCast(@NotNull ServerSpellCast cast, @NotNull ServerWorld world) {
         super.endCast(cast, world);
 
         if (cast.customData.contains("ChargeEntityUUID")) {

@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
@@ -18,7 +17,7 @@ public class SpellRecipeMap<T> {
         public static Element fromJson(JsonObject obj) throws IllegalArgumentException {
             if (obj.has("aspect")) {
                 var aspectId = new Identifier(obj.get("aspect").getAsString());
-                var aspect = ModRegistries.ASPECTS.get(aspectId);
+                var aspect = MagicRegistries.ASPECTS.get(aspectId);
                 if (aspect == null) {
                     throw new IllegalArgumentException("attempting to unserialize an unregistered aspect in spell element: %s".formatted(aspectId.toString()));
                 }
@@ -36,7 +35,7 @@ public class SpellRecipeMap<T> {
         public JsonObject toJson() throws IllegalStateException {
             if (aspect != null) {
                 Identifier aspectId = null;
-                for (var entry : ModRegistries.ASPECTS.entrySet()) {
+                for (var entry : MagicRegistries.ASPECTS.entrySet()) {
                     if (entry.getValue().equals(this.aspect)) {
                         aspectId = entry.getKey();
                         break;
@@ -62,7 +61,7 @@ public class SpellRecipeMap<T> {
     private final List<Recipe<T>> recipes = new ArrayList<>();
 
     public void addRecipe(@NotNull ImmutableList<Element> elements, @NotNull T result) {
-        recipes.add(new Recipe<T>(elements, result));
+        recipes.add(new Recipe<>(elements, result));
     }
 
     public void copyFrom(@NotNull SpellRecipeMap<T> from) {

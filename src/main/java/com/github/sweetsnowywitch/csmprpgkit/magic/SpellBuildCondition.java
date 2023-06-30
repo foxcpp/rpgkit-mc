@@ -1,14 +1,23 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.google.gson.JsonObject;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import java.util.List;
+
 @FunctionalInterface
 public interface SpellBuildCondition {
-    boolean shouldAdd(SpellBuilder builder, @Nullable SpellElement element);
+    class Context {
+        List<SpellElement> elements;
+        @Nullable SpellElement element;
+        Entity caster;
+    }
+
+    boolean shouldAdd(Context ctx);
 
     static SpellBuildCondition fromJson(JsonObject obj) {
         SpellBuildCondition cond = null;
@@ -52,29 +61,29 @@ public interface SpellBuildCondition {
     }
 
     static SpellBuildCondition not(SpellBuildCondition c) {
-        return (builder, el) -> !c.shouldAdd(builder, el);
+        return (ctx) -> !c.shouldAdd(ctx);
     }
 
     static SpellBuildCondition and(SpellBuildCondition c1, SpellBuildCondition c2) {
-        return (builder, el) -> c1.shouldAdd(builder, el) && c2.shouldAdd(builder, el);
+        return (ctx) -> c1.shouldAdd(ctx) && c2.shouldAdd(ctx);
     }
 
     static SpellBuildCondition or(SpellBuildCondition c1, SpellBuildCondition c2) {
-        return (builder, el) -> c1.shouldAdd(builder, el) || c2.shouldAdd(builder, el);
+        return (ctx) -> c1.shouldAdd(ctx) || c2.shouldAdd(ctx);
     }
 
     static SpellBuildCondition firstElement() {
-        return (builder, el) -> builder.getPendingElements().size() == 0;
+        return (ctx) -> ctx.elements.size() == 1;
     }
 
     static SpellBuildCondition sameAsFirstElement() {
-        return (builder, el) -> builder.getPendingElements().size() == 0 || builder.getPendingElements().get(0).equals(el);
+        return (ctx) -> ctx.elements.size() == 1 || ctx.elements.get(0).equals(ctx.element);
     }
 
     static SpellBuildCondition hasElement(@NotNull SpellElement element, @Range(from = 1, to = Integer.MAX_VALUE) int minCount, int maxCount) {
-        return (builder, el) -> {
+        return (ctx) -> {
             int effectiveCnt = 0;
-            for (var pending : builder.getPendingElements()) {
+            for (var pending : ctx.elements) {
                 if (pending.equals(element)) {
                     effectiveCnt++;
                 }
@@ -85,6 +94,6 @@ public interface SpellBuildCondition {
     }
 
     static SpellBuildCondition casterIsPlayer() {
-        return (builder, el) -> builder.getCaster() instanceof PlayerEntity;
+        return (ctx) -> ctx.caster instanceof PlayerEntity;
     }
 }

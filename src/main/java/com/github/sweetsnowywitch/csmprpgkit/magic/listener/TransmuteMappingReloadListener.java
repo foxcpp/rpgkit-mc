@@ -1,9 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic.listener;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.ServerDataSyncer;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ItemTransmuteMapping;
+import com.github.sweetsnowywitch.csmprpgkit.magic.MagicRegistries;
 import com.google.gson.JsonElement;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
@@ -46,8 +46,8 @@ public class TransmuteMappingReloadListener extends JsonDataLoader implements Id
             }
         }
 
-        ModRegistries.TRANSMUTE_MAPPINGS.clear();
-        ModRegistries.TRANSMUTE_MAPPINGS.putAll(mappings);
+        MagicRegistries.TRANSMUTE_MAPPINGS.clear();
+        MagicRegistries.TRANSMUTE_MAPPINGS.putAll(mappings);
         RPGKitMod.LOGGER.info("Loaded {} transmute mappings", mappings.size());
         lastLoadedData = prepared;
     }

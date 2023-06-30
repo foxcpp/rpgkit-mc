@@ -9,24 +9,16 @@ import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class BlastForm extends SpellForm implements ChanneledForm {
     public static class Reaction extends SpellReaction {
         public final double radius;
         public final double distance;
 
-        public Reaction(Identifier id) {
-            super(id);
-            this.radius = 0;
-            this.distance = 0;
-        }
+        public Reaction(JsonObject obj) {
+            super(obj);
 
-        public Reaction(Identifier id, JsonObject obj) {
-            super(id);
             if (obj.has("radius")) {
                 this.radius = obj.get("radius").getAsDouble();
             } else {
@@ -60,7 +52,7 @@ public class BlastForm extends SpellForm implements ChanneledForm {
     }
 
     @Override
-    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+    public void startCast(@NotNull ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         var pos = caster.getPos();
         if (caster instanceof PlayerEntity pe) {
             pos = pos.add(pe.getHandPosOffset(ModItems.SPELL_ITEM));
@@ -69,7 +61,7 @@ public class BlastForm extends SpellForm implements ChanneledForm {
 
         double distance = 5;
         double radius = 1.25;
-        for (var reaction : cast.getReactions()) {
+        for (var reaction : cast.getSpell().getFormReactions()) {
             if (reaction instanceof Reaction r) {
                 distance += r.distance;
                 radius += r.radius;
@@ -91,8 +83,6 @@ public class BlastForm extends SpellForm implements ChanneledForm {
         world.spawnEntity(blast);
 
         super.startCast(cast, world, caster);
-
-        cast.getSpell().onAreaHit(cast, world, blast.getArea());
     }
 
     @Override
@@ -108,7 +98,7 @@ public class BlastForm extends SpellForm implements ChanneledForm {
     }
 
     @Override
-    public int getMaxChannelDuration(Spell cast, List<SpellReaction> reactions) {
+    public int getMaxChannelDuration(Spell cast) {
         return 4 * 20;
     }
 
@@ -126,17 +116,10 @@ public class BlastForm extends SpellForm implements ChanneledForm {
                 double distance = cast.customData.getDouble("BlastDistance");
                 double radius = cast.customData.getDouble("BlastRadius");
 
-                var previousArea = blast.getArea();
-
                 cast.updateOrigin(pos);
                 cast.updateOriginRotation(caster.getHeadYaw(), caster.getPitch());
                 blast.moveArea(pos, caster.getRotationVector(), distance, radius);
                 blast.increaseMaxAge(5);
-
-                var intersection = previousArea.intersection(blast.getArea());
-                if (intersection.getAverageSideLength() < 2) {
-                    cast.getSpell().onAreaHit(cast, (ServerWorld) caster.getWorld(), intersection);
-                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.csmprpgkit.magic;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.TrackedHandlers;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.particle.GenericSpellParticleEffect;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
@@ -14,14 +15,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
-public class SpellArea {
+public class MagicArea {
     @FunctionalInterface
     public interface Factory {
         @NotNull
-        SpellArea createAreaFromNbt(Identifier effectID, @NotNull NbtCompound comp);
+        MagicArea createAreaFromNbt(Identifier effectID, @NotNull NbtCompound comp);
     }
 
-    public static Factory factoryFor(BiFunction<Identifier, NbtCompound, SpellArea> nbt) {
+    public static Factory factoryFor(BiFunction<Identifier, NbtCompound, MagicArea> nbt) {
         return nbt::apply;
     }
 
@@ -35,8 +36,8 @@ public class SpellArea {
     private boolean dirty; // true if anything changed and Area should be saved
     private boolean discarded;
 
-    public SpellArea(BlockBox box, SpellEffect effect, SpellCast cast, int maxAge) {
-        this.effectID = effect.id;
+    public MagicArea(BlockBox box, SpellEffect effect, SpellCast cast, int maxAge) {
+        this.effectID = effect.typeId;
         this.box = box;
         this.ownerChunkPos = new ChunkPos(new BlockPos(box.getMinX(), box.getMinX(), box.getMinZ()));
         this.cast = cast;
@@ -47,7 +48,7 @@ public class SpellArea {
         this.discarded = false;
     }
 
-    public SpellArea(Identifier effectID, NbtCompound tag) {
+    public MagicArea(Identifier effectID, NbtCompound tag) {
         this.effectID = effectID;
         this.box = TrackedHandlers.BLOCKBOX_CODEC.parse(NbtOps.INSTANCE, tag.get("Box"))
                 .resultOrPartial(RPGKitMod.LOGGER::error).orElseThrow();

@@ -1,6 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.commands;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
+import com.github.sweetsnowywitch.csmprpgkit.magic.MagicRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellForm;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -31,7 +31,7 @@ public class SpellFormArgument implements ArgumentType<SpellForm> {
     @Override
     public SpellForm parse(StringReader reader) throws CommandSyntaxException {
         var id = Identifier.fromCommandInput(reader);
-        var form = ModRegistries.SPELL_FORMS.get(id);
+        var form = MagicRegistries.FORMS.get(id);
         if (form == null) {
             throw new SimpleCommandExceptionType(Text.literal("unknown spell form")).createWithContext(reader);
         }
@@ -41,12 +41,12 @@ public class SpellFormArgument implements ArgumentType<SpellForm> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         return context.getSource() instanceof CommandSource ?
-                CommandSource.suggestMatching(ModRegistries.SPELL_FORMS.getIds().stream().map(Identifier::toString), builder) :
+                CommandSource.suggestMatching(MagicRegistries.FORMS.getIds().stream().map(Identifier::toString), builder) :
                 Suggestions.empty();
     }
 
     @Override
     public Collection<String> getExamples() {
-        return ModRegistries.SPELL_FORMS.getIds().stream().map(Identifier::toString).toList();
+        return MagicRegistries.FORMS.getIds().stream().map(Identifier::toString).toList();
     }
 }

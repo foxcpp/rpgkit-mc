@@ -1,6 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.mixin;
 
-import com.github.sweetsnowywitch.csmprpgkit.magic.effects.MuteEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.use.special.MuteEffect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;

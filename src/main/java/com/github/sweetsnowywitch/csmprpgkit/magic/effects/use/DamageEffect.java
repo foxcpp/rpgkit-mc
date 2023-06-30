@@ -1,31 +1,28 @@
-package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
+package com.github.sweetsnowywitch.csmprpgkit.magic.effects.use;
 
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellBuildCondition;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.UseEffect;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 
-public class DamageEffect extends SpellEffect {
+import java.util.ArrayList;
+
+public class DamageEffect extends UseEffect {
     public static class Reaction extends SpellReaction {
         private final int damageDealt;
 
-        public Reaction(Identifier id) {
-            super(id);
-            this.damageDealt = 0;
-        }
-
-        public Reaction(Identifier id, JsonObject obj) {
-            super(id, obj);
-
+        public Reaction(JsonObject obj) {
+            super(obj);
             if (obj.has("damage_dealt")) {
                 this.damageDealt = obj.get("damage_dealt").getAsInt();
             } else {
@@ -47,7 +44,7 @@ public class DamageEffect extends SpellEffect {
         }
     }
 
-    private final int damageDealt;
+    protected final int damageDealt;
 
     public DamageEffect(Identifier id) {
         super(id);
@@ -64,35 +61,50 @@ public class DamageEffect extends SpellEffect {
         }
     }
 
-    @Override
-    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
-        if (!(entity instanceof LivingEntity le)) {
-            return false;
+    public class Used extends UseEffect.Used {
+        protected Used(SpellBuildCondition.Context ctx) {
+            super(DamageEffect.this, new ArrayList<>(), ctx);
         }
 
-        var damageDealt = this.damageDealt;
+        protected Used(JsonObject obj) {
+            super(DamageEffect.this, obj);
+        }
 
-        for (var reaction : cast.getReactions()) {
-            if (reaction instanceof DamageEffect.Reaction r) {
-                damageDealt += r.damageDealt;
+        @Override
+        public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
+            return ActionResult.PASS;
+        }
+
+        @Override
+        public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
+            if (!(entity instanceof LivingEntity le)) {
+                return ActionResult.PASS;
             }
-        }
-        if (damageDealt <= 1) {
-            damageDealt = 1;
-        }
 
-        le.damage(DamageSource.MAGIC, damageDealt);
-        return false;
+            var damageDealt = DamageEffect.this.damageDealt;
+
+            for (var reaction : this.appliedReactions) {
+                if (reaction instanceof DamageEffect.Reaction r) {
+                    damageDealt += r.damageDealt;
+                }
+            }
+            if (damageDealt <= 1) {
+                damageDealt = 1;
+            }
+
+            le.damage(DamageSource.MAGIC, damageDealt);
+            return ActionResult.SUCCESS;
+        }
     }
 
     @Override
-    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        return false;
+    public UseEffect.Used use(SpellBuildCondition.Context ctx) {
+        return new Used(ctx);
     }
 
     @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
-
+    public UseEffect.Used usedFromJson(JsonObject obj) {
+        return new Used(obj);
     }
 
     @Override

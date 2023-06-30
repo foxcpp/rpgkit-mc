@@ -9,6 +9,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 /**
  * Handles packets sent by client UI when performing a cast.
@@ -23,11 +25,14 @@ public class ServerSpellBuildHandler {
         CAST,
         INTERRUPT_CAST,
     }
+
     public enum CastType {
         SELF,
         ITEM,
         AREA,
-        USE
+        USE,
+        USE_BLOCK,
+        USE_ENTITY,
     }
 
     public void register() {
@@ -82,6 +87,23 @@ public class ServerSpellBuildHandler {
     private void onCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         var type = CastType.valueOf(buf.readString(25));
 
+        BlockPos pos;
+        Direction direction;
+        int entityId;
+
+        if (type.equals(CastType.USE_BLOCK)) {
+            pos = buf.readBlockPos();
+            direction = Direction.byId(buf.readInt());
+        } else {
+            pos = null;
+            direction = null;
+        }
+        if (type.equals(CastType.USE_ENTITY)) {
+            entityId = buf.readInt();
+        } else {
+            entityId = 0;
+        }
+
         server.execute(() -> {
             try {
                 var comp = player.getComponent(ModComponents.CAST);
@@ -89,13 +111,34 @@ public class ServerSpellBuildHandler {
                     case SELF -> comp.performSelfCast();
                     case ITEM -> comp.performItemCast();
                     case AREA -> comp.performAreaCast();
-                    case USE -> comp.performUseCast();
+                    case USE -> comp.performRangedCast();
+                    case USE_BLOCK -> comp.performCastOnEntity(player.getWorld().getEntityById(entityId));
+                    case USE_ENTITY -> comp.performCastOnBlock(pos, direction);
                 }
             } catch (Exception ex) {
                 RPGKitMod.LOGGER.error("Exception happened while handling a spell build packet from %s".formatted(player.toString()), ex);
             }
         });
     }
+
+    private void onBlockCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        var type = CastType.valueOf(buf.readString(25));
+
+        server.execute(() -> {
+            try {
+                var comp = player.getComponent(ModComponents.CAST);
+                switch (type) {
+                    case SELF -> comp.performSelfCast();
+                    case ITEM -> comp.performItemCast();
+                    case AREA -> comp.performAreaCast();
+                    case USE -> comp.performRangedCast();
+                }
+            } catch (Exception ex) {
+                RPGKitMod.LOGGER.error("Exception happened while handling a spell build packet from %s".formatted(player.toString()), ex);
+            }
+        });
+    }
+
 
     private void onInterruptCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> {

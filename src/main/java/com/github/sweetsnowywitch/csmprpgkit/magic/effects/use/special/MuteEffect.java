@@ -1,18 +1,19 @@
-package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
+package com.github.sweetsnowywitch.csmprpgkit.magic.effects.use.special;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
 import com.github.sweetsnowywitch.csmprpgkit.effects.MuteStatusEffect;
-import com.github.sweetsnowywitch.csmprpgkit.entities.ModEntities;
 import com.github.sweetsnowywitch.csmprpgkit.entities.SoundBarrierEntity;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.use.SimpleUseEffect;
 import com.google.gson.JsonObject;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -22,7 +23,9 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MuteEffect extends SpellEffect {
+import java.util.List;
+
+public class MuteEffect extends SimpleUseEffect {
     public final int duration;
     public final boolean muteInside;
 
@@ -49,9 +52,9 @@ public class MuteEffect extends SpellEffect {
     }
 
     @Override
-    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
         if (!(entity instanceof LivingEntity le)) {
-            return false;
+            return ActionResult.PASS;
         }
 
         var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
@@ -62,19 +65,13 @@ public class MuteEffect extends SpellEffect {
                         false, false),
                 caster
         );
-        return false;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        return false;
-    }
-
-    @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
-        var barrier = new SoundBarrierEntity(ModEntities.SOUND_BARRIER, world, box, this.duration, this.muteInside);
-        barrier.setCast(cast);
-        world.spawnEntity(barrier);
+    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+        // TODO: Apply to block via SpellArea.
+        return null;
     }
 
     @Override

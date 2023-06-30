@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -63,7 +62,7 @@ public sealed class ItemElement implements SpellElement {
             return 0;
         }
 
-        var costs = ModRegistries.ITEM_COSTS.get(itemId);
+        var costs = MagicRegistries.ITEM_COSTS.get(itemId);
         if (costs == null) {
             return 0;
         }

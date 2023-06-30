@@ -1,8 +1,8 @@
-package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
+package com.github.sweetsnowywitch.csmprpgkit.magic.effects.use;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.google.gson.JsonObject;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -10,18 +10,18 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
+import java.util.List;
 import java.util.Optional;
 
-public class ExplosionEffect extends SpellEffect {
+public class ExplosionEffect extends SimpleUseEffect {
     public static class Behavior extends ExplosionBehavior {
         float blastResistanceDecrease;
         boolean destroyBlocks;
@@ -43,11 +43,11 @@ public class ExplosionEffect extends SpellEffect {
         }
     }
 
-    private final float blastResistanceDecrease;
-    private final boolean dropBlocks;
-    private final boolean breakBlocks;
+    protected final float blastResistanceDecrease;
+    protected final boolean dropBlocks;
+    protected final boolean breakBlocks;
 
-    private final float powerMultiplier;
+    protected final float powerMultiplier;
 
     public ExplosionEffect(Identifier id) {
         super(id);
@@ -74,19 +74,7 @@ public class ExplosionEffect extends SpellEffect {
     }
 
     @Override
-    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
-        this.onAreaHit(cast, (ServerWorld) entity.getWorld(), Box.of(entity.getPos(), 4, 4, 4));
-        return false;
-    }
-
-    @Override
-    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        this.onAreaHit(cast, world, Box.from(Vec3d.ofCenter(pos)));
-        return false;
-    }
-
-    @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
+    public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         var caster = cast.getCaster(world);
 
         DamageSource damageSource;
@@ -96,12 +84,18 @@ public class ExplosionEffect extends SpellEffect {
             damageSource = DamageSource.MAGIC;
         }
 
-        var center = box.getCenter();
-        var power = this.powerMultiplier * Math.min(box.getXLength(), box.getZLength());
+        var power = ExplosionEffect.this.powerMultiplier;
 
-        RPGKitMod.LOGGER.debug("Created spell explosion at {} with power {} (break blocks = {}, blast resistance - {})", center, power, breakBlocks, blastResistanceDecrease);
+        RPGKitMod.LOGGER.debug("Created spell explosion at {} with power {} (break blocks = {}, blast resistance - {})",
+                pos, power, breakBlocks, blastResistanceDecrease);
 
-        world.createExplosion(caster, damageSource, new Behavior(this.blastResistanceDecrease, this.breakBlocks),
-                center.x, center.y, center.z, (float) power, false, Explosion.DestructionType.DESTROY);
+        world.createExplosion(caster, damageSource, new Behavior(ExplosionEffect.this.blastResistanceDecrease, ExplosionEffect.this.breakBlocks),
+                pos.getX(), pos.getY(), pos.getZ(), power, false, Explosion.DestructionType.DESTROY);
+        return ActionResult.SUCCESS;
+    }
+
+    @Override
+    public ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
+        return ActionResult.PASS;
     }
 }

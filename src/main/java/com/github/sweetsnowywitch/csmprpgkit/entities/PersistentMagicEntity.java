@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.entities;
 
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.AreaEffect;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
@@ -46,14 +47,8 @@ public class PersistentMagicEntity extends MagicAreaEntity {
         super.tick();
 
         if (!this.world.isClient && (this.effectInterval == 0 || this.age % this.effectInterval == 0)) {
-            this.cast.getSpell().onAreaHit(this.cast, (ServerWorld) world, this.getArea());
-
-            for (var ent : world.getOtherEntities(this, this.getArea())) {
-                if (ent instanceof MagicAreaEntity) { // TODO: Magic field interactions.
-                    continue;
-                }
-                cast.getSpell().onSingleEntityHit(cast, ent);
-            }
+            this.cast.getSpell().useOnArea(this.cast, (ServerWorld) world,
+                    this.getArea(), this.getPos(), AreaEffect.AreaCollider.cube(this.getArea()));
         }
     }
 }

@@ -12,8 +12,19 @@
     "id": "csmprpgkit:blast",
     "weight": 1
   },
-  "generic_effects": [
-  ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "csmprpgkit:damage",
+      "damage": 1,
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "csmprpgkit:damage",
+          "damage": 1
+        }
+      ]
+    }
   ]
 }

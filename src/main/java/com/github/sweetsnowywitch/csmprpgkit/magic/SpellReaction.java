@@ -1,5 +1,7 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
+import com.github.sweetsnowywitch.csmprpgkit.JsonHelpers;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.SpellEffect;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
@@ -7,37 +9,18 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
 /**
  * SpellReaction is a base class for spell "reaction". Reaction
  * is a spell cast element that changes how its form or effect works, typically
  * by changing its parameters.
  */
-public abstract class SpellReaction {
-    public interface Factory {
-        @Nullable SpellReaction createDefaultReaction(Identifier id);
-
-        @Nullable SpellReaction createReactionFromJson(Identifier id, JsonObject obj);
+public abstract class SpellReaction implements JsonHelpers.JsonSerializable {
+    @FunctionalInterface
+    public interface JsonFactory {
+        SpellReaction createReactionFromJson(JsonObject obj);
     }
 
-    public static Factory factoryFor(Function<Identifier, SpellReaction> def, BiFunction<Identifier, JsonObject, SpellReaction> json) {
-        return new Factory() {
-            public @Nullable SpellReaction createDefaultReaction(Identifier id) {
-                return def.apply(id);
-            }
-
-            public @Nullable SpellReaction createReactionFromJson(Identifier id, JsonObject obj) {
-                return json.apply(id, obj);
-            }
-        };
-    }
-
-    public final Identifier id;
-    private final ImmutableMap<String, Float> costMultipliers;
-    private final ImmutableMap<String, Float> costTerms;
+    public final Identifier targetId;
     private final @Nullable SpellBuildCondition condition;
 
     public boolean appliesTo(SpellEffect effect) {
@@ -48,15 +31,8 @@ public abstract class SpellReaction {
         return false;
     }
 
-    public SpellReaction(Identifier id) {
-        this.id = id;
-        this.costMultipliers = ImmutableMap.of();
-        this.costTerms = ImmutableMap.of();
-        this.condition = null;
-    }
-
-    public SpellReaction(Identifier id, JsonObject obj) {
-        this.id = id;
+    protected SpellReaction(JsonObject obj) {
+        this.targetId = new Identifier(obj.get("for").getAsString());
 
         ImmutableMap.Builder<String, Float> costMultipliers = ImmutableMap.builder();
         ImmutableMap.Builder<String, Float> costTerms = ImmutableMap.builder();
@@ -74,9 +50,6 @@ public abstract class SpellReaction {
             }
         }
 
-        this.costTerms = costTerms.build();
-        this.costMultipliers = costMultipliers.build();
-
         if (obj.has("condition")) {
             this.condition = SpellBuildCondition.fromJson(obj.getAsJsonObject("condition"));
         } else {
@@ -84,49 +57,29 @@ public abstract class SpellReaction {
         }
     }
 
-    public boolean shouldAdd(SpellBuilder builder, @Nullable SpellElement source) {
+    public boolean shouldAdd(SpellBuildCondition.Context ctx) {
         if (this.condition != null) {
-            return this.condition.shouldAdd(builder, source);
+            return this.condition.shouldAdd(ctx);
         }
 
         return true;
     }
 
-    public float getCostMultiplier(String key) {
-        return Objects.requireNonNull(costMultipliers.getOrDefault(key, (float) 1));
-    }
-
-    public float getCostTerm(String key) {
-        return Objects.requireNonNull(costTerms.getOrDefault(key, (float) 0));
-    }
-
-    public final float applyCost(String key, float cost) {
-        return cost * this.getCostMultiplier(key) + this.getCostTerm(key);
-    }
-
     @MustBeInvokedByOverriders
     public void toJson(@NotNull JsonObject obj) {
-        if (obj.has("costs")) {
-            obj.remove("costs");
-        }
-        var costsObj = new JsonObject();
-        for (var entry : this.costMultipliers.entrySet()) {
-            if (!costsObj.has(entry.getKey())) {
-                costsObj.add(entry.getKey(), new JsonObject());
-            }
-            costsObj.getAsJsonObject(entry.getKey()).addProperty("mul", entry.getValue());
-        }
-        for (var entry : this.costTerms.entrySet()) {
-            if (!costsObj.has(entry.getKey())) {
-                costsObj.add(entry.getKey(), new JsonObject());
-            }
-            costsObj.getAsJsonObject(entry.getKey()).addProperty("add", entry.getValue());
-        }
-        obj.add("costs", costsObj);
+        obj.addProperty("for", this.targetId.toString());
     }
 
-    @Override
-    public String toString() {
-        return this.id.toString();
+    public static SpellReaction fromJson(JsonObject obj) {
+        var type = obj.get("for");
+        if (type == null) {
+            throw new IllegalArgumentException("missing type field in spell effect definition");
+        }
+        var id = new Identifier(type.getAsString());
+        var reaction = MagicRegistries.REACTIONS.get(id);
+        if (reaction == null) {
+            throw new IllegalArgumentException("unknown reaction: %s".formatted(id.toString()));
+        }
+        return reaction.createReactionFromJson(obj);
     }
 }

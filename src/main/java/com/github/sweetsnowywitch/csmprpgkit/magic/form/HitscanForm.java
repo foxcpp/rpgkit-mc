@@ -24,7 +24,7 @@ public class HitscanForm extends SpellForm {
     }
 
     @Override
-    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+    public void startCast(@NotNull ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         super.startCast(cast, world, caster);
 
         var pos = caster.getPos();
@@ -44,9 +44,9 @@ public class HitscanForm extends SpellForm {
         var entHitResult = ProjectileUtil.getEntityCollision(world, caster, pos, end,
                 new Box(pos, end), this::canHit);
         if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
-            cast.getSpell().onSingleEntityHit(cast, entHitResult.getEntity());
+            cast.getSpell().useOnEntity(cast, entHitResult.getEntity());
         } else if (hitResult.getType() != HitResult.Type.MISS) {
-            cast.getSpell().onSingleBlockHit(cast, world, hitResult.getBlockPos(), hitResult.getSide());
+            cast.getSpell().useOnBlock(cast, world, hitResult.getBlockPos(), hitResult.getSide());
         }
         // TODO: Pass-through for both entities and blocks.
     }

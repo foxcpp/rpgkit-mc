@@ -1,7 +1,10 @@
 package com.github.sweetsnowywitch.csmprpgkit.magic;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.AreaEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.ItemEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.UseEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.form.ModForms;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -9,15 +12,13 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
-import java.util.function.Function;
 
-public class SpellBuilder {
+public final class SpellBuilder {
     private final @NotNull Entity caster;
     private final int maxElements;
     private final List<SpellElement> fullRecipe;
     private final List<SpellElement> pendingElements;
-    private Spell spell;
-    private final List<SpellReaction> reactions;
+    private @Nullable Spell spell;
     private final Map<String, Float> spellAspectCosts;
 
     public SpellBuilder(@NotNull Entity caster, int maxElements) {
@@ -25,7 +26,7 @@ public class SpellBuilder {
         this.maxElements = maxElements;
         this.fullRecipe = new ArrayList<>();
         this.pendingElements = new ArrayList<>();
-        this.reactions = new ArrayList<>();
+        this.spell = null;
         this.spellAspectCosts = new HashMap<>();
     }
 
@@ -41,7 +42,7 @@ public class SpellBuilder {
 
         if (this.pendingElements.size() >= 2) {
             var lastIndex = this.pendingElements.size() - 1;
-            var res = ModRegistries.ASPECT_RECIPES.tryMatch(List.of(
+            var res = MagicRegistries.ASPECT_RECIPES.tryMatch(List.of(
                     this.pendingElements.get(lastIndex - 1),
                     this.pendingElements.get(lastIndex)
             ));
@@ -60,15 +61,43 @@ public class SpellBuilder {
     }
 
     public @NotNull SpellForm determineUseForm() {
-        return this.determinePendingSpell().determineUseForm();
+        return this.determinePendingSpell().getUseForm();
     }
 
     public @NotNull Spell determinePendingSpell() {
-        var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
-        if (spell != null) {
-            return spell.result();
+        var itemEffects = new ImmutableList.Builder<ItemEffect.Used>();
+        var areaEffects = new ImmutableList.Builder<AreaEffect.Used>();
+        var useEffects = new ImmutableList.Builder<UseEffect.Used>();
+        var formReactions = new ImmutableList.Builder<SpellReaction>();
+
+        SpellForm useForm = ModForms.RAY;
+        int useFormWeight = -9999;
+
+        var ctx = new SpellBuildCondition.Context();
+        ctx.caster = null;
+        ctx.elements = this.pendingElements;
+
+        for (var el : this.pendingElements) {
+            ctx.element = el;
+
+            el.itemEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
+                    map(eff -> eff.use(ctx)).forEach(itemEffects::add);
+            el.areaEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
+                    map(eff -> eff.use(ctx)).forEach(areaEffects::add);
+            el.useEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
+                    map(eff -> eff.use(ctx)).forEach(useEffects::add);
+            el.formReactions().stream().filter(eff -> eff.shouldAdd(ctx)).forEach(formReactions::add);
+
+            if (el.getPreferredForm() != null && el.getPreferredFormWeight() > useFormWeight) {
+                useForm = el.getPreferredForm();
+                useFormWeight = el.getPreferredFormWeight();
+            }
         }
-        return new GenericSpell(this, ImmutableList.copyOf(this.pendingElements));
+
+        return new Spell(
+                itemEffects.build(), areaEffects.build(), useEffects.build(),
+                formReactions.build(),
+                useForm);
     }
 
     public void finishSpell() {
@@ -76,15 +105,7 @@ public class SpellBuilder {
             throw new IllegalStateException("Spell is already finished");
         }
 
-        var spell = ModRegistries.SPELL_RECIPES.tryMatch(this.pendingElements);
-        if (spell != null) {
-            this.spell = spell.result();
-            this.consumeElements(this.pendingElements, (i) -> spell.elements().get(i).consume());
-        } else {
-            var generic = new GenericSpell(this, ImmutableList.copyOf(this.pendingElements));
-            this.reactions.addAll(generic.getForcedEffectReactions());
-            this.spell = generic;
-        }
+        this.spell = this.determinePendingSpell();
 
         for (var element : this.pendingElements) {
             for (var key : Aspect.COST_ALL) {
@@ -97,45 +118,6 @@ public class SpellBuilder {
         RPGKitMod.LOGGER.debug("SpellBuilder.finishSpell: {}", this.spell);
     }
 
-    public void finishReaction() {
-        var reactionFound = false;
-        var shouldConsume = new boolean[this.pendingElements.size()];
-        for (SpellEffect effect : this.spell.getEffects()) {
-            var effectReaction = ModRegistries.REACTION_RECIPES.tryMatch(this.pendingElements, reaction -> reaction.appliesTo(effect));
-            if (effectReaction != null) {
-                this.reactions.add(effectReaction.result());
-                for (var entry : this.spellAspectCosts.entrySet()) {
-                    this.spellAspectCosts.compute(entry.getKey(),
-                            (k, v) -> effectReaction.result().applyCost(k, v == null ? 0 : v));
-                }
-
-                // Consume effect reaction elements if any of matched recipes mark it as consumable.
-                for (int i = 0; i < effectReaction.elements().size(); i++) {
-                    shouldConsume[i] = shouldConsume[i] || effectReaction.elements().get(i).consume();
-                }
-                reactionFound = true;
-            }
-        }
-
-        var formReactions = ModRegistries.REACTION_RECIPES.tryMatchMultiple(this.pendingElements);
-        if (formReactions != null) {
-            for (var reaction : formReactions) {
-                this.reactions.add(reaction.result());
-
-                for (int i = 0; i < reaction.elements().size(); i++) {
-                    shouldConsume[i] = shouldConsume[i] || reaction.elements().get(i).consume();
-                }
-            }
-
-            reactionFound = true;
-        }
-
-        if (reactionFound) {
-            this.consumeElements(this.pendingElements, (i) -> shouldConsume[i]);
-            this.pendingElements.clear();
-        }
-    }
-
     public ServerSpellCast toServerCast(@NotNull SpellForm form) {
         if (this.spell == null) {
             this.finishSpell();
@@ -143,21 +125,11 @@ public class SpellBuilder {
 
         var costs = this.calculateFormedCosts(form);
 
-        RPGKitMod.LOGGER.info("{} casting spell {} with form {} and reactions {} (elements: {})",
-                caster, this.spell, form, this.reactions, this.fullRecipe);
+        RPGKitMod.LOGGER.info("{} casting spell {} with form {} (elements: {})",
+                caster, this.spell, form, this.fullRecipe);
         RPGKitMod.LOGGER.debug("Cast costs: {}", costs);
-        return new ServerSpellCast(form, this.spell, this.caster, this.reactions,
+        return new ServerSpellCast(form, this.spell, this.caster,
                 costs, this.fullRecipe, caster.getPos(), caster.getHeadYaw(), caster.getPitch());
-    }
-
-    private void consumeElements(List<SpellElement> elements, Function<Integer, Boolean> shouldConsume) {
-        for (int i = 0; i < elements.size(); i++) {
-            if (shouldConsume.apply(i)) {
-                // TODO: Check that element is still usable (item still present, etc)
-
-                elements.get(i).consume();
-            }
-        }
     }
 
     private Map<String, Float> calculateFormedCosts(SpellForm form) {
@@ -167,11 +139,6 @@ public class SpellBuilder {
             var cost = element.getValue();
 
             cost = form.applyCost(element.getKey(), cost);
-
-            for (var reaction : this.reactions) {
-                if (!reaction.appliesTo(form)) continue;
-                cost = reaction.applyCost(element.getKey(), cost);
-            }
 
             formedCosts.put(element.getKey(), cost);
         }
@@ -191,7 +158,7 @@ public class SpellBuilder {
         return maxElements;
     }
 
-    public @Nullable Entity getCaster() {
+    public @NotNull Entity getCaster() {
         return this.caster;
     }
 }

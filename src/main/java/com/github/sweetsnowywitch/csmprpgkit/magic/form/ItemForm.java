@@ -16,7 +16,7 @@ public class ItemForm extends SpellForm {
     }
 
     @Override
-    public void startCast(ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
+    public void startCast(@NotNull ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         ItemStack targetStack = null;
         if (caster instanceof LivingEntity le) {
             targetStack = le.getOffHandStack();
@@ -33,8 +33,8 @@ public class ItemForm extends SpellForm {
 
         super.startCast(cast, world, caster);
 
-        var replacement = cast.getSpell().onItemHit(cast, world, caster, targetStack);
-        caster.equipStack(EquipmentSlot.OFFHAND, replacement);
+        var res = cast.getSpell().useOnItem(cast, world, targetStack, null, caster);
+        caster.equipStack(EquipmentSlot.OFFHAND, res.getValue());
     }
 
     @Override

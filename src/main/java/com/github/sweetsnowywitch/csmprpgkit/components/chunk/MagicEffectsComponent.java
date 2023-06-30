@@ -1,9 +1,9 @@
 package com.github.sweetsnowywitch.csmprpgkit.components.chunk;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
+import com.github.sweetsnowywitch.csmprpgkit.magic.MagicArea;
+import com.github.sweetsnowywitch.csmprpgkit.magic.MagicRegistries;
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
@@ -28,7 +28,7 @@ import java.util.*;
 public class MagicEffectsComponent implements Component, ServerTickingComponent, AutoSyncedComponent {
     private static final Map<ServerPlayerEntity, Instant> lastChangeSynced = new HashMap<>();
     private final Chunk chunk;
-    private List<SpellArea> areas;
+    private List<MagicArea> areas;
     private BitSetVoxelSet hasEffects;
     private Instant lastChange;
 
@@ -39,7 +39,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         this.lastChange = Instant.now();
     }
 
-    public static void addGlobalArea(ServerWorld world, SpellArea area) {
+    public static void addGlobalArea(ServerWorld world, MagicArea area) {
         var visited = new ArrayList<ChunkPos>();
         area.getBox().forEachVertex(vert -> {
             var chunk = world.getChunk(vert);
@@ -51,7 +51,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         });
     }
 
-    public static void removeGlobalArea(ServerWorld world, SpellArea area) {
+    public static void removeGlobalArea(ServerWorld world, MagicArea area) {
         var visited = new ArrayList<ChunkPos>();
         area.getBox().forEachVertex(vert -> {
             var chunk = world.getChunk(vert);
@@ -63,7 +63,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         });
     }
 
-    public void addArea(SpellArea area) {
+    public void addArea(MagicArea area) {
         this.areas.add(area);
 
         int cnt = this.computeHasEffects(this.hasEffects, area);
@@ -76,7 +76,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         ModComponents.CHUNK_MAGIC_EFFECTS.sync(this.chunk);
     }
 
-    public void removeArea(SpellArea area) {
+    public void removeArea(MagicArea area) {
         if (this.areas.remove(area)) {
             this.computeHasEffects();
         }
@@ -86,7 +86,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         ModComponents.CHUNK_MAGIC_EFFECTS.sync(this.chunk);
     }
 
-    private int computeHasEffects(BitSetVoxelSet set, SpellArea area) {
+    private int computeHasEffects(BitSetVoxelSet set, MagicArea area) {
         int count = 0;
         var chunkPos = this.chunk.getPos();
         var box = area.getBox();
@@ -107,22 +107,22 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     private void computeHasEffects() {
         var newHasEffects = new BitSetVoxelSet(16, this.chunk.getHeight(), 16);
         int count = 0;
-        for (SpellArea area : this.areas) {
+        for (MagicArea area : this.areas) {
             count += this.computeHasEffects(newHasEffects, area);
         }
         this.hasEffects = newHasEffects;
         RPGKitMod.LOGGER.debug("MagicEffectsComponent.computeHasEffects: {} affected blocks across {} areas in {}", count, this.areas.size(), this.chunk.getPos());
     }
 
-    public List<SpellArea> getAreas(@NotNull BlockPos pos, Identifier effectID) {
+    public List<MagicArea> getAreas(@NotNull BlockPos pos, Identifier effectID) {
         if (!this.hasEffects.contains(ChunkSectionPos.getLocalCoord(pos.getX()),
                 ChunkSectionPos.getLocalCoord(pos.getY()),
                 ChunkSectionPos.getLocalCoord(pos.getZ()))) {
             return List.of();
         }
 
-        var areasInBlock = new ArrayList<SpellArea>(2);
-        for (SpellArea area : this.areas) {
+        var areasInBlock = new ArrayList<MagicArea>(2);
+        for (MagicArea area : this.areas) {
             if (area.getBox().contains(pos) && area.getEffectID().equals(effectID)) {
                 areasInBlock.add(area);
             }
@@ -130,7 +130,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         return areasInBlock;
     }
 
-    public <T extends SpellArea> List<T> getAreas(@NotNull BlockPos pos, Class<T> areaType) {
+    public <T extends MagicArea> List<T> getAreas(@NotNull BlockPos pos, Class<T> areaType) {
         if (!this.hasEffects.contains(ChunkSectionPos.getLocalCoord(pos.getX()),
                 ChunkSectionPos.getLocalCoord(pos.getY()),
                 ChunkSectionPos.getLocalCoord(pos.getZ()))) {
@@ -138,7 +138,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         }
 
         var areasInBlock = new ArrayList<T>(2);
-        for (SpellArea area : this.areas) {
+        for (MagicArea area : this.areas) {
             if (!area.getBox().contains(pos)) {
                 continue;
             }
@@ -149,7 +149,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         return areasInBlock;
     }
 
-    public @Unmodifiable List<SpellArea> getAreas() {
+    public @Unmodifiable List<MagicArea> getAreas() {
         return Collections.unmodifiableList(this.areas);
     }
 
@@ -166,9 +166,9 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
                         tag.getString("EffectID"), this.chunk.getPos());
                 continue;
             }
-            var factory = ModRegistries.SPELL_EFFECT_AREAS.get(effectID);
+            var factory = MagicRegistries.EFFECT_AREAS.get(effectID);
             if (factory == null) {
-                factory = SpellArea::new;
+                factory = MagicArea::new;
             }
 
             var area = factory.createAreaFromNbt(effectID, comp);
@@ -187,7 +187,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     @Override
     public void writeToNbt(@NotNull NbtCompound tag) {
         var areasNBT = new NbtList();
-        for (SpellArea area : this.areas) {
+        for (MagicArea area : this.areas) {
             var areaNBT = new NbtCompound();
             areaNBT.putString("EffectID", area.getEffectID().toString());
             area.writeToNbt(areaNBT);

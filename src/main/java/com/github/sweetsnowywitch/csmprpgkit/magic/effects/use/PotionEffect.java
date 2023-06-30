@@ -1,40 +1,34 @@
-package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
+package com.github.sweetsnowywitch.csmprpgkit.magic.effects.use;
 
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.SpellEffect;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 
-public class PotionEffect extends SpellEffect {
+public class PotionEffect extends SimpleUseEffect {
     public static class Reaction extends SpellReaction {
         private final @Nullable StatusEffect effect;
         private final double amplifier;
         private final int durationTicks;
 
-        public Reaction(Identifier id) {
-            super(id);
-            this.effect = null;
-            this.amplifier = 1;
-            this.durationTicks = 0;
-        }
-
-        public Reaction(Identifier id, JsonObject obj) {
-            super(id, obj);
+        public Reaction(JsonObject obj) {
+            super(obj);
 
             if (obj.has("id")) {
                 var effectId = new Identifier(obj.get("id").getAsString());
@@ -140,19 +134,19 @@ public class PotionEffect extends SpellEffect {
     }
 
     @Override
-    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
         if (this.statusEffect == null) {
             RPGKitMod.LOGGER.warn("Cast {} with empty status effect", cast);
-            return false;
+            return ActionResult.PASS;
         }
         if (!(entity instanceof LivingEntity le)) {
-            return false;
+            return ActionResult.PASS;
         }
 
         double amplifier = this.baseAmplifier;
         var duration = this.baseDuration;
 
-        for (var reaction : cast.getReactions()) {
+        for (var reaction : reactions) {
             if (reaction instanceof Reaction r && (r.effect == null || r.effect.equals(this.statusEffect))) {
                 amplifier += r.amplifier;
                 duration += r.durationTicks;
@@ -171,18 +165,12 @@ public class PotionEffect extends SpellEffect {
                 new StatusEffectInstance(this.statusEffect, duration, (int) amplifier, false, false),
                 caster
         );
-
-        return false;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        return false;
-    }
-
-    @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
-
+    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+        return null;
     }
 
     @Override

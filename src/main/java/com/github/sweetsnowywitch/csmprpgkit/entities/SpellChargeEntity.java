@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
@@ -111,7 +112,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
             return;
         }
 
-        this.cast.getSpell().onSingleEntityHit(this.cast, ehr.getEntity());
+        this.cast.getSpell().useOnEntity(this.cast, ehr.getEntity());
     }
 
     private Vec3d bounceDirection(BlockHitResult bhr) {
@@ -119,12 +120,12 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
         var rotation = this.getVelocity();
 
         var factor = this.cast.getCost(SpellElement.COST_INTERITIO) * 0.3f + 0.1f;
-        var degreesDelta = RPGKitMod.RANDOM.nextFloat(factor) - factor/2;
+        var degreesDelta = RPGKitMod.RANDOM.nextFloat(factor) - factor / 2;
 
         var bounce = switch (side.getAxis()) {
-            case X -> rotation.rotateX(180+degreesDelta);
-            case Y -> rotation.rotateY(180+degreesDelta);
-            case Z -> rotation.rotateZ(180+degreesDelta);
+            case X -> rotation.rotateX(180 + degreesDelta);
+            case Y -> rotation.rotateY(180 + degreesDelta);
+            case Z -> rotation.rotateZ(180 + degreesDelta);
         };
         return bounce.multiply(-1);
     }
@@ -136,8 +137,8 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
             return;
         }
 
-        var passThrough = this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld)this.world, bhr.getBlockPos(), bhr.getSide());
-        if (!passThrough) {
+        var result = this.cast.getSpell().useOnBlock(this.cast, (ServerWorld) this.world, bhr.getBlockPos(), bhr.getSide());
+        if (result.equals(ActionResult.CONSUME)) {
             this.setVelocity(bounceDirection(bhr).multiply(this.bounceFactor));
             if (this.getVelocity().lengthSquared() >= 0.01f) {
                 return;

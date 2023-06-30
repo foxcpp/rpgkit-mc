@@ -1,12 +1,14 @@
-package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
+package com.github.sweetsnowywitch.csmprpgkit.magic.effects.use.special;
 
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.components.chunk.MagicEffectsComponent;
 import com.github.sweetsnowywitch.csmprpgkit.effects.ModStatusEffects;
+import com.github.sweetsnowywitch.csmprpgkit.magic.MagicArea;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellArea;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.SpellEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.use.SimpleUseEffect;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -22,14 +24,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
-public class WardEffect extends SpellEffect {
+public class WardEffect extends SimpleUseEffect {
     private static class Listener implements AttackBlockCallback, UseBlockCallback {
         @Override
         public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
@@ -54,7 +57,7 @@ public class WardEffect extends SpellEffect {
         AttackBlockCallback.EVENT.register(l);
     }
 
-    public static class Area extends SpellArea {
+    public static class Area extends MagicArea {
         private final int strength;
         private final @Nullable UUID holderId;
 
@@ -115,13 +118,13 @@ public class WardEffect extends SpellEffect {
     }
 
     @Override
-    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
         if (entity.getUuid().equals(cast.getCasterUuid()) && this.allowCaster) {
-            return false;
+            return ActionResult.PASS;
         }
 
         if (!(entity instanceof LivingEntity le)) {
-            return false;
+            return ActionResult.PASS;
         }
 
         var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
@@ -132,20 +135,15 @@ public class WardEffect extends SpellEffect {
                         false, false),
                 caster
         );
-        return false;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
+    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         MagicEffectsComponent.addGlobalArea(world,
                 new Area(new BlockBox(pos), this, cast, this.duration,
                         this.strength, this.allowCaster ? cast.getCasterUuid() : null));
-        return false;
-    }
-
-    @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
-        // TODO: Create force-field that cannot be passed.
+        return ActionResult.SUCCESS;
     }
 
     public static boolean isBlockProtected(World world, BlockPos pos) {
@@ -168,7 +166,7 @@ public class WardEffect extends SpellEffect {
     }
 
     @Override
-    public void toJson(JsonObject obj) {
+    public void toJson(@NotNull JsonObject obj) {
         super.toJson(obj);
         obj.addProperty("strength", this.strength);
         obj.addProperty("duration", this.duration);

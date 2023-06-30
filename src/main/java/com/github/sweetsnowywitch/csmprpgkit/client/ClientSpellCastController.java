@@ -7,7 +7,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ClientSpellCastController implements SpellCastController {
@@ -59,7 +62,36 @@ public class ClientSpellCastController implements SpellCastController {
         this.performCast(ServerSpellBuildHandler.CastType.ITEM);
     }
 
-    public void performUseCast() {
+    @Override
+    public void performCastOnBlock(BlockPos pos, Direction direction) {
+        if (!ClientPlayNetworking.canSend(PACKET_ID)) {
+            RPGKitMod.LOGGER.error("Cannot send a spell build packet");
+            return;
+        }
+
+        var buf = PacketByteBufs.create();
+        buf.writeString(ServerSpellBuildHandler.Action.CAST.name());
+        buf.writeString(ServerSpellBuildHandler.CastType.USE_BLOCK.name());
+        buf.writeBlockPos(pos);
+        buf.writeInt(direction.getId());
+        ClientPlayNetworking.send(PACKET_ID, buf);
+    }
+
+    @Override
+    public void performCastOnEntity(Entity target) {
+        if (!ClientPlayNetworking.canSend(PACKET_ID)) {
+            RPGKitMod.LOGGER.error("Cannot send a spell build packet");
+            return;
+        }
+
+        var buf = PacketByteBufs.create();
+        buf.writeString(ServerSpellBuildHandler.Action.CAST.name());
+        buf.writeString(ServerSpellBuildHandler.CastType.USE_ENTITY.name());
+        buf.writeInt(target.getId());
+        ClientPlayNetworking.send(PACKET_ID, buf);
+    }
+
+    public void performRangedCast() {
         this.performCast(ServerSpellBuildHandler.CastType.USE);
     }
 

@@ -7,7 +7,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -69,6 +71,45 @@ public class SpellItem extends Item implements IAnimatable {
     }
 
     @Override
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        return super.postHit(stack, target, attacker);
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        if (context.getWorld().isClient) {
+            context.getPlayer().setCurrentHand(context.getHand());
+            return ActionResult.SUCCESS;
+        }
+
+        try {
+            return context.getPlayer().getComponent(ModComponents.CAST).performCastOnBlock(context.getBlockPos(), context.getSide());
+        } catch (Exception ex) {
+            RPGKitMod.LOGGER.error("Exception happening while trying to perform cast", ex);
+        }
+
+        context.getPlayer().setCurrentHand(context.getHand());
+        return ActionResult.FAIL;
+    }
+
+    @Override
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if (user.world.isClient) {
+            user.setCurrentHand(hand);
+            return ActionResult.SUCCESS;
+        }
+
+        try {
+            return user.getComponent(ModComponents.CAST).performCastOnEntity(entity);
+        } catch (Exception ex) {
+            RPGKitMod.LOGGER.error("Exception happening while trying to perform cast", ex);
+        }
+
+        user.setCurrentHand(hand);
+        return ActionResult.FAIL;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack inHand = user.getStackInHand(hand);
         if (!world.isClient) {
@@ -77,7 +118,7 @@ public class SpellItem extends Item implements IAnimatable {
         }
 
         try {
-            user.getComponent(ModComponents.CAST).performUseCast();
+            return new TypedActionResult<>(user.getComponent(ModComponents.CAST).performRangedCast(), inHand);
         } catch (Exception ex) {
             RPGKitMod.LOGGER.error("Exception happened while trying to perform cast", ex);
         }

@@ -1,20 +1,21 @@
-package com.github.sweetsnowywitch.csmprpgkit.magic.effects;
+package com.github.sweetsnowywitch.csmprpgkit.magic.effects.use;
 
 import com.github.sweetsnowywitch.csmprpgkit.VectorUtils;
 import com.github.sweetsnowywitch.csmprpgkit.magic.ServerSpellCast;
-import com.github.sweetsnowywitch.csmprpgkit.magic.SpellEffect;
 import com.github.sweetsnowywitch.csmprpgkit.magic.SpellReaction;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
-public class PushEffect extends SpellEffect {
+import java.util.List;
+
+public class PushEffect extends SimpleUseEffect {
     public enum EffectVector {
         TOWARDS_ORIGIN,
         FROM_ORIGIN,
@@ -45,15 +46,8 @@ public class PushEffect extends SpellEffect {
         public final EffectVector vector;
         public final boolean disregardCurrentVelocity;
 
-        public Reaction(Identifier id) {
-            super(id);
-            this.velocity = 0;
-            this.vector = EffectVector.FROM_ORIGIN;
-            this.disregardCurrentVelocity = false;
-        }
-
-        public Reaction(Identifier id, JsonObject obj) {
-            super(id);
+        public Reaction(JsonObject obj) {
+            super(obj);
             if (obj.has("velocity")) {
                 this.velocity = obj.get("velocity").getAsDouble();
             } else {
@@ -113,12 +107,12 @@ public class PushEffect extends SpellEffect {
     }
 
     @Override
-    public boolean onSingleEntityHit(ServerSpellCast cast, Entity entity) {
+    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
         var castDirection = VectorUtils.direction(cast.getOriginPitch(), cast.getOriginYaw());
         double velocity = this.velocity;
         Vec3d effectDirection = null;
         boolean disregardCurrentVelocity = this.disregardCurrentVelocity;
-        for (var reaction : cast.getReactions()) {
+        for (var reaction : reactions) {
             if (reaction instanceof Reaction r) {
                 velocity += r.velocity;
                 if (effectDirection != null) {
@@ -151,18 +145,12 @@ public class PushEffect extends SpellEffect {
                     currentVelocity.y + effectVelocityVec.y,
                     currentVelocity.z + effectVelocityVec.z);
         }
-        return false;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean onSingleBlockHit(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction dir) {
-        // none
-        return false;
-    }
-
-    @Override
-    public void onAreaHit(ServerSpellCast cast, ServerWorld world, Box box) {
-        // none
+    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+        return ActionResult.PASS;
     }
 
     @Override

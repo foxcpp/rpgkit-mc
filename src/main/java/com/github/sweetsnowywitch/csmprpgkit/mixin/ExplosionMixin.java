@@ -1,6 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit.mixin;
 
-import com.github.sweetsnowywitch.csmprpgkit.magic.effects.WardEffect;
+import com.github.sweetsnowywitch.csmprpgkit.magic.effects.use.special.WardEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion;
@@ -14,12 +14,13 @@ import java.util.List;
 
 @Mixin(Explosion.class)
 public abstract class ExplosionMixin {
-    @Shadow public abstract List<BlockPos> getAffectedBlocks();
+    @Shadow
+    public abstract List<BlockPos> getAffectedBlocks();
 
     @Inject(at = @At("TAIL"), method = "collectBlocksAndDamageEntities()V")
     public void collectBlocksAndDamageEntities(CallbackInfo ci) {
-        var me = (Explosion)(Object)this;
-        var world = ((ExplosionAccessor)me).getWorld();
+        var me = (Explosion) (Object) this;
+        var world = ((ExplosionAccessor) me).getWorld();
         if (!(world instanceof ServerWorld sw)) {
             return;
         }

@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.csmprpgkit.components.entity;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
 import com.github.sweetsnowywitch.csmprpgkit.items.CatalystBagItem;
@@ -13,12 +12,19 @@ import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,12 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, ClientTickingComponent, ServerTickingComponent, SpellCastController {
+public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, ClientTickingComponent, ServerTickingComponent {
     // Calls are redirected to it on client-side after doing necessary client-side checks.
     public static SpellCastController CLIENT_CONTROLLER = null;
 
     private final PlayerEntity provider;
-    private SpellCast activeCast; // populated only on server-side
+    private ServerSpellCast activeCast; // populated only on server-side
     private SpellBuilder builder; // populated only on server-side
     private List<SpellElement> pendingElements;
     private List<SpellElement> availableElements;
@@ -189,7 +195,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         this.hasBuilder = true;
         this.usingCatalystBag = false;
         this.pendingElements = List.of();
-        this.availableElements = ModRegistries.ASPECTS.values().stream().filter(
+        this.availableElements = MagicRegistries.ASPECTS.values().stream().filter(
                 (a) -> a.isPrimary() && a.getKind() == Aspect.Kind.EFFECT
         ).sorted().collect(Collectors.toList());
 
@@ -226,7 +232,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (this.usingCatalystBag) {
             this.availableElements = this.getAvailableCatalysts(bag);
         } else {
-            this.availableElements = ModRegistries.ASPECTS.values().stream().filter(
+            this.availableElements = MagicRegistries.ASPECTS.values().stream().filter(
                     (a) -> a.isPrimary() && a.getKind() == Aspect.Kind.EFFECT
             ).sorted().collect(Collectors.toList());
         }
@@ -266,9 +272,9 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         this.pendingElements = this.builder.getPendingElements();
 
         var spell = this.builder.determinePendingSpell();
-        var useForm = spell.determineUseForm();
+        var useForm = spell.getUseForm();
         if (useForm instanceof ChanneledForm cf) {
-            this.channelMaxAge = cf.getMaxChannelDuration(spell, spell.getForcedEffectReactions());
+            this.channelMaxAge = cf.getMaxChannelDuration(spell);
         } else {
             this.channelMaxAge = 0;
         }
@@ -282,19 +288,27 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         ModComponents.CAST.sync(this.provider);
     }
 
-    private void performCast(SpellForm form) {
+    private ActionResult performCast(SpellForm form, @Nullable BlockPos pos, @Nullable Direction direction, @Nullable Entity entity) {
         assert this.builder != null;
 
         if (this.builder.getFullRecipe().size() == 0) {
             this.cancelBuild();
-            return;
+            return ActionResult.FAIL;
         }
 
+        ActionResult res = ActionResult.CONSUME;
         var cast = this.builder.toServerCast(form);
         cast.perform((ServerWorld) this.provider.world);
+        if (form.equals(ModForms.USE)) {
+            if (pos != null) {
+                res = cast.getSpell().useOnBlock(cast, (ServerWorld) this.provider.world, pos, direction);
+            } else if (entity != null) {
+                res = cast.getSpell().useOnEntity(cast, entity);
+            }
+        }
 
         if (form instanceof ChanneledForm cf) {
-            this.channelMaxAge = cf.getMaxChannelDuration(cast.getSpell(), cast.getReactions());
+            this.channelMaxAge = cf.getMaxChannelDuration(cast.getSpell());
             this.activeCast = cast;
             this.hasActiveCast = true;
         } else {
@@ -310,15 +324,14 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
         var handStack = this.provider.getMainHandStack();
         if (handStack.getItem().equals(ModItems.SPELL_ITEM)) {
-            if (this.isChanneling()) {
-                handStack.setSubNbt("SpellTranslationKey", NbtString.of(cast.getSpell().getTranslationKey()));
-            } else {
-                this.provider.sendMessage(Text.translatable(cast.getSpell().getTranslationKey()), true);
+            if (!this.isChanneling()) {
                 handStack.decrement(1);
             }
         }
 
         ModComponents.CAST.sync(this.provider);
+
+        return res;
     }
 
     public void performSelfCast() {
@@ -332,7 +345,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return;
         }
 
-        this.performCast(ModForms.SELF);
+        this.performCast(ModForms.SELF, null, null, null);
     }
 
     public void performItemCast() {
@@ -346,7 +359,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return;
         }
 
-        this.performCast(ModForms.ITEM);
+        this.performCast(ModForms.ITEM, null, null, null);
     }
 
     public void performAreaCast() {
@@ -360,21 +373,62 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return;
         }
 
-        this.performCast(ModForms.AREA);
+        this.performCast(ModForms.AREA, null, null, null);
     }
 
-    public void performUseCast() {
+    public ActionResult performCastOnBlock(BlockPos pos, Direction direction) {
         if (!this.hasBuilder) {
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
         if (this.provider.world.isClient) {
             if (CLIENT_CONTROLLER != null) {
-                CLIENT_CONTROLLER.performUseCast();
+                CLIENT_CONTROLLER.performCastOnBlock(pos, direction);
             }
-            return;
+            return ActionResult.SUCCESS;
         }
 
-        this.performCast(this.builder.determineUseForm());
+        if (pos.getSquaredDistance(this.provider.getEyePos().x, this.provider.getEyePos().y, this.provider.getEyePos().z) > 36) {
+            RPGKitMod.LOGGER.warn("Player {} sent CastType.USE_BLOCK for a block more than 6 blocks away, ignoring and canceling spell", this.provider);
+            this.cancelBuild();
+            return ActionResult.FAIL;
+        }
+
+        return this.performCast(ModForms.USE, pos, direction, null);
+    }
+
+    public ActionResult performCastOnEntity(Entity target) {
+        if (!this.hasBuilder) {
+            throw new IllegalStateException("cannot perform cast when not building a spell");
+        }
+
+        if (this.provider.world.isClient) {
+            if (CLIENT_CONTROLLER != null) {
+                CLIENT_CONTROLLER.performCastOnEntity(target);
+            }
+            return ActionResult.SUCCESS;
+        }
+
+        if (target.getPos().squaredDistanceTo(this.provider.getEyePos()) > 36) {
+            RPGKitMod.LOGGER.warn("Player {} sent CastType.USE_ENTITY for an entity more than 6 blocks away, ignoring and canceling spell", this.provider);
+            this.cancelBuild();
+            return ActionResult.FAIL;
+        }
+
+        return this.performCast(ModForms.USE, null, null, target);
+    }
+
+    public ActionResult performRangedCast() {
+        if (!this.hasBuilder) {
+            throw new IllegalStateException("cannot perform cast when not building a spell");
+        }
+        if (this.provider.world.isClient) {
+            if (CLIENT_CONTROLLER != null) {
+                CLIENT_CONTROLLER.performRangedCast();
+            }
+            return ActionResult.SUCCESS;
+        }
+
+        return this.performCast(this.builder.determineUseForm(), null, null, null);
     }
 
     private List<SpellElement> getAvailableCatalysts(ItemStack bag) {
@@ -458,12 +512,6 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             }
 
             cf.channelTick(cast, this.provider);
-
-            for (var effect : cast.getSpell().getEffects()) {
-                if (effect instanceof SpellEffect.Channeled c) {
-                    c.onChannelTick(cast, (ServerWorld) this.provider.world);
-                }
-            }
 
             this.channelAge++;
 

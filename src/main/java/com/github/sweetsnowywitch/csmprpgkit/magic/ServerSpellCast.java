@@ -24,19 +24,19 @@ public class ServerSpellCast extends SpellCast {
     private final UUID casterUuid;
     public final NbtCompound customData;
 
-    public ServerSpellCast(SpellForm form, Spell spell, UUID casterID, List<SpellReaction> formReactions,
-                           List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+    public ServerSpellCast(SpellForm form, Spell spell, UUID casterID,
+                           Map<String, Float> costs, List<SpellElement> fullRecipe,
                            Vec3d startPos, float startYaw, float startPitch) {
-        super(form, spell, reactions, costs, fullRecipe, startPos, startYaw, startPitch);
+        super(form, spell, costs, fullRecipe, startPos, startYaw, startPitch);
 
         this.casterUuid = casterID;
         this.customData = new NbtCompound();
     }
 
     public ServerSpellCast(SpellForm form, Spell spell, @NotNull Entity caster,
-                           List<SpellReaction> reactions, Map<String, Float> costs, List<SpellElement> fullRecipe,
+                           Map<String, Float> costs, List<SpellElement> fullRecipe,
                            Vec3d startPos, float startYaw, float startPitch) {
-        super(form, spell, reactions, costs, fullRecipe, startPos, startYaw, startPitch);
+        super(form, spell, costs, fullRecipe, startPos, startYaw, startPitch);
 
         if (caster.getWorld().isClient) {
             throw new IllegalStateException("cannot instantiate ServerSpellCast on logical client");
@@ -53,6 +53,12 @@ public class ServerSpellCast extends SpellCast {
         if (casterID == null) throw new IllegalArgumentException("missing caster UUID in NBT");
         this.casterUuid = casterID;
         this.customData = nbt.getCompound("CustomData");
+    }
+
+    public ServerSpellCast withSpell(Spell spell) {
+        return new ServerSpellCast(this.form, spell, this.casterUuid,
+                this.costs, this.fullRecipe,
+                this.originPos, this.originYaw, this.originPitch);
     }
 
     public void perform(ServerWorld world) {

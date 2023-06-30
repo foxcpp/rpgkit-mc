@@ -17,6 +17,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -161,7 +162,8 @@ public class SpellRayEntity extends Entity {
         if (this.cast == null) {
             return false;
         }
-        return this.cast.getSpell().onSingleBlockHit(this.cast, (ServerWorld) this.world, bhr.getBlockPos(), bhr.getSide());
+        var res = this.cast.getSpell().useOnBlock(this.cast, (ServerWorld) this.world, bhr.getBlockPos(), bhr.getSide());
+        return !res.equals(ActionResult.CONSUME);
     }
 
     /**
@@ -174,7 +176,7 @@ public class SpellRayEntity extends Entity {
      * @return Должен ли луч продолжить распространяться, проходя сковзь entity.
      */
     protected boolean onEntityHit(EntityHitResult ehr) {
-        this.cast.getSpell().onSingleEntityHit(this.cast, ehr.getEntity());
+        this.cast.getSpell().useOnEntity(this.cast, ehr.getEntity());
         return false;
     }
 
@@ -253,7 +255,7 @@ public class SpellRayEntity extends Entity {
         if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
             // Skip hits to make effect spam less significant.
             if (this.previousEntityHit != null && entHitResult.getEntity().equals(this.previousEntityHit)) {
-                this.cast.getSpell().onSingleEntityHold(this.cast, entHitResult.getEntity());
+                this.onEntityHit(entHitResult);
                 return;
             }
 
