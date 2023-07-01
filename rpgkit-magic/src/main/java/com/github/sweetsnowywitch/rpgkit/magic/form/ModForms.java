@@ -26,6 +26,7 @@ public class ModForms {
         Registry.register(MagicRegistries.FORMS, Identifier.of(RPGKitMagicMod.MOD_ID, "item"), ITEM);
         Registry.register(MagicRegistries.FORMS, Identifier.of(RPGKitMagicMod.MOD_ID, "use"), USE);
 
+        Registry.register(MagicRegistries.REACTIONS, Identifier.of(RPGKitMagicMod.MOD_ID, "ray"), RayForm.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, Identifier.of(RPGKitMagicMod.MOD_ID, "charge"), ChargeForm.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, Identifier.of(RPGKitMagicMod.MOD_ID, "blast"), BlastForm.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, Identifier.of(RPGKitMagicMod.MOD_ID, "area"), AreaForm.Reaction::new);

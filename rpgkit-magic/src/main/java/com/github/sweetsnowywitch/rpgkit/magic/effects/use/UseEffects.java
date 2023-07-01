@@ -21,6 +21,7 @@ public class UseEffects {
     public static final UseEffect.JsonFactory EXPLOSION = ExplosionEffect::new;
     public static final UseEffect.JsonFactory PLACE_BLOCK = PlaceBlockEffect::new;
     public static final UseEffect.JsonFactory BREAK_BLOCK = BreakBlockEffect::new;
+    public static final UseEffect.JsonFactory PICK_UP_ITEM = PickUpItemEffect::new;
 
     public static void register() {
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "potion"), POTION);
@@ -34,6 +35,7 @@ public class UseEffects {
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "explosion"), EXPLOSION);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "place_block"), PLACE_BLOCK);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "break_block"), BREAK_BLOCK);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "pick_up_item"), PICK_UP_ITEM);
 
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "potion"), PotionEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "damage"), DamageEffect.Reaction::new);

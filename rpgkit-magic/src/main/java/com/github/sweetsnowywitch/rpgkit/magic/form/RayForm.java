@@ -3,17 +3,35 @@ package com.github.sweetsnowywitch.rpgkit.magic.form;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.ModEntities;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.SpellRayEntity;
 import com.github.sweetsnowywitch.rpgkit.magic.items.ModItems;
-import com.github.sweetsnowywitch.rpgkit.magic.spell.ChanneledForm;
-import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
-import com.github.sweetsnowywitch.rpgkit.magic.spell.Spell;
-import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellForm;
+import com.github.sweetsnowywitch.rpgkit.magic.spell.*;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.NotNull;
 
 public class RayForm extends SpellForm implements ChanneledForm {
+    public static class Reaction extends SpellReaction {
+        public final boolean canHitItems;
+
+        protected Reaction(JsonObject obj) {
+            super(Type.FORM, obj);
+            this.canHitItems = obj.has("can_hit_items") && obj.get("can_hit_items").getAsBoolean();
+        }
+
+        @Override
+        public boolean appliesTo(SpellForm form) {
+            return form instanceof RayForm;
+        }
+
+        @Override
+        public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
+            obj.addProperty("can_hit_items", this.canHitItems);
+        }
+    }
+
     public RayForm() {
         super(ImmutableMap.of(), ImmutableMap.of());
     }
@@ -23,6 +41,14 @@ public class RayForm extends SpellForm implements ChanneledForm {
         var ray = new SpellRayEntity(ModEntities.SPELL_RAY, world);
         cast.customData.putUuid("RayEntityUUID", ray.getUuid());
         ray.setCast(cast);
+
+        var canHitItems = false;
+        for (var reaction : cast.getSpell().getGlobalReactions()) {
+            if (reaction instanceof Reaction r) {
+                canHitItems = canHitItems || r.canHitItems;
+            }
+        }
+        ray.setCanHitItems(canHitItems);
 
         ray.setAimOrigin(caster.getEyePos());
         var pos = caster.getPos();

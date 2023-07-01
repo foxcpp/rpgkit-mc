@@ -15,6 +15,9 @@ public class JsonHelpers {
     }
 
     public static <T> ImmutableList<T> fromJsonList(JsonArray input, Function<JsonObject, T> mapper) {
+        if (input == null) {
+            return ImmutableList.of();
+        }
         ImmutableList.Builder<T> builder = ImmutableList.builder();
         for (var el : input) {
             builder.add(mapper.apply(el.getAsJsonObject()));

@@ -4,10 +4,7 @@ import com.github.sweetsnowywitch.rpgkit.magic.particle.GenericSpellParticleEffe
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellElement;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -21,6 +18,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -37,16 +35,19 @@ public class SpellRayEntity extends Entity {
 
     public int rayBaseColor = 0x00FFFFFF; // ARGB, calculated on client-side only
     protected ParticleEffect particleEffect; // calcualted on client-side only
-    private Vec3d previousBlockHit;
+    private boolean canHitItems;
+    private BlockPos previousBlockHit;
     private Entity previousEntityHit;
 
     public SpellRayEntity(EntityType<?> type, World world) {
         super(type, world);
         this.ignoreCameraFrustum = true;
         this.maxAge = 3 * 20;
+        this.canHitItems = false;
 
         this.previousBlockHit = null;
         this.previousEntityHit = null;
+
     }
 
     public static SpellRayEntity empty(EntityType<?> type, World world) {
@@ -68,6 +69,10 @@ public class SpellRayEntity extends Entity {
         if (nbt.contains("AimOrigin")) {
             var pos = nbt.getCompound("AimOrigin");
             this.aimOrigin = new Vec3d(pos.getDouble("X"), pos.getDouble("Y"), pos.getDouble("Z"));
+        }
+
+        if (nbt.contains("CanHitItems")) {
+            this.canHitItems = nbt.getBoolean("CanHitItems");
         }
     }
 
@@ -92,6 +97,8 @@ public class SpellRayEntity extends Entity {
             pos.putDouble("Z", this.aimOrigin.getZ());
             nbt.put("AimOrigin", pos);
         }
+
+        nbt.putBoolean("CanHitItems", this.canHitItems);
     }
 
     @Override
@@ -120,6 +127,10 @@ public class SpellRayEntity extends Entity {
         this.maxAge = maxAge;
     }
 
+    public void setCanHitItems(boolean canHitItems) {
+        this.canHitItems = canHitItems;
+    }
+
     public float getLength() {
         return this.dataTracker.get(LENGTH);
     }
@@ -135,13 +146,16 @@ public class SpellRayEntity extends Entity {
     }
 
     protected boolean canHit(Entity entity) {
+        if (entity instanceof ItemEntity && this.canHitItems) {
+            return true;
+        }
         if (entity.isSpectator() || !entity.isAlive() || !entity.canHit()) {
             return false;
         }
 
         // Prevent first ray segment from accidentally colliding with caster.
         Entity owner = ((ServerWorld) this.world).getEntity(this.cast.getCasterUuid());
-        return owner == null || !owner.isConnectedThroughVehicle(entity);
+        return !entity.equals(owner) || !owner.isConnectedThroughVehicle(entity);
     }
 
     @Override
@@ -225,15 +239,17 @@ public class SpellRayEntity extends Entity {
             this.discard();
         }
 
+        var rotVec = this.getRotationVector();
+
         // Raycast to aim.
-        var raycastStart = this.getAimOrigin();
-        var raycastEnd = this.getAimOrigin().add(this.getRotationVector().multiply(50f));
+        var raycastStart = this.getAimOrigin().add(rotVec.x, rotVec.y, rotVec.z);
+        var raycastEnd = this.getAimOrigin().add(rotVec.x * 50f, rotVec.y * 50f, rotVec.z * 50f);
         BlockHitResult hitResult = this.world.raycast(new RaycastContext(
                 raycastStart, raycastEnd,
                 RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
                 this));
         if (hitResult.getType() != HitResult.Type.MISS) {
-            raycastEnd = hitResult.getPos().add(this.getRotationVector());
+            raycastEnd = hitResult.getPos().add(rotVec);
         }
         var entHitResult = ProjectileUtil.getEntityCollision(world, this, raycastStart, raycastEnd,
                 new Box(raycastStart, raycastEnd), this::canHit);
@@ -242,13 +258,13 @@ public class SpellRayEntity extends Entity {
         }
 
         // Raycast to hit.
-        raycastStart = this.getPos();
+        raycastStart = this.getPos().add(rotVec.x, rotVec.y, rotVec.z);
         hitResult = this.world.raycast(new RaycastContext(
                 raycastStart, raycastEnd,
                 RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
                 this));
         if (hitResult.getType() != HitResult.Type.MISS) {
-            raycastEnd = hitResult.getPos();
+            raycastEnd = hitResult.getPos().add(rotVec);
         }
         entHitResult = ProjectileUtil.getEntityCollision(world, this, raycastStart, raycastEnd,
                 new Box(raycastStart, raycastEnd), this::canHit);
@@ -267,7 +283,9 @@ public class SpellRayEntity extends Entity {
             this.previousEntityHit = entHitResult.getEntity();
         } else if (hitResult.getType() != HitResult.Type.MISS) {
             // Skip hits to make effect spam less significant.
-            if (this.previousBlockHit != null && hitResult.getPos().squaredDistanceTo(this.previousBlockHit) <= 1) {
+            if (this.previousBlockHit != null && hitResult.getBlockPos().equals(this.previousBlockHit)) {
+                // but update length anyway
+                this.dataTracker.set(LENGTH, (float) hitResult.getPos().distanceTo(this.getPos()));
                 return;
             }
 
@@ -275,7 +293,7 @@ public class SpellRayEntity extends Entity {
                 this.dataTracker.set(LENGTH, (float) hitResult.getPos().distanceTo(this.getPos()));
             }
 
-            this.previousBlockHit = hitResult.getPos();
+            this.previousBlockHit = hitResult.getBlockPos();
             this.previousEntityHit = null;
         } else {
             this.dataTracker.set(LENGTH, 50f);
