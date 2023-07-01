@@ -20,6 +20,7 @@ import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.Instant;
@@ -28,14 +29,12 @@ import java.util.*;
 public class MagicEffectsComponent implements Component, ServerTickingComponent, AutoSyncedComponent {
     private static final Map<ServerPlayerEntity, Instant> lastChangeSynced = new HashMap<>();
     private final Chunk chunk;
-    private List<MagicArea> areas;
-    private BitSetVoxelSet hasEffects;
+    private @Nullable List<MagicArea> areas;
+    private @Nullable BitSetVoxelSet hasEffects;
     private Instant lastChange;
 
     public MagicEffectsComponent(Chunk chunk) {
         this.chunk = chunk;
-        this.hasEffects = new BitSetVoxelSet(16, chunk.getHeight(), 16);
-        this.areas = new ArrayList<>();
         this.lastChange = Instant.now();
     }
 
@@ -64,6 +63,12 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     }
 
     public void addArea(MagicArea area) {
+        if (this.areas == null) {
+            this.hasEffects = new BitSetVoxelSet(16, chunk.getHeight(), 16);
+            this.areas = new ArrayList<>();
+        }
+        assert this.hasEffects == null;
+
         this.areas.add(area);
 
         int cnt = this.computeHasEffects(this.hasEffects, area);
@@ -77,8 +82,16 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     }
 
     public void removeArea(MagicArea area) {
+        if (this.areas == null) {
+            return;
+        }
+
         if (this.areas.remove(area)) {
             this.computeHasEffects();
+        }
+        if (this.areas.size() == 0) {
+            this.areas = null;
+            this.hasEffects = null;
         }
 
         this.lastChange = Instant.now();
@@ -86,7 +99,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
         ModComponents.CHUNK_MAGIC_EFFECTS.sync(this.chunk);
     }
 
-    private int computeHasEffects(BitSetVoxelSet set, MagicArea area) {
+    private int computeHasEffects(@NotNull BitSetVoxelSet set, @NotNull MagicArea area) {
         int count = 0;
         var chunkPos = this.chunk.getPos();
         var box = area.getBox();
@@ -105,6 +118,11 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     }
 
     private void computeHasEffects() {
+        if (this.areas == null) {
+            this.hasEffects = null;
+            return;
+        }
+
         var newHasEffects = new BitSetVoxelSet(16, this.chunk.getHeight(), 16);
         int count = 0;
         for (MagicArea area : this.areas) {
@@ -115,6 +133,10 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     }
 
     public List<MagicArea> getAreas(@NotNull BlockPos pos, Identifier effectID) {
+        if (this.hasEffects == null) {
+            return List.of();
+        }
+        assert this.areas == null;
         if (!this.hasEffects.contains(ChunkSectionPos.getLocalCoord(pos.getX()),
                 ChunkSectionPos.getLocalCoord(pos.getY()),
                 ChunkSectionPos.getLocalCoord(pos.getZ()))) {
@@ -131,6 +153,11 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     }
 
     public <T extends MagicArea> List<T> getAreas(@NotNull BlockPos pos, Class<T> areaType) {
+        if (this.hasEffects == null) {
+            return List.of();
+        }
+        assert this.areas == null;
+
         if (!this.hasEffects.contains(ChunkSectionPos.getLocalCoord(pos.getX()),
                 ChunkSectionPos.getLocalCoord(pos.getY()),
                 ChunkSectionPos.getLocalCoord(pos.getZ()))) {
@@ -150,12 +177,23 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     }
 
     public @Unmodifiable List<MagicArea> getAreas() {
+        if (this.areas == null) {
+            return List.of();
+        }
         return Collections.unmodifiableList(this.areas);
     }
 
     @Override
     public void readFromNbt(NbtCompound tag) {
+        if (!tag.contains("Areas")) {
+            return;
+        }
+
         var areasNBT = tag.getList("Areas", NbtElement.COMPOUND_TYPE);
+        if (areasNBT.size() == 0) {
+            return;
+        }
+
         this.areas = new ArrayList<>(areasNBT.size());
         for (var el : areasNBT) {
             var comp = (NbtCompound) el;
@@ -186,6 +224,10 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
 
     @Override
     public void writeToNbt(@NotNull NbtCompound tag) {
+        if (this.areas == null) {
+            return;
+        }
+
         var areasNBT = new NbtList();
         for (MagicArea area : this.areas) {
             var areaNBT = new NbtCompound();
@@ -213,6 +255,10 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
 
     @Override
     public void serverTick() {
+        if (this.areas == null) {
+            return;
+        }
+
         var needsSaving = false;
         var shouldRemove = false;
         for (int i = 0; i < this.areas.size(); i++) {
