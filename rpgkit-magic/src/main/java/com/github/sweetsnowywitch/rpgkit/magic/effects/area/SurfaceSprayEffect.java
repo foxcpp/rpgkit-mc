@@ -130,7 +130,7 @@ public class SurfaceSprayEffect extends AreaEffect {
                 }
             }
 
-            return null;
+            return ActionResult.SUCCESS;
         }
     }
 
