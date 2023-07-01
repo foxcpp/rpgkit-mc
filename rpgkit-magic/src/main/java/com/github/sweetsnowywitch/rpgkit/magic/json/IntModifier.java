@@ -12,6 +12,11 @@ public class IntModifier implements JsonHelpers.JsonSerializable {
     private final int add;
     private final int mul;
 
+    public IntModifier(int add) {
+        this.add = add;
+        this.mul = 1;
+    }
+
     public IntModifier(int add, int mul) {
         this.add = add;
         this.mul = mul;
@@ -40,12 +45,6 @@ public class IntModifier implements JsonHelpers.JsonSerializable {
 
     public int apply(int val) {
         return val * this.mul + this.add;
-    }
-
-    public JsonElement toJson() {
-        var obj = new JsonObject();
-        this.toJson(obj);
-        return obj;
     }
 
     @Override

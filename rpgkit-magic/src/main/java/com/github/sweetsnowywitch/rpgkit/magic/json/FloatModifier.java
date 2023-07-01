@@ -6,44 +6,44 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
-public class DoubleModifier implements JsonHelpers.JsonSerializable {
-    public static final DoubleModifier NOOP = new DoubleModifier(0, 1);
+public class FloatModifier implements JsonHelpers.JsonSerializable {
+    public static final FloatModifier NOOP = new FloatModifier(0, 1);
 
-    private final double add;
-    private final double mul;
+    private final float add;
+    private final float mul;
 
-    public DoubleModifier(double add) {
+    public FloatModifier(float add) {
         this.add = add;
         this.mul = 1;
     }
 
-    public DoubleModifier(double add, double mul) {
+    public FloatModifier(float add, float mul) {
         this.add = add;
         this.mul = mul;
     }
 
-    public DoubleModifier(JsonElement el) {
+    public FloatModifier(JsonElement el) {
         if (el instanceof JsonObject obj) {
             if (obj.has("add")) {
-                this.add = obj.get("add").getAsDouble();
+                this.add = obj.get("add").getAsFloat();
             } else {
                 this.add = 0;
             }
 
             if (obj.has("mul")) {
-                this.mul = obj.get("mul").getAsDouble();
+                this.mul = obj.get("mul").getAsFloat();
             } else {
                 this.mul = 1;
             }
         } else if (el instanceof JsonPrimitive p) {
-            this.add = p.getAsDouble();
+            this.add = p.getAsFloat();
             this.mul = 1;
         } else {
             throw new IllegalArgumentException("malformed modifier");
         }
     }
 
-    public double apply(double val) {
+    public float apply(float val) {
         return val * this.mul + this.add;
     }
 
@@ -53,3 +53,4 @@ public class DoubleModifier implements JsonHelpers.JsonSerializable {
         obj.addProperty("mul", this.mul);
     }
 }
+

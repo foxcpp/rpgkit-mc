@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.json;
 
+import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -9,13 +10,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class BlockStatePredicate implements Predicate<BlockState> {
+public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.JsonElementSerializable {
     protected final @Nullable Block block;
     protected final @Nullable TagKey<Block> tag;
     protected final @Nullable List<BlockStatePredicate> or;
@@ -51,7 +53,8 @@ public class BlockStatePredicate implements Predicate<BlockState> {
         }
     }
 
-    public JsonElement toJson() {
+    @Override
+    public @NotNull JsonElement toJson() {
         if (this.block != null) {
             return new JsonPrimitive(Registry.BLOCK.getId(this.block).toString());
         } else if (this.tag != null) {
