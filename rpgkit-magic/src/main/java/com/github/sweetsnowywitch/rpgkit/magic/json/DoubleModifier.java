@@ -42,6 +42,12 @@ public class DoubleModifier implements JsonHelpers.JsonSerializable {
         return val * this.mul + this.add;
     }
 
+    public JsonElement toJson() {
+        var obj = new JsonObject();
+        this.toJson(obj);
+        return obj;
+    }
+
     @Override
     public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("add", this.add);

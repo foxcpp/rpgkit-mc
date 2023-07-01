@@ -14,17 +14,19 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class SpawnEntityEffect extends SimpleUseEffect {
-    private final NbtCompound definition;
+    private final @Nullable NbtCompound customNbt;
     private final boolean inBlock;
-    private final EntityType entityType;
+    private final EntityType<?> entityType;
 
     public SpawnEntityEffect(Identifier id) {
         super(id);
-        this.definition = new NbtCompound();
+        this.customNbt = new NbtCompound();
         this.inBlock = false;
         this.entityType = EntityType.PIG;
     }
@@ -32,13 +34,14 @@ public class SpawnEntityEffect extends SimpleUseEffect {
     public SpawnEntityEffect(Identifier id, JsonObject obj) {
         super(id, obj);
 
-        this.definition = NbtCompound.CODEC.parse(JsonOps.INSTANCE, obj).result().orElseThrow();
-        if (!this.definition.contains("id")) {
-            throw new IllegalArgumentException("id is required for SpawnEntityEffect");
+        this.entityType = Registry.ENTITY_TYPE.get(new Identifier(obj.get("id").getAsString()));
+        if (obj.has("custom_nbt")) {
+            this.customNbt = NbtCompound.CODEC.parse(JsonOps.INSTANCE, obj.get("custom_nbt")).result().orElseThrow();
+        } else {
+            this.customNbt = null;
         }
 
         this.inBlock = obj.has("in_block") && obj.get("in_block").getAsBoolean();
-        this.entityType = Registry.ENTITY_TYPE.get(new Identifier(this.definition.getString("id")));
     }
 
 
@@ -48,7 +51,7 @@ public class SpawnEntityEffect extends SimpleUseEffect {
             pos = pos.add(direction.getVector());
         }
 
-        var ent = this.entityType.create(world, this.definition, null, null, pos, SpawnReason.MOB_SUMMONED, true, false);
+        var ent = this.entityType.create(world, this.customNbt, null, null, pos, SpawnReason.MOB_SUMMONED, true, false);
         if (ent == null) {
             return ActionResult.PASS;
         }
@@ -58,12 +61,22 @@ public class SpawnEntityEffect extends SimpleUseEffect {
 
     @Override
     protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
-        var ent = EntityType.loadEntityWithPassengers(this.definition, entity.getWorld(), ent2 -> ent2);
+        var world = (ServerWorld) entity.getWorld();
+        var ent = this.entityType.create(world, this.customNbt, null, null, entity.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
         if (ent == null) {
             return ActionResult.PASS;
         }
-        ent.setPosition(entity.getX(), entity.getY(), entity.getZ());
-        entity.getWorld().spawnEntity(ent);
+        world.spawnEntity(ent);
         return ActionResult.SUCCESS;
+    }
+
+    @Override
+    public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
+        if (this.customNbt != null) {
+            obj.add("custom_nbt", NbtCompound.CODEC.encodeStart(JsonOps.INSTANCE, this.customNbt).result().orElseThrow());
+        }
+        obj.addProperty("in_block", this.inBlock);
+        obj.addProperty("id", Registry.ENTITY_TYPE.getId(this.entityType).toString());
     }
 }
