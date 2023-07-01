@@ -142,7 +142,7 @@ public final class Aspect implements SpellElement, Comparable<Aspect> {
     }
 
     @Override
-    public ImmutableList<SpellReaction> formReactions() {
+    public ImmutableList<SpellReaction> globalReactions() {
         return this.reactions;
     }
 
@@ -192,7 +192,11 @@ public final class Aspect implements SpellElement, Comparable<Aspect> {
         if (id == null) {
             throw new IllegalStateException("Malformed aspect ID in NBT: %s".formatted(comp.getString("Id")));
         }
-        return MagicRegistries.ASPECTS.get(id);
+        var asp = MagicRegistries.ASPECTS.get(id);
+        if (asp == null) {
+            throw new IllegalArgumentException("Unknown aspect ID: %s".formatted(id.toString()));
+        }
+        return asp;
     }
 
     @Override

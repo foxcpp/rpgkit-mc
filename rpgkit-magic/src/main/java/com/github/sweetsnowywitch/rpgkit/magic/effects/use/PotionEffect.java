@@ -28,7 +28,7 @@ public class PotionEffect extends SimpleUseEffect {
         private final int durationTicks;
 
         public Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.EFFECT, obj);
 
             if (obj.has("id")) {
                 var effectId = new Identifier(obj.get("id").getAsString());

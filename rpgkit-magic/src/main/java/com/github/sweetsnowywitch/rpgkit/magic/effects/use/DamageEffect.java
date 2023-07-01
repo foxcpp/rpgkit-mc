@@ -22,7 +22,7 @@ public class DamageEffect extends UseEffect {
         private final int damageDealt;
 
         public Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.EFFECT, obj);
             if (obj.has("damage_dealt")) {
                 this.damageDealt = obj.get("damage_dealt").getAsInt();
             } else {
@@ -63,7 +63,7 @@ public class DamageEffect extends UseEffect {
 
     public class Used extends UseEffect.Used {
         protected Used(SpellBuildCondition.Context ctx) {
-            super(DamageEffect.this, new ArrayList<>(), ctx);
+            super(DamageEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
         }
 
         protected Used(JsonObject obj) {
@@ -83,7 +83,7 @@ public class DamageEffect extends UseEffect {
 
             var damageDealt = DamageEffect.this.damageDealt;
 
-            for (var reaction : this.appliedReactions) {
+            for (var reaction : this.effectReactions) {
                 if (reaction instanceof DamageEffect.Reaction r) {
                     damageDealt += r.damageDealt;
                 }

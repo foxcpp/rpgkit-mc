@@ -33,7 +33,7 @@ public class AreaForm extends SpellForm {
         public final Shape shape;
 
         public Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.FORM, obj);
 
             if (obj.has("radius")) {
                 this.radius = obj.get("radius").getAsDouble();
@@ -88,7 +88,7 @@ public class AreaForm extends SpellForm {
 
         double radius = this.radius;
         var shape = this.shape;
-        for (var reaction : cast.getSpell().getFormReactions()) {
+        for (var reaction : cast.getSpell().getGlobalReactions()) {
             if (reaction instanceof Reaction r) {
                 radius += r.radius;
                 shape = r.shape;

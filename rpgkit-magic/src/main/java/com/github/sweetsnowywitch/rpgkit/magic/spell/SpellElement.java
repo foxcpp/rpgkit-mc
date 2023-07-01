@@ -38,7 +38,7 @@ public sealed interface SpellElement permits Aspect, ItemElement {
         return ImmutableList.of();
     }
 
-    default ImmutableList<SpellReaction> formReactions() {
+    default ImmutableList<SpellReaction> globalReactions() {
         return ImmutableList.of();
     }
 

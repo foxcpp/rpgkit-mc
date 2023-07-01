@@ -17,7 +17,7 @@ public class BlastForm extends SpellForm implements ChanneledForm {
         public final double distance;
 
         public Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.FORM, obj);
 
             if (obj.has("radius")) {
                 this.radius = obj.get("radius").getAsDouble();
@@ -61,7 +61,7 @@ public class BlastForm extends SpellForm implements ChanneledForm {
 
         double distance = 5;
         double radius = 1.25;
-        for (var reaction : cast.getSpell().getFormReactions()) {
+        for (var reaction : cast.getSpell().getGlobalReactions()) {
             if (reaction instanceof Reaction r) {
                 distance += r.distance;
                 radius += r.radius;

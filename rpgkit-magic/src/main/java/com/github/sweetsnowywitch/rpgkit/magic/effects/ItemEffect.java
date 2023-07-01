@@ -30,8 +30,8 @@ public abstract class ItemEffect extends SpellEffect {
     }
 
     public static abstract class Used extends SpellEffect.Used<ItemEffect> {
-        protected Used(ItemEffect effect, List<SpellReaction> appliedReactions, SpellBuildCondition.Context ctx) {
-            super(effect, appliedReactions, ctx);
+        protected Used(ItemEffect effect, List<SpellReaction> globalReactions, List<SpellReaction> appliedReactions, SpellBuildCondition.Context ctx) {
+            super(effect, globalReactions, appliedReactions, ctx);
         }
 
         protected Used(ItemEffect effect, JsonObject obj) {

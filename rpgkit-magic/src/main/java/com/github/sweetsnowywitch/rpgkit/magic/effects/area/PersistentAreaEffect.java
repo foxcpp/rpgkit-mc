@@ -25,7 +25,7 @@ public class PersistentAreaEffect extends AreaEffect {
         private final IntModifier effectInterval;
 
         protected Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.EFFECT, obj);
 
             if (obj.has("duration")) {
                 this.duration = new IntModifier(obj.get("duration"));
@@ -78,10 +78,10 @@ public class PersistentAreaEffect extends AreaEffect {
         protected final ImmutableList<UseEffect.Used> effects;
 
         protected Used(SpellBuildCondition.Context ctx) {
-            super(PersistentAreaEffect.this, new ArrayList<>(), ctx);
+            super(PersistentAreaEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
             var duration = PersistentAreaEffect.this.durationTicks;
             var effectInterval = PersistentAreaEffect.this.effectIntervalTicks;
-            for (var reaction : this.appliedReactions) {
+            for (var reaction : this.effectReactions) {
                 if (reaction instanceof Reaction r) {
                     duration = r.duration.apply(duration);
                     effectInterval = r.effectInterval.apply(effectInterval);
@@ -90,6 +90,9 @@ public class PersistentAreaEffect extends AreaEffect {
             this.durationTicks = duration;
             this.effectIntervalTicks = effectInterval;
             this.effects = PersistentAreaEffect.this.effects.stream().map(eff -> eff.use(ctx)).collect(ImmutableList.toImmutableList());
+            for (var effect : this.effects) {
+                this.globalReactions.addAll(effect.getGlobalReactions());
+            }
         }
 
         protected Used(JsonObject obj) {
@@ -109,7 +112,7 @@ public class PersistentAreaEffect extends AreaEffect {
 
         @Override
         public ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaCollider collider) {
-            var cast2 = cast.withSpell(new Spell(this.effects, cast.getSpell().getFormReactions(), cast.getSpell().getUseForm()));
+            var cast2 = cast.withSpell(new Spell(this.effects, cast.getSpell().getGlobalReactions(), cast.getSpell().getUseForm()));
             return cast2.getSpell().useOnArea(cast, world, boundingBox, origin, collider);
         }
     }

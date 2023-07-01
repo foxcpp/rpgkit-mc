@@ -47,7 +47,7 @@ public class PushEffect extends SimpleUseEffect {
         public final boolean disregardCurrentVelocity;
 
         public Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.EFFECT, obj);
             if (obj.has("velocity")) {
                 this.velocity = obj.get("velocity").getAsDouble();
             } else {

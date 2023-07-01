@@ -9,7 +9,10 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,23 +23,38 @@ public abstract class SpellEffect implements JsonHelpers.JsonSerializable {
 
     public static class Used<E extends SpellEffect> implements JsonHelpers.JsonSerializable {
         public final E effect;
-        public final ImmutableList<SpellReaction> appliedReactions;
+        public final ImmutableList<SpellReaction> effectReactions;
+        protected final List<SpellReaction> globalReactions;
 
-        public Used(E effect, List<SpellReaction> appliedReactions, SpellBuildCondition.Context ctx) {
+        public Used(E effect, List<SpellReaction> globalReactions, List<SpellReaction> effectReactions, SpellBuildCondition.Context ctx) {
             this.effect = effect;
+            this.globalReactions = new ArrayList<>(globalReactions.size());
 
-            for (var r : effect.reactions) {
-                if (r.appliesTo(effect) && r.shouldAdd(ctx)) {
-                    appliedReactions.add(r);
+            for (var r : globalReactions) {
+                if (r.shouldAdd(ctx)) {
+                    this.globalReactions.add(r);
                 }
             }
 
-            this.appliedReactions = ImmutableList.copyOf(appliedReactions);
+            for (var r : effect.reactions) {
+                if (r.type.equals(SpellReaction.Type.FORM) || !r.appliesTo(effect)) {
+                    this.globalReactions.add(r);
+                } else if (r.shouldAdd(ctx)) {
+                    effectReactions.add(r);
+                }
+            }
+
+            this.effectReactions = ImmutableList.copyOf(effectReactions);
         }
 
         public Used(E effect, JsonObject obj) {
             this.effect = effect;
-            this.appliedReactions = JsonHelpers.fromJsonList(obj.getAsJsonArray("reactions"), SpellReaction::fromJson);
+            this.globalReactions = JsonHelpers.fromJsonList(obj.getAsJsonArray("global_reactions"), SpellReaction::fromJson);
+            this.effectReactions = JsonHelpers.fromJsonList(obj.getAsJsonArray("effect_reactions"), SpellReaction::fromJson);
+        }
+
+        public @Unmodifiable List<SpellReaction> getGlobalReactions() {
+            return Collections.unmodifiableList(this.globalReactions);
         }
 
         @Override
@@ -45,7 +63,8 @@ public abstract class SpellEffect implements JsonHelpers.JsonSerializable {
             var effectObj = new JsonObject();
             this.effect.toJson(effectObj);
             obj.add("effect", effectObj);
-            obj.add("reactions", JsonHelpers.toJsonList(this.appliedReactions));
+            obj.add("global_reactions", JsonHelpers.toJsonList(this.globalReactions));
+            obj.add("effect_reactions", JsonHelpers.toJsonList(this.effectReactions));
         }
     }
 

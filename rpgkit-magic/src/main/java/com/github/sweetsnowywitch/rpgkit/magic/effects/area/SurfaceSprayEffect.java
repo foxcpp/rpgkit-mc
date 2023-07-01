@@ -22,7 +22,7 @@ public class SurfaceSprayEffect extends AreaEffect {
         protected final float areaCoverage;
 
         protected Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.EFFECT, obj);
             if (obj.has("area_coverage")) {
                 this.areaCoverage = obj.get("area_coverage").getAsFloat();
             } else {
@@ -64,8 +64,11 @@ public class SurfaceSprayEffect extends AreaEffect {
         private final ImmutableList<UseEffect.Used> effects;
 
         protected Used(SpellBuildCondition.Context ctx) {
-            super(SurfaceSprayEffect.this, new ArrayList<>(), ctx);
+            super(SurfaceSprayEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
             this.effects = SurfaceSprayEffect.this.effects.stream().map(eff -> eff.use(ctx)).collect(ImmutableList.toImmutableList());
+            for (var effect : this.effects) {
+                this.globalReactions.addAll(effect.getGlobalReactions());
+            }
         }
 
         protected Used(JsonObject obj) {

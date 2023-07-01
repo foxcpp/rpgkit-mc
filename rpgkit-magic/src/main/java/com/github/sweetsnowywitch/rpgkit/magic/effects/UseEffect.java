@@ -29,8 +29,8 @@ public abstract class UseEffect extends SpellEffect {
     }
 
     public static abstract class Used extends SpellEffect.Used<UseEffect> {
-        protected Used(UseEffect effect, List<SpellReaction> appliedReactions, SpellBuildCondition.Context ctx) {
-            super(effect, appliedReactions, ctx);
+        protected Used(UseEffect effect, List<SpellReaction> globalReactions, List<SpellReaction> appliedReactions, SpellBuildCondition.Context ctx) {
+            super(effect, globalReactions, appliedReactions, ctx);
         }
 
         protected Used(UseEffect effect, JsonObject obj) {

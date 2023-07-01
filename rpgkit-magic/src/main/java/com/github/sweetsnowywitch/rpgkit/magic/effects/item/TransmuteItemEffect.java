@@ -42,7 +42,7 @@ public class TransmuteItemEffect extends ItemEffect {
 
     public class Used extends ItemEffect.Used {
         protected Used(SpellBuildCondition.Context ctx) {
-            super(TransmuteItemEffect.this, new ArrayList<>(), ctx);
+            super(TransmuteItemEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
         }
 
         protected Used(JsonObject obj) {

@@ -69,7 +69,7 @@ public final class SpellBuilder {
         var itemEffects = new ImmutableList.Builder<ItemEffect.Used>();
         var areaEffects = new ImmutableList.Builder<AreaEffect.Used>();
         var useEffects = new ImmutableList.Builder<UseEffect.Used>();
-        var formReactions = new ImmutableList.Builder<SpellReaction>();
+        var globalReactions = new ImmutableList.Builder<SpellReaction>();
 
         SpellForm useForm = ModForms.RAY;
         int useFormWeight = -9999;
@@ -87,7 +87,7 @@ public final class SpellBuilder {
                     map(eff -> eff.use(ctx)).forEach(areaEffects::add);
             el.useEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
                     map(eff -> eff.use(ctx)).forEach(useEffects::add);
-            el.formReactions().stream().filter(eff -> eff.shouldAdd(ctx)).forEach(formReactions::add);
+            el.globalReactions().stream().filter(eff -> eff.shouldAdd(ctx)).forEach(globalReactions::add);
 
             if (el.getPreferredForm() != null && el.getPreferredFormWeight() > useFormWeight) {
                 useForm = el.getPreferredForm();
@@ -95,9 +95,23 @@ public final class SpellBuilder {
             }
         }
 
+        var itemEffectsBuilt = itemEffects.build();
+        var areaEffectsBuilt = areaEffects.build();
+        var useEffectsBuilt = useEffects.build();
+
+        for (var eff : itemEffectsBuilt) {
+            globalReactions.addAll(eff.getGlobalReactions());
+        }
+        for (var eff : areaEffectsBuilt) {
+            globalReactions.addAll(eff.getGlobalReactions());
+        }
+        for (var eff : useEffectsBuilt) {
+            globalReactions.addAll(eff.getGlobalReactions());
+        }
+
         return new Spell(
-                itemEffects.build(), areaEffects.build(), useEffects.build(),
-                formReactions.build(),
+                itemEffectsBuilt, areaEffectsBuilt, useEffectsBuilt,
+                globalReactions.build(),
                 useForm);
     }
 

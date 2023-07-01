@@ -26,39 +26,38 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class Spell {
-
     public static final Spell EMPTY = new Spell();
     private final ImmutableList<ItemEffect.Used> itemEffects;
     private final ImmutableList<AreaEffect.Used> areaEffects;
     private final ImmutableList<UseEffect.Used> useEffects;
-    private final ImmutableList<SpellReaction> formReactions;
+    private final ImmutableList<SpellReaction> globalReactions;
     private final SpellForm useForm;
 
     private Spell() {
         this.itemEffects = ImmutableList.of();
         this.areaEffects = ImmutableList.of();
         this.useEffects = ImmutableList.of();
-        this.formReactions = ImmutableList.of();
+        this.globalReactions = ImmutableList.of();
         this.useForm = ModForms.RAY;
     }
 
     public Spell(ImmutableList<ItemEffect.Used> item,
                  ImmutableList<AreaEffect.Used> area,
                  ImmutableList<UseEffect.Used> interact,
-                 ImmutableList<SpellReaction> formReactions, SpellForm useForm) {
+                 ImmutableList<SpellReaction> globalReactions, SpellForm useForm) {
         this.itemEffects = item;
         this.areaEffects = area;
         this.useEffects = interact;
-        this.formReactions = formReactions;
+        this.globalReactions = globalReactions;
         this.useForm = useForm;
     }
 
     public Spell(ImmutableList<UseEffect.Used> interact,
-                 ImmutableList<SpellReaction> formReactions, SpellForm useForm) {
+                 ImmutableList<SpellReaction> globalReactions, SpellForm useForm) {
         this.itemEffects = ImmutableList.of();
         this.areaEffects = ImmutableList.of();
         this.useEffects = interact;
-        this.formReactions = formReactions;
+        this.globalReactions = globalReactions;
         this.useForm = useForm;
     }
 
@@ -66,7 +65,7 @@ public class Spell {
         this.itemEffects = JsonHelpers.fromJsonList(obj.getAsJsonArray("item_effects"), ItemEffect.Used::fromJson);
         this.areaEffects = JsonHelpers.fromJsonList(obj.getAsJsonArray("area_effects"), AreaEffect.Used::fromJson);
         this.useEffects = JsonHelpers.fromJsonList(obj.getAsJsonArray("use_effects"), UseEffect.Used::fromJson);
-        this.formReactions = JsonHelpers.fromJsonList(obj.getAsJsonArray("form_reactions"), SpellReaction::fromJson);
+        this.globalReactions = JsonHelpers.fromJsonList(obj.getAsJsonArray("global_reactions"), SpellReaction::fromJson);
 
         var useFormId = new Identifier(obj.get("use_form").getAsString());
         var useForm = MagicRegistries.FORMS.get(useFormId);
@@ -81,7 +80,7 @@ public class Spell {
         obj.add("item_effects", JsonHelpers.toJsonList(this.itemEffects));
         obj.add("area_effects", JsonHelpers.toJsonList(this.areaEffects));
         obj.add("use_effects", JsonHelpers.toJsonList(this.useEffects));
-        obj.add("form_reactions", JsonHelpers.toJsonList(this.formReactions));
+        obj.add("global_reactions", JsonHelpers.toJsonList(this.globalReactions));
         obj.addProperty("use_form", Objects.requireNonNull(MagicRegistries.FORMS.getId(this.useForm)).toString());
     }
 
@@ -137,7 +136,7 @@ public class Spell {
         return this.useForm;
     }
 
-    public ImmutableList<SpellReaction> getFormReactions() {
-        return formReactions;
+    public ImmutableList<SpellReaction> getGlobalReactions() {
+        return globalReactions;
     }
 }

@@ -16,12 +16,18 @@ import org.jetbrains.annotations.Nullable;
  * by changing its parameters.
  */
 public abstract class SpellReaction implements JsonHelpers.JsonSerializable {
+    public enum Type {
+        EFFECT,
+        FORM;
+    }
+
     @FunctionalInterface
     public interface JsonFactory {
         SpellReaction createReactionFromJson(JsonObject obj);
     }
 
     public final Identifier targetId;
+    public final Type type;
     private final @Nullable SpellBuildCondition condition;
 
     public boolean appliesTo(SpellEffect effect) {
@@ -32,8 +38,9 @@ public abstract class SpellReaction implements JsonHelpers.JsonSerializable {
         return false;
     }
 
-    protected SpellReaction(JsonObject obj) {
+    protected SpellReaction(Type type, JsonObject obj) {
         this.targetId = new Identifier(obj.get("for").getAsString());
+        this.type = type;
 
         ImmutableMap.Builder<String, Float> costMultipliers = ImmutableMap.builder();
         ImmutableMap.Builder<String, Float> costTerms = ImmutableMap.builder();

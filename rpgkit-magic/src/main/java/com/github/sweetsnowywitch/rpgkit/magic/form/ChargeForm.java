@@ -18,7 +18,7 @@ public class ChargeForm extends SpellForm {
         private final float velocity;
 
         public Reaction(JsonObject obj) {
-            super(obj);
+            super(Type.FORM, obj);
 
             if (obj.has("bounce_velocity_factor")) {
                 this.bounceVelocityFactor = obj.get("bounce_velocity_factor").getAsFloat();
@@ -49,7 +49,7 @@ public class ChargeForm extends SpellForm {
     public void startCast(@NotNull ServerSpellCast cast, ServerWorld world, @NotNull Entity caster) {
         var velocity = 1f;
         var bounceFactor = 0.2f;
-        for (var reaction : cast.getSpell().getFormReactions()) {
+        for (var reaction : cast.getSpell().getGlobalReactions()) {
             if (reaction instanceof Reaction r) {
                 velocity += r.velocity;
                 bounceFactor += r.bounceVelocityFactor;

@@ -26,7 +26,7 @@ public abstract class SimpleUseEffect extends UseEffect {
 
     public class Used extends UseEffect.Used {
         protected Used(SpellBuildCondition.Context ctx) {
-            super(SimpleUseEffect.this, new ArrayList<>(), ctx);
+            super(SimpleUseEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
         }
 
         protected Used(JsonObject obj) {
@@ -35,12 +35,12 @@ public abstract class SimpleUseEffect extends UseEffect {
 
         @Override
         public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
-            return SimpleUseEffect.this.useOnBlock(cast, world, pos, direction, this.appliedReactions);
+            return SimpleUseEffect.this.useOnBlock(cast, world, pos, direction, this.effectReactions);
         }
 
         @Override
         public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
-            return SimpleUseEffect.this.useOnEntity(cast, entity, this.appliedReactions);
+            return SimpleUseEffect.this.useOnEntity(cast, entity, this.effectReactions);
         }
     }
 
