@@ -111,19 +111,19 @@ public class PersistentAreaEffect extends AreaEffect {
         }
 
         @Override
-        public ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaCollider collider) {
+        public @NotNull ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaCollider collider) {
             var cast2 = cast.withSpell(new Spell(this.effects, cast.getSpell().getGlobalReactions(), cast.getSpell().getUseForm()));
             return cast2.getSpell().useOnArea(cast, world, boundingBox, origin, collider);
         }
     }
 
     @Override
-    public Used use(SpellBuildCondition.Context ctx) {
+    public @NotNull Used use(SpellBuildCondition.Context ctx) {
         return new Used(ctx);
     }
 
     @Override
-    public Used usedFromJson(JsonObject obj) {
+    public @NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
     }
 }

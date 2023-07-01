@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public abstract class ItemEffect extends SpellEffect {
             super(effect, obj);
         }
 
+        @NotNull
         public abstract TypedActionResult<ItemStack> useOnItem(ServerSpellCast cast, ServerWorld world, ItemStack stack, @Nullable Inventory container, @Nullable Entity holder);
 
         public static ItemEffect.Used fromJson(JsonObject obj) {
@@ -46,8 +48,10 @@ public abstract class ItemEffect extends SpellEffect {
         }
     }
 
+    @NotNull
     public abstract Used use(SpellBuildCondition.Context ctx);
 
+    @NotNull
     public abstract Used usedFromJson(JsonObject obj);
 
     public static ItemEffect fromJson(JsonObject obj) {

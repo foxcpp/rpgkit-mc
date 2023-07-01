@@ -11,6 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -37,8 +38,10 @@ public abstract class UseEffect extends SpellEffect {
             super(effect, obj);
         }
 
+        @NotNull
         public abstract ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction);
 
+        @NotNull
         public abstract ActionResult useOnEntity(ServerSpellCast cast, Entity entity);
 
         public static UseEffect.Used fromJson(JsonObject obj) {
@@ -47,8 +50,10 @@ public abstract class UseEffect extends SpellEffect {
         }
     }
 
+    @NotNull
     public abstract Used use(SpellBuildCondition.Context ctx);
 
+    @NotNull
     public abstract Used usedFromJson(JsonObject obj);
 
     public static UseEffect fromJson(JsonObject obj) {

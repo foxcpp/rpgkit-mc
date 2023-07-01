@@ -10,6 +10,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -50,6 +51,7 @@ public abstract class AreaEffect extends SpellEffect {
             super(effect, obj);
         }
 
+        @NotNull
         public abstract ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaCollider collider);
 
         public static Used fromJson(JsonObject obj) {
@@ -58,8 +60,10 @@ public abstract class AreaEffect extends SpellEffect {
         }
     }
 
+    @NotNull
     public abstract Used use(SpellBuildCondition.Context ctx);
 
+    @NotNull
     public abstract Used usedFromJson(JsonObject obj);
 
     public static AreaEffect fromJson(JsonObject obj) {

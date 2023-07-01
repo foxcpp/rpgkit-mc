@@ -16,6 +16,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class TransmuteItemEffect extends ItemEffect {
         }
 
         @Override
-        public TypedActionResult<ItemStack> useOnItem(ServerSpellCast cast, ServerWorld world, ItemStack stack, @Nullable Inventory container, @Nullable Entity holder) {
+        public @NotNull TypedActionResult<ItemStack> useOnItem(ServerSpellCast cast, ServerWorld world, ItemStack stack, @Nullable Inventory container, @Nullable Entity holder) {
             if (TransmuteItemEffect.this.mapping == null) {
                 return TypedActionResult.pass(stack);
             }
@@ -79,12 +80,12 @@ public class TransmuteItemEffect extends ItemEffect {
     }
 
     @Override
-    public Used use(SpellBuildCondition.Context ctx) {
+    public @NotNull Used use(SpellBuildCondition.Context ctx) {
         return new Used(ctx);
     }
 
     @Override
-    public Used usedFromJson(JsonObject obj) {
+    public @NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
     }
 }

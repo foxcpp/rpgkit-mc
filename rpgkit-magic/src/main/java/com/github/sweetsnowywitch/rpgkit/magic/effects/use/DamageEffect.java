@@ -71,12 +71,12 @@ public class DamageEffect extends UseEffect {
         }
 
         @Override
-        public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
+        public @NotNull ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
             return ActionResult.PASS;
         }
 
         @Override
-        public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
+        public @NotNull ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
             if (!(entity instanceof LivingEntity le)) {
                 return ActionResult.PASS;
             }
@@ -98,12 +98,12 @@ public class DamageEffect extends UseEffect {
     }
 
     @Override
-    public UseEffect.Used use(SpellBuildCondition.Context ctx) {
+    public UseEffect.@NotNull Used use(SpellBuildCondition.Context ctx) {
         return new Used(ctx);
     }
 
     @Override
-    public UseEffect.Used usedFromJson(JsonObject obj) {
+    public UseEffect.@NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
     }
 

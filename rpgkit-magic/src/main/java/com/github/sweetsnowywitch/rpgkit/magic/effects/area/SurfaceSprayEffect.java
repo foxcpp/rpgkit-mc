@@ -94,7 +94,7 @@ public class SurfaceSprayEffect extends AreaEffect {
         }
 
         @Override
-        public ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaCollider collider) {
+        public @NotNull ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaCollider collider) {
             var bb = new BlockBox(
                     (int) boundingBox.minX, (int) boundingBox.minY, (int) boundingBox.minZ,
                     (int) boundingBox.maxX, (int) origin.y, (int) boundingBox.maxZ
@@ -135,12 +135,12 @@ public class SurfaceSprayEffect extends AreaEffect {
     }
 
     @Override
-    public AreaEffect.Used use(SpellBuildCondition.Context ctx) {
+    public AreaEffect.@NotNull Used use(SpellBuildCondition.Context ctx) {
         return new Used(ctx);
     }
 
     @Override
-    public AreaEffect.Used usedFromJson(JsonObject obj) {
+    public AreaEffect.@NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
     }
 }
