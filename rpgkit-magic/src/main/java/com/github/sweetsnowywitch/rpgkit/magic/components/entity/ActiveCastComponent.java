@@ -489,15 +489,17 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
     @Override
     public void serverTick() {
-        if (this.usingCatalystBag && this.getCatalystBag() == null) {
-            this.usingCatalystBag = false;
-            ModComponents.CAST.sync(this.provider);
-        }
+        if (this.hasBuilder) {
+            if (this.usingCatalystBag && this.getCatalystBag() == null) {
+                this.usingCatalystBag = false;
+                ModComponents.CAST.sync(this.provider);
+            }
 
-        var bag = this.getCatalystBag();
-        if (bag != null && CatalystBagItem.isOpen(bag) != this.usingCatalystBag) {
-            CatalystBagItem.setOpen(bag, this.usingCatalystBag);
-            this.provider.getInventory().markDirty();
+            var bag = this.getCatalystBag();
+            if (bag != null && CatalystBagItem.isOpen(bag) != this.usingCatalystBag) {
+                CatalystBagItem.setOpen(bag, this.usingCatalystBag);
+                this.provider.getInventory().markDirty();
+            }
         }
 
         if (this.activeCast == null) {
