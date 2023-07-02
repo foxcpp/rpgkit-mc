@@ -37,13 +37,13 @@ public abstract class SimpleUseEffect extends UseEffect {
         @Override
         @NotNull
         public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
-            return SimpleUseEffect.this.useOnBlock(cast, world, pos, direction, this.effectReactions);
+            return SimpleUseEffect.this.useOnBlock(cast, this, world, pos, direction, this.effectReactions);
         }
 
         @Override
         @NotNull
         public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
-            return SimpleUseEffect.this.useOnEntity(cast, entity, this.effectReactions);
+            return SimpleUseEffect.this.useOnEntity(cast, this, entity, this.effectReactions);
         }
     }
 
@@ -60,8 +60,8 @@ public abstract class SimpleUseEffect extends UseEffect {
     }
 
     @NotNull
-    protected abstract ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions);
+    protected abstract ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions);
 
     @NotNull
-    protected abstract ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions);
+    protected abstract ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions);
 }

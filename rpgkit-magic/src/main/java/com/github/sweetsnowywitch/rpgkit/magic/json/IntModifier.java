@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.rpgkit.magic.json;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,9 @@ public class IntModifier implements JsonHelpers.JsonSerializable {
             }
         } else if (el instanceof JsonPrimitive p) {
             this.add = p.getAsInt();
+            this.mul = 1;
+        } else if (el == null || el instanceof JsonNull) {
+            this.add = 0;
             this.mul = 1;
         } else {
             throw new IllegalArgumentException("malformed modifier");

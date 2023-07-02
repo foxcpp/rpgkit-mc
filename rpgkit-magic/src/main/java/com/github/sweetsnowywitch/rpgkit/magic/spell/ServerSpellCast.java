@@ -95,6 +95,14 @@ public class ServerSpellCast extends SpellCast {
         return world.getEntity(this.casterUuid);
     }
 
+    public @Nullable PlayerEntity getPlayerCaster(@NotNull ServerWorld world) {
+        var caster = this.getCaster(world);
+        if (caster instanceof PlayerEntity pe) {
+            return pe;
+        }
+        return null;
+    }
+
     public static ServerSpellCast readFromNbt(NbtCompound nbt) {
         return new ServerSpellCast(nbt);
     }

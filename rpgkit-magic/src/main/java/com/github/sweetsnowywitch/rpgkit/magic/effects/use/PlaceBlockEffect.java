@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
+import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.json.BlockStatePredicate;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
@@ -53,7 +54,7 @@ public class PlaceBlockEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         BlockPos target;
         if (this.replace) {
             target = pos;
@@ -70,7 +71,7 @@ public class PlaceBlockEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         var world = (ServerWorld) entity.getWorld();
 
         BlockPos target;

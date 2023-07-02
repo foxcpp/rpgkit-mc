@@ -1,6 +1,8 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
+import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.events.MagicEntityEvents;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellBuildCondition;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
@@ -28,6 +30,11 @@ public class DamageEffect extends UseEffect {
             } else {
                 this.damageDealt = 0;
             }
+        }
+
+        @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof DamageEffect;
         }
 
         @Override
@@ -91,6 +98,13 @@ public class DamageEffect extends UseEffect {
             if (damageDealt <= 1) {
                 damageDealt = 1;
             }
+
+            var entityResult = MagicEntityEvents.DAMAGE.invoker().onEntityMagicDamaged(cast, this, le, damageDealt);
+            if (entityResult.getResult().equals(ActionResult.FAIL) || entityResult.getResult().equals(ActionResult.CONSUME)
+                    || entityResult.getResult().equals(ActionResult.CONSUME_PARTIAL)) {
+                return entityResult.getResult();
+            }
+            damageDealt = entityResult.getValue();
 
             le.damage(DamageSource.MAGIC, damageDealt);
             return ActionResult.SUCCESS;

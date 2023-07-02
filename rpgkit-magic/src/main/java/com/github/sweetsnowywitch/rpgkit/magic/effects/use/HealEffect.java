@@ -1,5 +1,7 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
+import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.json.DoubleModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
@@ -29,6 +31,11 @@ public class HealEffect extends SimpleUseEffect {
         }
 
         @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof HealEffect;
+        }
+
+        @Override
         public void toJson(@NotNull JsonObject obj) {
             super.toJson(obj);
             obj.add("amount", this.amount.toJson());
@@ -52,12 +59,12 @@ public class HealEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         return ActionResult.PASS;
     }
 
     @Override
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         var amount = this.amount;
         for (var reaction : reactions) {
             if (reaction instanceof Reaction r) {
