@@ -33,7 +33,9 @@ public abstract class KillStreakMixin extends PlayerEntity {
 
         for (var rawPerk : perks) {
             var perk = (KillStreakPerk) rawPerk;
-            if (perk.getAttribute() != null && perk.getKillStreak() < perk.getMaxStreak() && !target.isAlive()) {
+            if (perk.getAttribute() != null && perk.getKillStreak() < perk.getMaxStreak()
+                    && !target.isAlive() && ((!perk.isOnlyPlayerKill() && !target.isPlayer())
+                    || (perk.isOnlyPlayerKill() && target.isPlayer()))) {
                 Objects.requireNonNull(this.getAttributeInstance(perk.getAttribute())).
                         addTemporaryModifier(new EntityAttributeModifier(this.getName().getString(), perk.getModifier(),
                                 EntityAttributeModifier.Operation.ADDITION));

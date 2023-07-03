@@ -15,6 +15,7 @@ public class KillStreakPerk extends Perk {
     private int killStreak = 0;
 
     private final EntityAttribute attribute;
+    private final boolean onlyPlayerKill;
     private final float modifier;
     private final int penalty;
     private final int maxStreak;
@@ -22,14 +23,16 @@ public class KillStreakPerk extends Perk {
     public KillStreakPerk(Identifier typeId) {
         super(typeId);
         this.attribute = null;
+        this.onlyPlayerKill = false;
         this.modifier = BASE_MODIFIER;
         this.penalty = BASE_PENALTY;
         this.maxStreak = BASE_MAX_STREAK;
     }
 
-    public KillStreakPerk(Identifier typeId, @Nullable EntityAttribute attribute, float modifier, int penalty, int maxStreak) {
+    public KillStreakPerk(Identifier typeId, @Nullable EntityAttribute attribute, boolean onlyPlayerKill, float modifier, int penalty, int maxStreak) {
         super(typeId);
         this.attribute = attribute;
+        this.onlyPlayerKill = onlyPlayerKill;
         this.modifier = modifier;
         this.penalty = penalty;
         this.maxStreak = maxStreak;
@@ -46,6 +49,12 @@ public class KillStreakPerk extends Perk {
             }
         }
 
+        var playerKill = this.onlyPlayerKill;
+        if (obj.has("playerKill")) {
+            playerKill = obj.get("playerKill").getAsBoolean();
+        }
+
+
         var modifier = this.modifier;
         if (obj.has("modifier")) {
             modifier = obj.get("modifier").getAsFloat();
@@ -60,7 +69,7 @@ public class KillStreakPerk extends Perk {
         if (obj.has("maxStreak")) {
             maxStreak = obj.get("maxStreak").getAsInt();
         }
-        return new KillStreakPerk(this.typeId, attribute, modifier, penalty, maxStreak);
+        return new KillStreakPerk(this.typeId, attribute, playerKill, modifier, penalty, maxStreak);
     }
 
     @Override
@@ -73,6 +82,7 @@ public class KillStreakPerk extends Perk {
             }
             obj.addProperty("id", id.toString());
         }
+        obj.addProperty("playerKill", this.onlyPlayerKill);
         obj.addProperty("modifier", this.modifier);
         obj.addProperty("penalty", this.penalty);
         obj.addProperty("maxStreak", this.maxStreak);
@@ -81,6 +91,10 @@ public class KillStreakPerk extends Perk {
 
     public EntityAttribute getAttribute() {
         return attribute;
+    }
+
+    public boolean isOnlyPlayerKill() {
+        return onlyPlayerKill;
     }
 
     public float getModifier() {

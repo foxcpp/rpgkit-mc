@@ -1,0 +1,16 @@
+{
+  "values": {
+    "playerex:constitution": {
+      "csmprpgkit:max_mana": {
+        "behaviour": "ADDITION",
+        "value": 20
+      }
+    },
+    "playerex:intelligence": {
+      "csmprpgkit:mana_regen_speed": {
+        "behaviour": "ADDITION",
+        "value": 0.002
+      }
+    }
+  }
+}
