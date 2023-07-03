@@ -1,0 +1,8 @@
+{
+  "values": {
+    "minecraft:player": {
+      "csmprpgkit:max_mana": 0.0,
+      "csmprpgkit:mana_regen_speed": 0.005
+    }
+  }
+}

@@ -34,7 +34,7 @@ public final class ModComponents implements EntityComponentInitializer, ChunkCom
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         // XXX: Не забывай вписывать компоненты в fabric.mod.json.
         registry.registerForPlayers(ABILITIES, AbilitiesComponent::new, RespawnCopyStrategy.CHARACTER);
-        registry.registerForPlayers(MANA, ManaComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerForPlayers(MANA, ManaComponent::new, RespawnCopyStrategy.CHARACTER);
         registry.registerForPlayers(CLASS, ClassComponent::new, RespawnCopyStrategy.CHARACTER);
         registry.registerForPlayers(CAST, ActiveCastComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }

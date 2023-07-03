@@ -9,13 +9,22 @@
   "commands.csmprpgkit.exp.reset.success_multiple": "Reset experience points of %d targets.",
   "commands.csmprpgkit.exp.reset.success_single": "%s's experience points reset.",
   "commands.csmprpgkit.unknown_spell_element": "Unknown element (no such aspect or item)",
+
+  "attribute.name.player.csmprpgkit.max_mana": "Max mana points",
+  "attribute.name.player.csmprpgkit.mana_regen_speed": "Mana regen speed",
+
+  "csmprpgkit.class.csmprpgkit.rouge": "Rouge",
   "csmprpgkit.class.csmprpgkit.warrior": "Warrior",
   "csmprpgkit.class.csmprpgkit.wizard": "Wizard",
+
   "item.csmprpgkit.catalyst_bag": "Catalyst Bag",
+
+  "category.csmprpgkit.magic": "CSMP RPGKit Magic",
+
+  "key.csmprpgkit.magic.spell_build": "Start spell building",
+
   "csmprpgkit.magic.must_have_mana": "You need magic energy to cast spells",
   "csmprpgkit.magic.must_have_empty_hand": "You need an empty hand to cast spells",
-  "category.csmprpgkit.magic": "CSMP RPGKit Magic",
-  "key.csmprpgkit.magic.spell_build": "Start spell building",
   "csmprpgkit.magic.spell.csmprpgkit.generic": "Unnamed spell",
   "csmprpgkit.magic.spell.csmprpgkit.silence": "Spell: Silence",
   "csmprpgkit.magic.spell.csmprpgkit.ward": "Spell: Magic seal",
@@ -26,6 +35,26 @@
   "csmprpgkit.magic.help.area_cast": "Press %s to cast the spell on area around you.",
   "csmprpgkit.magic.help.self_cast": "Press %s to apply the spell to yourself.",
   "csmprpgkit.magic.help.catalyst_bag": "If you have a catalyst bag, press %s to open it (you must have it in your hotbar)",
+
   "csmprpgkit.advancement.root": "Hero of Cubes and Magic",
-  "csmprpgkit.advancement.root.desc": "Download CSMP RPGkit"
+  "csmprpgkit.advancement.root.desc": "Download CSMP RPGkit",
+
+  "csmprpgkit.gui.page.magic.title": "Magic",
+  "csmprpgkit.gui.page.attributes.text.max_mana": "Mana: %s/%s",
+  "csmprpgkit.gui.page.attributes.tooltip.max_mana": "Current MP / Max MP",
+  "csmprpgkit.gui.page.attributes.text.mana_regen_speed": "Mana regeneration: %s",
+  "csmprpgkit.gui.page.attributes.tooltip.mana_regen_speed": "Speed of mana regeneration",
+  "csmprpgkit.gui.page.attributes.tooltip.button.class_class_points": "Class points progress: %s",
+  "csmprpgkit.gui.page.attributes.text.class_points": "Free class points: %s",
+  "csmprpgkit.gui.page.attributes.tooltip.class_points[0]": "Undistributed points",
+  "csmprpgkit.gui.page.attributes.tooltip.class_points[1]": "for classes' level ups",
+  "csmprpgkit.gui.page.attributes.text.class_rouge": "Rouge lvl: %s",
+  "csmprpgkit.gui.page.attributes.tooltip.button.class_rouge": "Rouge class",
+  "csmprpgkit.gui.page.attributes.tooltip.class_rouge": "Rouge",
+  "csmprpgkit.gui.page.attributes.text.class_warrior": "Warrior lvl: %s",
+  "csmprpgkit.gui.page.attributes.tooltip.button.class_warrior": "Warrior class",
+  "csmprpgkit.gui.page.attributes.tooltip.class_warrior": "Warrior",
+  "csmprpgkit.gui.page.attributes.text.class_wizard": "Wizard lvl: %s",
+  "csmprpgkit.gui.page.attributes.tooltip.button.class_wizard": "Wizard class",
+  "csmprpgkit.gui.page.attributes.tooltip.class_wizard": "Wizard"
 }

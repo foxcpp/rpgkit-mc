@@ -3,8 +3,12 @@
     "icon": {
       "item": "csmprpgkit:spell"
     },
-    "title": "Hero of Cubes and Magic",
-    "description": "Download CSMP RPGkit",
+    "title": {
+      "translate": "csmprpgkit.advancement.root"
+    },
+    "description": {
+      "translate": "csmprpgkit.advancement.root.desc"
+    },
     "background": "csmprpgkit:textures/gui/advancements_bg.png",
     "frame": "task",
     "show_toast": true,

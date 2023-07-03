@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerTickingComponent {
     public static final int[] REQUIRED_LEVEL_EXP = { // TODO: Make configurable.
             0, // 0 lvl
-            10, // 1 lvl
-            20, 20, 20, 20, // 2-5 lvl
-            30, 30, 30, 30, 30, // 6-10 lvl
-            40, 40, 40, 40, 40, // 11-15 lvl
-            50, 50, 50, 50, 50 // 16-20 lvl
+            1, // 1 lvl
+            2, 2, 2, 2, // 2-5 lvl
+            3, 3, 3, 3, 3, // 6-10 lvl
+            4, 4, 4, 4, 4, // 11-15 lvl
+            5, 5, 5, 5, 5 // 16-20 lvl
     };
 
     private final LivingEntity provider;

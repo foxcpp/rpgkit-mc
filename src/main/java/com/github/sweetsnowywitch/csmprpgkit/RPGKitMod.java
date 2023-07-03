@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.csmprpgkit;
 
+import com.github.sweetsnowywitch.csmprpgkit.classes.ServerButtonHandler;
 import com.github.sweetsnowywitch.csmprpgkit.classes.abilities.ModAbilities;
 import com.github.sweetsnowywitch.csmprpgkit.classes.listener.AdvancementsListener;
 import com.github.sweetsnowywitch.csmprpgkit.classes.listener.ClassReloadListener;
@@ -41,6 +42,8 @@ public class RPGKitMod implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final ServerSpellBuildHandler SERVER_SPELL_BUILD_HANDLER =
             new ServerSpellBuildHandler();
+    public static final ServerButtonHandler SERVER_BUTTON_HANDLER =
+            new ServerButtonHandler();
 
     public static final ScreenHandlerType<CatalystBagScreenHandler> CATALYST_BAG_SCREEN_HANDLER =
             new ScreenHandlerType<>(CatalystBagScreenHandler::new);
@@ -80,5 +83,6 @@ public class RPGKitMod implements ModInitializer {
         DATA_SYNCER.registerListener(new ReactionReloadListener());
         Registry.register(Registry.SCREEN_HANDLER, Identifier.of(RPGKitMod.MOD_ID, "catalyst_bag"), CATALYST_BAG_SCREEN_HANDLER);
         SERVER_SPELL_BUILD_HANDLER.register();
+        SERVER_BUTTON_HANDLER.register();
     }
 }

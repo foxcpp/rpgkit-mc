@@ -1,6 +1,8 @@
 package com.github.sweetsnowywitch.csmprpgkit.client;
 
+import com.github.clevernucleus.playerex.api.client.PageRegistry;
 import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.csmprpgkit.client.gui.MagicPageLayer;
 import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ActiveCastOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.overlays.ManaHudOverlay;
 import com.github.sweetsnowywitch.csmprpgkit.client.particle.GenericSpellParticle;
@@ -37,6 +39,7 @@ import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 @Environment(EnvType.CLIENT)
 public class ClientRPGKitMod implements ClientModInitializer {
     public static final Gson GSON = new Gson();
+    public static final Identifier MAGIC_PAGE = new Identifier(RPGKitMod.MOD_ID, "magic_page");
 
     public static final KeyBinding ACTIVATE_SPELL_BUILD_KEY = new KeyBinding(
             "key." + RPGKitMod.MOD_ID + ".magic.spell_build",
@@ -99,5 +102,8 @@ public class ClientRPGKitMod implements ClientModInitializer {
         HandledScreens.register(RPGKitMod.CATALYST_BAG_SCREEN_HANDLER, CatalystBagScreen::new);
 
         RPGKitMod.DATA_SYNCER.setupClient();
+
+        PageRegistry.registerPage(MAGIC_PAGE, new Identifier(RPGKitMod.MOD_ID, "textures/gui/icon_magic.png"), Text.translatable("csmprpgkit.gui.page.magic.title"));
+        PageRegistry.registerLayer(MAGIC_PAGE, MagicPageLayer::new);
     }
 }
