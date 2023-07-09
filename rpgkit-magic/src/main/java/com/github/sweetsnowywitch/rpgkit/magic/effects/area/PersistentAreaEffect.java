@@ -2,7 +2,6 @@ package com.github.sweetsnowywitch.rpgkit.magic.effects.area;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.AreaEffect;
-import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.json.IntModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.Spell;
@@ -41,41 +40,10 @@ public class PersistentAreaEffect extends AreaEffect {
         }
     }
 
-    protected final int durationTicks;
-    protected final int effectIntervalTicks;
-    protected final ImmutableList<UseEffect> effects;
-
-    protected PersistentAreaEffect(Identifier id) {
-        super(id);
-        this.durationTicks = 60;
-        this.effectIntervalTicks = 20;
-        this.effects = ImmutableList.of();
-    }
-
-    protected PersistentAreaEffect(Identifier id, JsonObject obj) {
-        super(id, obj);
-
-        if (obj.has("duration")) {
-            this.durationTicks = obj.get("duration").getAsInt();
-        } else {
-            this.durationTicks = 60;
-        }
-        if (obj.has("interval")) {
-            this.effectIntervalTicks = obj.get("interval").getAsInt();
-        } else {
-            this.effectIntervalTicks = 20;
-        }
-        if (obj.has("effects")) {
-            this.effects = JsonHelpers.fromJsonList(obj.getAsJsonArray("effects"), UseEffect::fromJson);
-        } else {
-            this.effects = ImmutableList.of();
-        }
-    }
-
     public class Used extends AreaEffect.Used {
         protected final int durationTicks;
         protected final int effectIntervalTicks;
-        protected final ImmutableList<UseEffect.Used> effects;
+        protected final ImmutableList<AreaEffect.Used> effects;
 
         protected Used(SpellBuildCondition.Context ctx) {
             super(PersistentAreaEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
@@ -99,7 +67,7 @@ public class PersistentAreaEffect extends AreaEffect {
             super(PersistentAreaEffect.this, obj);
             this.durationTicks = obj.get("duration").getAsInt();
             this.effectIntervalTicks = obj.get("interval").getAsInt();
-            this.effects = JsonHelpers.fromJsonList(obj.getAsJsonArray("effects"), UseEffect.Used::fromJson);
+            this.effects = JsonHelpers.fromJsonList(obj.getAsJsonArray("effects"), AreaEffect.Used::fromJson);
         }
 
         @Override
@@ -112,8 +80,41 @@ public class PersistentAreaEffect extends AreaEffect {
 
         @Override
         public @NotNull ActionResult useOnArea(ServerSpellCast cast, ServerWorld world, Box boundingBox, Vec3d origin, AreaCollider collider) {
-            var cast2 = cast.withSpell(new Spell(this.effects, cast.getSpell().getGlobalReactions(), cast.getSpell().getUseForm()));
+            var cast2 = cast.withSpell(new Spell(
+                    ImmutableList.of(), this.effects, ImmutableList.of(),
+                    cast.getSpell().getGlobalReactions(), cast.getSpell().getUseForm()));
             return cast2.getSpell().useOnArea(cast, world, boundingBox, origin, collider);
+        }
+    }
+
+    protected final int durationTicks;
+    protected final int effectIntervalTicks;
+    protected final ImmutableList<AreaEffect> effects;
+
+    protected PersistentAreaEffect(Identifier id) {
+        super(id);
+        this.durationTicks = 60;
+        this.effectIntervalTicks = 20;
+        this.effects = ImmutableList.of();
+    }
+
+    protected PersistentAreaEffect(Identifier id, JsonObject obj) {
+        super(id, obj);
+
+        if (obj.has("duration")) {
+            this.durationTicks = obj.get("duration").getAsInt();
+        } else {
+            this.durationTicks = 60;
+        }
+        if (obj.has("interval")) {
+            this.effectIntervalTicks = obj.get("interval").getAsInt();
+        } else {
+            this.effectIntervalTicks = 20;
+        }
+        if (obj.has("area_effects")) {
+            this.effects = JsonHelpers.fromJsonList(obj.getAsJsonArray("area_effects"), AreaEffect::fromJson);
+        } else {
+            this.effects = ImmutableList.of();
         }
     }
 
@@ -125,5 +126,13 @@ public class PersistentAreaEffect extends AreaEffect {
     @Override
     public @NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
+    }
+
+    @Override
+    public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
+        obj.addProperty("duration", this.durationTicks);
+        obj.addProperty("interval", this.effectIntervalTicks);
+        obj.add("area_effects", JsonHelpers.toJsonList(this.effects));
     }
 }
