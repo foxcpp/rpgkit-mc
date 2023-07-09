@@ -69,7 +69,7 @@ public class BreakBlockEffect extends UseEffect {
             var magStrength = BreakBlockEffect.this.magicStrength;
             for (var reaction : this.effectReactions) {
                 if (reaction instanceof Reaction r) {
-                    magStrength = r.magicStrength.apply(magStrength);
+                    magStrength = r.magicStrength.applyMultiple(magStrength, ctx.stackSize);
                 }
             }
             this.magicStrength = magStrength;
@@ -125,7 +125,7 @@ public class BreakBlockEffect extends UseEffect {
         }
 
         @Override
-        public FloatModifier calculateEffectReduction(ServerSpellCast cast, float protectionStrength) {
+        public @NotNull FloatModifier calculateEffectReduction(ServerSpellCast cast, float protectionStrength) {
             if (protectionStrength > this.magicStrength) {
                 return FloatModifier.ZEROED;
             }

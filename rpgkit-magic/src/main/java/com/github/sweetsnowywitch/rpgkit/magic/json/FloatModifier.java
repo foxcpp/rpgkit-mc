@@ -52,6 +52,23 @@ public class FloatModifier implements JsonHelpers.JsonSerializable {
         return val * this.mul + this.add;
     }
 
+    public float applyMultiple(float val, int count) {
+        // (val * mul + add) * mul + add
+        // ((val * mul + add) * mul + add) * mul + add
+        // (val * mul^3 + add*mul^2 + add*mul + add
+        // and so on.
+
+        var res = 0;
+        var mulFact = 1;
+        for (int i = 0; i < count; i++) {
+            res += add * mulFact;
+            mulFact *= this.mul;
+        }
+
+        res += val * mulFact;
+        return res;
+    }
+
     @Override
     public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("add", this.add);

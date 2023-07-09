@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
-import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
@@ -23,7 +22,7 @@ public class ExtinguishEffect extends SimpleUseEffect {
         super(id, obj);
     }
 
-    public @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    public @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         if (this.extinguish(cast, world, pos)) {
             return ActionResult.SUCCESS;
         }
@@ -31,7 +30,7 @@ public class ExtinguishEffect extends SimpleUseEffect {
     }
 
     @Override
-    public @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
+    public @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         entity.setOnFire(false);
         entity.setOnFireFor(0);
         return ActionResult.SUCCESS;

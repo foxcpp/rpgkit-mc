@@ -83,8 +83,8 @@ public class PersistentAreaEffect extends AreaEffect {
             var effectInterval = PersistentAreaEffect.this.effectIntervalTicks;
             for (var reaction : this.effectReactions) {
                 if (reaction instanceof Reaction r) {
-                    duration = r.duration.apply(duration);
-                    effectInterval = r.effectInterval.apply(effectInterval);
+                    duration = r.duration.applyMultiple(duration, ctx.stackSize);
+                    effectInterval = r.effectInterval.applyMultiple(effectInterval, ctx.stackSize);
                 }
             }
             this.durationTicks = duration;

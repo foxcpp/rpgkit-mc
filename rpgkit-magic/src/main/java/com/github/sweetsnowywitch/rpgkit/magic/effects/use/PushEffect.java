@@ -120,15 +120,15 @@ public class PushEffect extends UseEffect {
             boolean disregardCurrentVelocity = PushEffect.this.disregardCurrentVelocity;
             for (var reaction : this.effectReactions) {
                 if (reaction instanceof Reaction r) {
-                    velocity = r.velocity.apply(velocity);
-                    magStrength = r.magicStrength.apply(magStrength);
+                    velocity = r.velocity.applyMultiple(velocity, ctx.stackSize);
+                    magStrength = r.magicStrength.applyMultiple(magStrength, ctx.stackSize);
                     disregardCurrentVelocity = disregardCurrentVelocity || r.disregardCurrentVelocity;
                 }
             }
             for (var reaction : this.getGlobalReactions()) {
                 if (reaction instanceof Reaction r) {
-                    velocity = r.velocity.apply(velocity);
-                    magStrength = r.magicStrength.apply(magStrength);
+                    velocity = r.velocity.applyMultiple(velocity, ctx.stackSize);
+                    magStrength = r.magicStrength.applyMultiple(magStrength, ctx.stackSize);
                     disregardCurrentVelocity = disregardCurrentVelocity || r.disregardCurrentVelocity;
                 }
             }

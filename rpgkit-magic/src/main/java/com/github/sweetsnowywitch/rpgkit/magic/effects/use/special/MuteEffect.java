@@ -1,7 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use.special;
 
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
-import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.use.SimpleUseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.SoundBarrierEntity;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
@@ -53,7 +52,7 @@ public class MuteEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         if (!(entity instanceof LivingEntity le)) {
             return ActionResult.PASS;
         }
@@ -70,9 +69,9 @@ public class MuteEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         // TODO: Apply to block via SpellArea.
-        return null;
+        return ActionResult.PASS;
     }
 
     @Override

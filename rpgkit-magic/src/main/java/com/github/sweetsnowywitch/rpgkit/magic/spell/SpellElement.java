@@ -1,13 +1,17 @@
 package com.github.sweetsnowywitch.rpgkit.magic.spell;
 
+import com.github.sweetsnowywitch.rpgkit.magic.MagicRegistries;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.AreaEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.ItemEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,6 +75,25 @@ public sealed interface SpellElement permits Aspect, ItemElement {
     @Contract(value = "_ -> new", pure = true)
     static @NotNull SpellElement of(Item item) {
         return new ItemElement(item);
+    }
+
+    static @Nullable SpellElement byId(Identifier id) {
+        if (id == null) {
+            return null;
+        }
+
+        SpellElement element = null;
+        var asp = MagicRegistries.ASPECTS.get(id);
+        if (asp != null) {
+            element = SpellElement.of(asp);
+        } else {
+            var item = Registry.ITEM.get(id);
+            if (!item.equals(Items.AIR)) {
+                element = SpellElement.of(item);
+            }
+        }
+        
+        return element;
     }
 
     static SpellElement readFromNbt(NbtCompound comp) {

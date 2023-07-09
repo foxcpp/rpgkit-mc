@@ -1,12 +1,10 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
-import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.FluidState;
@@ -76,7 +74,7 @@ public class ExplosionEffect extends SimpleUseEffect {
     }
 
     @Override
-    public @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    public @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         var caster = cast.getCaster(world);
 
         DamageSource damageSource;
@@ -94,10 +92,5 @@ public class ExplosionEffect extends SimpleUseEffect {
         world.createExplosion(caster, damageSource, new Behavior(ExplosionEffect.this.blastResistanceDecrease, ExplosionEffect.this.breakBlocks),
                 pos.getX(), pos.getY(), pos.getZ(), power, false, Explosion.DestructionType.DESTROY);
         return ActionResult.SUCCESS;
-    }
-
-    @Override
-    public @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
-        return ActionResult.PASS;
     }
 }

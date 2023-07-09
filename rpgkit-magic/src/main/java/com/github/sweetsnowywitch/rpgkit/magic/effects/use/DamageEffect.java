@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.events.MagicEntityEvents;
+import com.github.sweetsnowywitch.rpgkit.magic.json.IntModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellBuildCondition;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
@@ -21,14 +22,14 @@ import java.util.ArrayList;
 
 public class DamageEffect extends UseEffect {
     public static class Reaction extends SpellReaction {
-        private final int damageDealt;
+        private final IntModifier damageDealt;
 
         public Reaction(JsonObject obj) {
             super(Type.EFFECT, obj);
-            if (obj.has("damage_dealt")) {
-                this.damageDealt = obj.get("damage_dealt").getAsInt();
+            if (obj.has("damage")) {
+                this.damageDealt = new IntModifier(obj.get("damage"));
             } else {
-                this.damageDealt = 0;
+                this.damageDealt = IntModifier.NOOP;
             }
         }
 
@@ -40,7 +41,7 @@ public class DamageEffect extends UseEffect {
         @Override
         public void toJson(@NotNull JsonObject obj) {
             super.toJson(obj);
-            obj.addProperty("damage_dealt", this.damageDealt);
+            obj.add("damage", this.damageDealt.toJson());
         }
 
         @Override
@@ -69,12 +70,32 @@ public class DamageEffect extends UseEffect {
     }
 
     public class Used extends UseEffect.Used {
+        private final int damage;
+
         protected Used(SpellBuildCondition.Context ctx) {
             super(DamageEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
+
+            var dmg = DamageEffect.this.damageDealt;
+            for (var reaction : this.effectReactions) {
+                if (reaction instanceof Reaction r) {
+                    dmg = r.damageDealt.applyMultiple(dmg, ctx.stackSize);
+                }
+            }
+            if (dmg <= 1) {
+                dmg = 1;
+            }
+            this.damage = dmg;
         }
 
         protected Used(JsonObject obj) {
             super(DamageEffect.this, obj);
+            this.damage = obj.get("damage").getAsInt();
+        }
+
+        @Override
+        public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
+            obj.addProperty("damage", this.damage);
         }
 
         @Override
@@ -88,25 +109,13 @@ public class DamageEffect extends UseEffect {
                 return ActionResult.PASS;
             }
 
-            var damageDealt = DamageEffect.this.damageDealt;
-
-            for (var reaction : this.effectReactions) {
-                if (reaction instanceof DamageEffect.Reaction r) {
-                    damageDealt += r.damageDealt;
-                }
-            }
-            if (damageDealt <= 1) {
-                damageDealt = 1;
-            }
-
-            var entityResult = MagicEntityEvents.DAMAGE.invoker().onEntityMagicDamaged(cast, this, le, damageDealt);
+            var entityResult = MagicEntityEvents.DAMAGE.invoker().onEntityMagicDamaged(cast, this, le, this.damage);
             if (entityResult.getResult().equals(ActionResult.FAIL) || entityResult.getResult().equals(ActionResult.CONSUME)
                     || entityResult.getResult().equals(ActionResult.CONSUME_PARTIAL)) {
                 return entityResult.getResult();
             }
-            damageDealt = entityResult.getValue();
 
-            le.damage(DamageSource.MAGIC, damageDealt);
+            le.damage(DamageSource.MAGIC, entityResult.getValue());
             return ActionResult.SUCCESS;
         }
     }

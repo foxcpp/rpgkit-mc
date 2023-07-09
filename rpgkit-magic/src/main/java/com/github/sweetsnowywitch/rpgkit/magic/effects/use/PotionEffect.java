@@ -2,7 +2,7 @@ package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
-import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.json.IntModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
@@ -13,8 +13,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,8 +23,8 @@ import java.util.Objects;
 public class PotionEffect extends SimpleUseEffect {
     public static class Reaction extends SpellReaction {
         private final @Nullable StatusEffect effect;
-        private final double amplifier;
-        private final int durationTicks;
+        private final IntModifier amplifier;
+        private final IntModifier durationTicks;
 
         public Reaction(JsonObject obj) {
             super(Type.EFFECT, obj);
@@ -44,14 +42,14 @@ public class PotionEffect extends SimpleUseEffect {
             }
 
             if (obj.has("amplifier")) {
-                this.amplifier = obj.get("amplifier").getAsDouble();
+                this.amplifier = new IntModifier(obj.get("amplifier"));
             } else {
-                this.amplifier = 1;
+                this.amplifier = IntModifier.NOOP;
             }
             if (obj.has("duration")) {
-                this.durationTicks = obj.get("duration").getAsInt();
+                this.durationTicks = new IntModifier(obj.get("duration"));
             } else {
-                this.durationTicks = 0;
+                this.durationTicks = IntModifier.NOOP;
             }
         }
 
@@ -71,8 +69,8 @@ public class PotionEffect extends SimpleUseEffect {
                 obj.addProperty("id", id.toString());
             }
 
-            obj.addProperty("amplifier", this.amplifier);
-            obj.addProperty("duration", this.durationTicks);
+            obj.add("amplifier", this.amplifier.toJson());
+            obj.add("duration", this.durationTicks.toJson());
         }
 
         @Override
@@ -135,7 +133,7 @@ public class PotionEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         if (this.statusEffect == null) {
             RPGKitMagicMod.LOGGER.warn("Cast {} with empty status effect", cast);
             return ActionResult.PASS;
@@ -144,13 +142,13 @@ public class PotionEffect extends SimpleUseEffect {
             return ActionResult.PASS;
         }
 
-        double amplifier = this.baseAmplifier;
+        var amplifier = this.baseAmplifier;
         var duration = this.baseDuration;
 
         for (var reaction : reactions) {
             if (reaction instanceof Reaction r && (r.effect == null || r.effect.equals(this.statusEffect))) {
-                amplifier += r.amplifier;
-                duration += r.durationTicks;
+                amplifier = r.amplifier.applyMultiple(amplifier, used.reactionStackSize);
+                duration = r.durationTicks.applyMultiple(duration, used.reactionStackSize);
             }
         }
         if (amplifier <= 0) {
@@ -163,15 +161,10 @@ public class PotionEffect extends SimpleUseEffect {
         var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
 
         le.addStatusEffect(
-                new StatusEffectInstance(this.statusEffect, duration, (int) amplifier, false, false),
+                new StatusEffectInstance(this.statusEffect, duration, amplifier, false, false),
                 caster
         );
         return ActionResult.SUCCESS;
-    }
-
-    @Override
-    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
-        return null;
     }
 
     @Override

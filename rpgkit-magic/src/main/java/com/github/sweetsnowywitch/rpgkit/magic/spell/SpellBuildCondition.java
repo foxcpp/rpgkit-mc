@@ -3,8 +3,8 @@ package com.github.sweetsnowywitch.rpgkit.magic.spell;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.List;
@@ -12,9 +12,10 @@ import java.util.List;
 @FunctionalInterface
 public interface SpellBuildCondition {
     class Context {
-        List<SpellElement> elements;
-        @Nullable SpellElement element;
-        Entity caster;
+        public List<SpellElement> elements;
+        public SpellElement element;
+        public int stackSize;
+        public Entity caster;
     }
 
     boolean shouldAdd(Context ctx);
@@ -47,6 +48,51 @@ public interface SpellBuildCondition {
                         elCond = not(sameAsFirstElement());
                     }
                 }
+                case "stacked" -> {
+                    if (el.getValue().isJsonPrimitive()) {
+                        elCond = stacked(el.getValue().getAsInt(), Integer.MAX_VALUE);
+                    } else if (el.getValue() instanceof JsonObject elObj) {
+                        var min = 1;
+                        var max = Integer.MAX_VALUE;
+                        if (elObj.has("min")) {
+                            min = elObj.get("min").getAsInt();
+                        }
+                        if (elObj.has("max")) {
+                            max = elObj.get("max").getAsInt();
+                        }
+                        elCond = stacked(min, max);
+                    } else {
+                        throw new IllegalArgumentException("malformed stacked field in spell build condition: " + el.getKey());
+                    }
+                }
+                case "has_element" -> {
+                    if (el.getValue().isJsonPrimitive()) {
+                        var spellEl = SpellElement.byId(new Identifier(el.getValue().getAsString()));
+                        if (spellEl == null) {
+                            throw new IllegalArgumentException("unknown aspect or item element: " + el.getValue());
+                        }
+
+                        elCond = hasElement(spellEl, 1, Integer.MAX_VALUE);
+                    } else if (el.getValue() instanceof JsonObject elObj) {
+                        var spellEl = SpellElement.byId(new Identifier(elObj.get("element").getAsString()));
+                        if (spellEl == null) {
+                            throw new IllegalArgumentException("unknown aspect or item element: " + el.getValue());
+                        }
+
+                        var min = 1;
+                        var max = Integer.MAX_VALUE;
+                        if (elObj.has("min")) {
+                            min = elObj.get("min").getAsInt();
+                        }
+                        if (elObj.has("max")) {
+                            max = elObj.get("max").getAsInt();
+                        }
+
+                        elCond = hasElement(spellEl, min, max);
+                    } else {
+                        throw new IllegalArgumentException("malformed has_element field in spell build condition: " + el.getKey());
+                    }
+                }
                 default -> throw new IllegalArgumentException("unknown field in spell build condition: " + el.getKey());
             }
 
@@ -72,15 +118,15 @@ public interface SpellBuildCondition {
         return (ctx) -> c1.shouldAdd(ctx) || c2.shouldAdd(ctx);
     }
 
-    static SpellBuildCondition firstElement() {
-        return (ctx) -> ctx.elements.size() == 1;
-    }
-
     static SpellBuildCondition sameAsFirstElement() {
         return (ctx) -> ctx.elements.size() == 1 || ctx.elements.get(0).equals(ctx.element);
     }
 
-    static SpellBuildCondition hasElement(@NotNull SpellElement element, @Range(from = 1, to = Integer.MAX_VALUE) int minCount, int maxCount) {
+    static SpellBuildCondition stacked(@Range(from = 1, to = Integer.MAX_VALUE) int min, @Range(from = 1, to = Integer.MAX_VALUE) int max) {
+        return (ctx) -> ctx.stackSize >= min && ctx.stackSize <= max;
+    }
+
+    static SpellBuildCondition hasElement(@NotNull SpellElement element, @Range(from = 1, to = Integer.MAX_VALUE) int minCount, @Range(from = 1, to = Integer.MAX_VALUE) int maxCount) {
         return (ctx) -> {
             int effectiveCnt = 0;
             for (var pending : ctx.elements) {

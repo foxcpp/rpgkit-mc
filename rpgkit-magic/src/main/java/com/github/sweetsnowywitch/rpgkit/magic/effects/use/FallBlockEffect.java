@@ -3,14 +3,12 @@ package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 import com.github.sweetsnowywitch.rpgkit.VectorUtils;
 import com.github.sweetsnowywitch.rpgkit.magic.EffectVector;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
-import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.events.MagicBlockEvents;
 import com.github.sweetsnowywitch.rpgkit.magic.json.BlockStatePredicate;
 import com.github.sweetsnowywitch.rpgkit.magic.json.DoubleModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -88,7 +86,7 @@ public class FallBlockEffect extends SimpleUseEffect {
 
     @Override
     @NotNull
-    protected ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         var bs = world.getBlockState(pos);
         if (bs.isAir()) {
             return ActionResult.PASS;
@@ -131,16 +129,12 @@ public class FallBlockEffect extends SimpleUseEffect {
     }
 
     @Override
-    @NotNull
-    protected ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
-        return ActionResult.PASS;
-    }
-
-    @Override
     public void toJson(@NotNull JsonObject obj) {
         super.toJson(obj);
         if (this.filter != null) {
             obj.add("filter", this.filter.toJson());
         }
+        obj.addProperty("velocity", this.velocity);
+        obj.addProperty("vector", this.vector.name().toLowerCase());
     }
 }

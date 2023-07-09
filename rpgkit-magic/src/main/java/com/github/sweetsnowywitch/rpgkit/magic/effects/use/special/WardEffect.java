@@ -17,7 +17,6 @@ import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -103,11 +102,15 @@ public class WardEffect extends SimpleUseEffect {
             if (pbue.willDissolveProtection(cast, strength)) {
                 comp.removeAreas(areas);
                 return ActionResult.PASS;
-            } else if (allowBypass && pbue.calculateEffectReduction(cast, strength).apply(1) == 0) {
-                return ActionResult.CONSUME;
-            } else {
-                return ActionResult.PASS;
             }
+            if (!allowBypass) {
+                return ActionResult.CONSUME;
+            }
+
+            if (pbue.calculateEffectReduction(cast, strength).apply(1) == 0) {
+                return ActionResult.CONSUME;
+            }
+            return ActionResult.PASS;
         }
     }
 
@@ -210,24 +213,19 @@ public class WardEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
-        return ActionResult.PASS;
-    }
-
-    @Override
-    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         var duration = this.duration;
         var magStrength = this.strength;
         for (var reaction : reactions) {
             if (reaction instanceof Reaction r) {
-                duration = r.duration.apply(duration);
-                magStrength = r.strength.apply(magStrength);
+                duration = r.duration.applyMultiple(duration, used.reactionStackSize);
+                magStrength = r.strength.applyMultiple(magStrength, used.reactionStackSize);
             }
         }
         for (var reaction : used.getGlobalReactions()) {
             if (reaction instanceof Reaction r) {
-                duration = r.duration.apply(duration);
-                magStrength = r.strength.apply(magStrength);
+                duration = r.duration.applyMultiple(duration, used.reactionStackSize);
+                magStrength = r.strength.applyMultiple(magStrength, used.reactionStackSize);
             }
         }
 

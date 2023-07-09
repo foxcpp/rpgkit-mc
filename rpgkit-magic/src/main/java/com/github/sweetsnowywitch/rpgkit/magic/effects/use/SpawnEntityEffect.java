@@ -1,6 +1,5 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
-import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
@@ -47,7 +46,7 @@ public class SpawnEntityEffect extends SimpleUseEffect {
 
 
     @Override
-    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, UseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         if (!this.inBlock) {
             pos = pos.add(direction.getVector());
         }
@@ -61,7 +60,7 @@ public class SpawnEntityEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, UseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         var world = (ServerWorld) entity.getWorld();
         var ent = this.entityType.create(world, this.customNbt, null, null, entity.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
         if (ent == null) {

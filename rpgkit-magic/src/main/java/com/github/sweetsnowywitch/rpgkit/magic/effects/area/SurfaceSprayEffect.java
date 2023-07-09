@@ -92,14 +92,14 @@ public class SurfaceSprayEffect extends AreaEffect {
             var entCoverage = SurfaceSprayEffect.this.entityCoverage;
             for (var reaction : this.effectReactions) {
                 if (reaction instanceof Reaction r) {
-                    areaCoverage = r.areaCoverage.apply(areaCoverage);
-                    entCoverage = r.entityCoverage.apply(entCoverage);
+                    areaCoverage = r.areaCoverage.applyMultiple(areaCoverage, ctx.stackSize);
+                    entCoverage = r.entityCoverage.applyMultiple(entCoverage, ctx.stackSize);
                 }
             }
             for (var reaction : this.getGlobalReactions()) {
                 if (reaction instanceof Reaction r) {
-                    areaCoverage = r.areaCoverage.apply(areaCoverage);
-                    entCoverage = r.entityCoverage.apply(entCoverage);
+                    areaCoverage = r.areaCoverage.applyMultiple(areaCoverage, ctx.stackSize);
+                    entCoverage = r.entityCoverage.applyMultiple(entCoverage, ctx.stackSize);
                 }
             }
             this.areaCoverage = areaCoverage;
