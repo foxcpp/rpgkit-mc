@@ -46,36 +46,6 @@ public class SurfaceSprayEffect extends AreaEffect {
         }
     }
 
-    protected final float areaCoverage;
-    protected final float entityCoverage;
-    protected final ImmutableList<UseEffect> effects;
-
-    protected SurfaceSprayEffect(Identifier id) {
-        super(id);
-        this.areaCoverage = 0.25f;
-        this.entityCoverage = 1f;
-        this.effects = ImmutableList.of();
-    }
-
-    protected SurfaceSprayEffect(Identifier id, JsonObject obj) {
-        super(id, obj);
-        if (obj.has("area_coverage")) {
-            this.areaCoverage = obj.get("area_coverage").getAsFloat();
-        } else {
-            this.areaCoverage = 0.25f;
-        }
-        if (obj.has("entity_coverage")) {
-            this.entityCoverage = obj.get("entity_coverage").getAsFloat();
-        } else {
-            this.entityCoverage = 1f;
-        }
-        if (obj.has("effects")) {
-            this.effects = JsonHelpers.fromJsonList(obj.getAsJsonArray("effects"), UseEffect::fromJson);
-        } else {
-            this.effects = ImmutableList.of();
-        }
-    }
-
     public class Used extends AreaEffect.Used {
         private final ImmutableList<UseEffect.Used> effects;
         private final float areaCoverage;
@@ -203,6 +173,37 @@ public class SurfaceSprayEffect extends AreaEffect {
         }
     }
 
+
+    protected final float areaCoverage;
+    protected final float entityCoverage;
+    protected final ImmutableList<UseEffect> effects;
+
+    protected SurfaceSprayEffect(Identifier id) {
+        super(id);
+        this.areaCoverage = 0.25f;
+        this.entityCoverage = 1f;
+        this.effects = ImmutableList.of();
+    }
+
+    protected SurfaceSprayEffect(Identifier id, JsonObject obj) {
+        super(id, obj);
+        if (obj.has("area_coverage")) {
+            this.areaCoverage = obj.get("area_coverage").getAsFloat();
+        } else {
+            this.areaCoverage = 0.25f;
+        }
+        if (obj.has("entity_coverage")) {
+            this.entityCoverage = obj.get("entity_coverage").getAsFloat();
+        } else {
+            this.entityCoverage = 1f;
+        }
+        if (obj.has("effects")) {
+            this.effects = JsonHelpers.fromJsonList(obj.getAsJsonArray("effects"), UseEffect::fromJson);
+        } else {
+            this.effects = ImmutableList.of();
+        }
+    }
+
     @Override
     public AreaEffect.@NotNull Used use(SpellBuildCondition.Context ctx) {
         return new Used(ctx);
@@ -211,5 +212,13 @@ public class SurfaceSprayEffect extends AreaEffect {
     @Override
     public AreaEffect.@NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
+    }
+
+    @Override
+    public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
+        obj.addProperty("area_coverage", this.areaCoverage);
+        obj.addProperty("entity_coverage", this.entityCoverage);
+        obj.add("effects", JsonHelpers.toJsonList(this.effects));
     }
 }
