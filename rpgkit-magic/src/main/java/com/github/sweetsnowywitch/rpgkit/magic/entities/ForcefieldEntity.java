@@ -117,6 +117,8 @@ public class ForcefieldEntity extends MagicAreaEntity {
             }
             if (!this.prevTickSeen.containsKey(ent.getId())) {
                 this.cast.getSpell().useOnEntity(this.cast, ent);
+                world.spawnParticles(this.particleEffect, ent.getX(), ent.getEyeY(), ent.getZ(),
+                        5, 0.2, 0.7, 0.2, 0);
             }
             this.prevTickSeen.put(ent.getId(), true);
         }
