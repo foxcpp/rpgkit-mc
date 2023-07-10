@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class ForcefieldEntity extends MagicAreaEntity {
     private final HashMap<Integer, Boolean> prevTickSeen = new HashMap<>(5);
     private Box innerArea;
-    private static final double THICKNESS = 0.7;
+    private static final double THICKNESS = 1.1;
 
     public ForcefieldEntity(EntityType<?> type, World world, Box area, int duration) {
         super(type, world, area, duration);
