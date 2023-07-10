@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleEffect;
@@ -25,20 +26,21 @@ public abstract class MagicAreaEntity extends Entity {
     protected int maxAge;
     public static final TrackedData<Box> AREA = DataTracker.registerData(MagicAreaEntity.class, TrackedHandlers.BOX);
     public static final TrackedData<SpellCast> CAST = DataTracker.registerData(MagicAreaEntity.class, SpellCast.TRACKED_HANDLER);
+    public static final TrackedData<Boolean> NO_PARTICLES = DataTracker.registerData(MagicAreaEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected int particleColor;
     protected ParticleEffect particleEffect;
 
     public MagicAreaEntity(EntityType<?> type, World world, Box area, int duration) {
         super(type, world);
-        this.dataTracker.set(AREA, area);
+        this.setArea(area);
         this.maxAge = duration;
-        this.setPosition(area.getCenter());
     }
 
     @Override
     protected void initDataTracker() {
         this.dataTracker.startTracking(AREA, Box.from(this.getPos()));
         this.dataTracker.startTracking(CAST, SpellCast.EMPTY);
+        this.dataTracker.startTracking(NO_PARTICLES, false);
     }
 
     @Override
@@ -51,6 +53,7 @@ public abstract class MagicAreaEntity extends Entity {
             this.dataTracker.set(CAST, this.cast); // sync some spell data to client
         }
         this.maxAge = nbt.getInt("MaxAge");
+        this.dataTracker.set(NO_PARTICLES, nbt.getBoolean("NoParticles"));
     }
 
     @Override
@@ -70,6 +73,7 @@ public abstract class MagicAreaEntity extends Entity {
                         .resultOrPartial(RPGKitMagicMod.LOGGER::error).orElseThrow());
 
         nbt.putInt("MaxAge", this.maxAge);
+        nbt.putBoolean("NoParticles", this.dataTracker.get(NO_PARTICLES));
     }
 
     public void increaseMaxAge(int duration) {
@@ -103,6 +107,11 @@ public abstract class MagicAreaEntity extends Entity {
         return this.dataTracker.get(CAST);
     }
 
+    protected void setArea(Box area) {
+        this.dataTracker.set(AREA, area);
+        this.setPosition(area.getCenter());
+    }
+
     public Box getArea() {
         return this.dataTracker.get(AREA);
     }
@@ -129,7 +138,7 @@ public abstract class MagicAreaEntity extends Entity {
             return;
         }
 
-        if (this.world.isClient && this.getArea() != null) {
+        if (this.world.isClient && this.getArea() != null && !this.dataTracker.get(NO_PARTICLES)) {
             this.spawnParticles();
         }
     }

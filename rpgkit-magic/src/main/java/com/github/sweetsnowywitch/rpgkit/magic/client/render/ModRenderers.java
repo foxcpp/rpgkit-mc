@@ -15,6 +15,7 @@ public class ModRenderers {
         EntityRendererRegistry.register(ModEntities.SOUND_BARRIER, EmptyEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.SPELL_BLAST, EmptyEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.PERSISTENT_MAGIC, EmptyEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.FORCEFIELD, EmptyEntityRenderer::new);
 
         EntityRendererRegistry.register(ModEntities.SPELL_CHARGE, SpellChargeRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(SpellChargeModel.MAIN, SpellChargeModel::getTexturedModelData);

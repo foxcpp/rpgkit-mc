@@ -53,7 +53,10 @@ public class SurfaceSprayEffect extends AreaEffect {
 
         protected Used(SpellBuildCondition.Context ctx) {
             super(SurfaceSprayEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
-            this.effects = SurfaceSprayEffect.this.effects.stream().map(eff -> eff.use(ctx)).collect(ImmutableList.toImmutableList());
+            this.effects = SurfaceSprayEffect.this.effects.stream().
+                    filter(eff -> eff.shouldAdd(ctx)).
+                    map(eff -> eff.use(ctx)).
+                    collect(ImmutableList.toImmutableList());
             for (var effect : this.effects) {
                 this.globalReactions.addAll(effect.getGlobalReactions());
             }
