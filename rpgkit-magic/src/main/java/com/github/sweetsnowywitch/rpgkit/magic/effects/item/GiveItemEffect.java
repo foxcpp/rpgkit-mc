@@ -1,7 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.item;
 
-import com.github.sweetsnowywitch.rpgkit.magic.ItemTransmuteMapping;
-import com.github.sweetsnowywitch.rpgkit.magic.MagicRegistries;
+import com.github.sweetsnowywitch.rpgkit.magic.ItemSelectorMapping;
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.ItemEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
@@ -21,45 +20,23 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class TransmuteItemEffect extends ItemEffect {
-    protected final ItemTransmuteMapping mapping;
-
-    protected TransmuteItemEffect(Identifier id) {
-        super(id);
-        this.mapping = null;
-
-        RPGKitMagicMod.LOGGER.warn("TransformItemEffect is not configured, will be no-op");
-    }
-
-    protected TransmuteItemEffect(Identifier id, JsonObject obj) {
-        super(id, obj);
-
-        if (!obj.has("mapping")) {
-            throw new IllegalArgumentException("missing mapping field for TransmuteItemEffect");
-        }
-
-        this.mapping = MagicRegistries.TRANSMUTE_MAPPINGS.get(new Identifier(obj.get("mapping").getAsString()));
-        if (this.mapping == null) {
-            throw new IllegalArgumentException("transmute mapping does not exist");
-        }
-    }
-
+public class GiveItemEffect extends ItemEffect {
     public class Used extends ItemEffect.Used {
+
         protected Used(SpellBuildCondition.Context ctx) {
-            super(TransmuteItemEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
+            super(GiveItemEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
         }
 
         protected Used(JsonObject obj) {
-            super(TransmuteItemEffect.this, obj);
+            super(GiveItemEffect.this, obj);
         }
 
         @Override
         public @NotNull TypedActionResult<ItemStack> useOnItem(ServerSpellCast cast, ServerWorld world, ItemStack stack, @Nullable Inventory container, @Nullable Entity holder) {
-            if (TransmuteItemEffect.this.mapping == null) {
+            if (GiveItemEffect.this.mapping == null) {
                 return TypedActionResult.pass(stack);
             }
-
-            if (stack.isEmpty()) {
+            if (!stack.isEmpty()) {
                 return TypedActionResult.pass(stack);
             }
 
@@ -78,8 +55,21 @@ public class TransmuteItemEffect extends ItemEffect {
             lcb.parameter(LootContextParameters.THIS_ENTITY, thisEntity);
             var context = lcb.build(LootContextTypes.SELECTOR);
 
-            return TypedActionResult.success(TransmuteItemEffect.this.mapping.apply(stack, context));
+            return TypedActionResult.success(GiveItemEffect.this.mapping.apply(stack, context));
         }
+    }
+
+    protected final ItemSelectorMapping mapping;
+
+    protected GiveItemEffect(Identifier id) {
+        super(id);
+        this.mapping = null;
+    }
+
+    protected GiveItemEffect(Identifier id, JsonObject obj) {
+        super(id, obj);
+
+        this.mapping = new ItemSelectorMapping(obj.getAsJsonArray("entries"));
     }
 
     @Override
@@ -90,5 +80,11 @@ public class TransmuteItemEffect extends ItemEffect {
     @Override
     public @NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
+    }
+
+    @Override
+    public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
+        obj.add("entries", this.mapping.toJsonArray());
     }
 }
