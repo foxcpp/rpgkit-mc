@@ -88,12 +88,16 @@ public class PotionEffect extends SimpleUseEffect {
     private final StatusEffect statusEffect;
     private final int baseDuration;
     private final int baseAmplifier;
+    private final boolean showIcon;
+    private final boolean showParticles;
 
     public PotionEffect(Identifier id) {
         super(id);
         this.statusEffect = null;
         this.baseAmplifier = DEFAULT_AMPLIFIER;
         this.baseDuration = DEFAULT_DURATION;
+        this.showIcon = false;
+        this.showParticles = false;
     }
 
     public PotionEffect(Identifier id, JsonObject obj) {
@@ -120,6 +124,18 @@ public class PotionEffect extends SimpleUseEffect {
             this.baseDuration = obj.get("duration").getAsInt();
         } else {
             this.baseDuration = DEFAULT_DURATION;
+        }
+
+        if (obj.has("show_icon")) {
+            this.showIcon = obj.get("show_icon").getAsBoolean();
+        } else {
+            this.showIcon = false;
+        }
+
+        if (obj.has("show_particles")) {
+            this.showParticles = obj.get("show_particles").getAsBoolean();
+        } else {
+            this.showParticles = false;
         }
     }
 
@@ -158,11 +174,10 @@ public class PotionEffect extends SimpleUseEffect {
             duration = 2;
         }
 
-        var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
-
         le.addStatusEffect(
-                new StatusEffectInstance(this.statusEffect, duration, amplifier, false, false),
-                caster
+                new StatusEffectInstance(this.statusEffect, duration, amplifier, false,
+                        this.showParticles, this.showIcon),
+                cast.getCaster((ServerWorld) entity.getWorld())
         );
         return ActionResult.SUCCESS;
     }
@@ -179,5 +194,7 @@ public class PotionEffect extends SimpleUseEffect {
         }
         obj.addProperty("amplifier", this.baseAmplifier);
         obj.addProperty("duration", this.baseDuration);
+        obj.addProperty("show_icon", this.showIcon);
+        obj.addProperty("show_particles", this.showParticles);
     }
 }
