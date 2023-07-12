@@ -39,6 +39,22 @@ public final class Aspect implements SpellElement, Comparable<Aspect> {
     private final @Nullable SpellForm preferredUseForm;
     private final int preferredFormWeight;
 
+    public Aspect(Identifier id, boolean primary, Kind kind) {
+        this.id = id;
+        this.kind = kind;
+        this.primary = primary;
+        this.scales = ImmutableMap.of();
+        this.color = DEFAULT_COLOR;
+        this.order = 0;
+        this.texturePath = new Identifier(id.getNamespace(), "textures/magic/aspects/" + id.getPath() + ".png");
+        this.itemEffects = ImmutableList.of();
+        this.areaEffects = ImmutableList.of();
+        this.useEffects = ImmutableList.of();
+        this.reactions = ImmutableList.of();
+        this.preferredUseForm = null;
+        this.preferredFormWeight = 0;
+    }
+
     public Aspect(Identifier id, boolean primary, JsonObject obj) {
         this.id = id;
         this.kind = Aspect.Kind.valueOf(obj.get("kind").getAsString().toUpperCase());

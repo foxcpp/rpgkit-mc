@@ -33,6 +33,24 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
     public void loadSynced(Map<Identifier, JsonElement> prepared) {
         var aspects = new HashMap<Identifier, Aspect>();
 
+        // First load aspects as empty objects so any inter-references in aspect definitions will actually
+        // work correctly. They will reference empty objects but it is fine since equality comparison is based
+        // on identifiers.
+        for (var ent : prepared.entrySet()) {
+            try {
+                var entObj = ent.getValue().getAsJsonObject();
+                aspects.put(ent.getKey(), new Aspect(ent.getKey(),
+                        !entObj.has("recipes"),
+                        Aspect.Kind.valueOf(entObj.get("kind").getAsString().toUpperCase())));
+                RPGKitMagicMod.LOGGER.debug("Registered aspect {}", ent.getKey());
+            } catch (Exception e) {
+                RPGKitMagicMod.LOGGER.error("Error occurred while loading aspect definition for {}: {}", ent.getKey(), e);
+            }
+        }
+        MagicRegistries.ASPECTS.clear();
+        MagicRegistries.ASPECTS.putAll(aspects);
+        RPGKitMagicMod.LOGGER.debug("Pre-loaded {} aspect definitions", aspects.size());
+
         for (var ent : prepared.entrySet()) {
             try {
                 var entObj = ent.getValue().getAsJsonObject();
@@ -45,7 +63,6 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
 
         MagicRegistries.ASPECTS.clear();
         MagicRegistries.ASPECTS.putAll(aspects);
-
         RPGKitMagicMod.LOGGER.info("Loaded {} aspect definitions", aspects.size());
 
         var recipes = new SpellRecipeMap<Aspect>();
@@ -95,7 +112,9 @@ public class AspectReloadListener extends JsonDataLoader implements Identifiable
 
     @Override
     public Collection<Identifier> getFabricDependencies() {
-        return List.of();
+        return List.of(
+                new Identifier(RPGKitMagicMod.MOD_ID, "magic/transmute_mapping")
+        );
     }
 
     @Override
