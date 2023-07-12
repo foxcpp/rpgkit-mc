@@ -91,6 +91,15 @@ public class BreakBlockEffect extends UseEffect {
                 return eventResult;
             }
 
+            if (!world.isInBuildLimit(pos)) {
+                return ActionResult.PASS;
+            }
+
+            var playerCaster = cast.getPlayerCaster(world);
+            if (playerCaster != null && !world.canPlayerModifyAt(playerCaster, pos)) {
+                return ActionResult.PASS;
+            }
+
             if (world.breakBlock(pos, BreakBlockEffect.this.drop, cast.getCaster(world))) {
                 return ActionResult.SUCCESS;
             } else {
@@ -109,6 +118,15 @@ public class BreakBlockEffect extends UseEffect {
             var eventResult = MagicBlockEvents.DAMAGE.invoker().onBlockMagicDamaged(cast, this, world, entity.getBlockPos());
             if (eventResult.equals(ActionResult.FAIL) || eventResult.equals(ActionResult.CONSUME) || eventResult.equals(ActionResult.CONSUME_PARTIAL)) {
                 return eventResult;
+            }
+
+            if (!world.isInBuildLimit(entity.getBlockPos())) {
+                return ActionResult.PASS;
+            }
+
+            var playerCaster = cast.getPlayerCaster(world);
+            if (playerCaster != null && !world.canPlayerModifyAt(playerCaster, entity.getBlockPos())) {
+                return ActionResult.PASS;
             }
 
             if (world.breakBlock(entity.getBlockPos(), BreakBlockEffect.this.drop, cast.getCaster(world))) {

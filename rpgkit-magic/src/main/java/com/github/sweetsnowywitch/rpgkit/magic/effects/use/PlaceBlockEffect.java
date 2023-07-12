@@ -65,6 +65,15 @@ public class PlaceBlockEffect extends SimpleUseEffect {
             return ActionResult.PASS;
         }
 
+        if (!world.isInBuildLimit(pos)) {
+            return ActionResult.PASS;
+        }
+
+        var playerCaster = cast.getPlayerCaster(world);
+        if (playerCaster != null && !world.canPlayerModifyAt(playerCaster, pos)) {
+            return ActionResult.PASS;
+        }
+
         world.setBlockState(target, this.blockState);
         return ActionResult.SUCCESS;
     }
