@@ -2,12 +2,14 @@ package com.github.sweetsnowywitch.rpgkit.magic.json;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
 public class FloatModifier implements JsonHelpers.JsonSerializable {
     public static final FloatModifier NOOP = new FloatModifier(0, 1);
+    public static final FloatModifier ZEROED = new FloatModifier(0, 0);
 
     private final float add;
     private final float mul;
@@ -38,6 +40,9 @@ public class FloatModifier implements JsonHelpers.JsonSerializable {
         } else if (el instanceof JsonPrimitive p) {
             this.add = p.getAsFloat();
             this.mul = 1;
+        } else if (el == null || el instanceof JsonNull) {
+            this.add = 0;
+            this.mul = 1;
         } else {
             throw new IllegalArgumentException("malformed modifier");
         }
@@ -45,6 +50,23 @@ public class FloatModifier implements JsonHelpers.JsonSerializable {
 
     public float apply(float val) {
         return val * this.mul + this.add;
+    }
+
+    public float applyMultiple(float val, int count) {
+        // (val * mul + add) * mul + add
+        // ((val * mul + add) * mul + add) * mul + add
+        // (val * mul^3 + add*mul^2 + add*mul + add
+        // and so on.
+
+        var res = 0;
+        var mulFact = 1;
+        for (int i = 0; i < count; i++) {
+            res += add * mulFact;
+            mulFact *= this.mul;
+        }
+
+        res += val * mulFact;
+        return res;
     }
 
     @Override

@@ -429,7 +429,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             return ActionResult.SUCCESS;
         }
 
-        return this.performCast(this.builder.determineUseForm(), null, null, null);
+        return this.performCast(this.builder.determinePendingUseForm(), null, null, null);
     }
 
     private List<SpellElement> getAvailableCatalysts(ItemStack bag) {

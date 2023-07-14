@@ -1,8 +1,14 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
+import com.github.sweetsnowywitch.rpgkit.magic.MagicStrengthReaction;
+import com.github.sweetsnowywitch.rpgkit.magic.ProtectionBreakingEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.events.MagicBlockEvents;
 import com.github.sweetsnowywitch.rpgkit.magic.json.BlockStatePredicate;
+import com.github.sweetsnowywitch.rpgkit.magic.json.FloatModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
-import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
+import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellBuildCondition;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
@@ -13,22 +19,40 @@ import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class BreakBlockEffect extends SimpleUseEffect {
+public class BreakBlockEffect extends UseEffect {
     private final boolean drop;
+    private final float magicStrength;
 
     private final @Nullable BlockStatePredicate filter;
+
+    public static class Reaction extends MagicStrengthReaction {
+        protected Reaction(JsonObject obj) {
+            super(Type.EFFECT, obj);
+        }
+
+        @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof BreakBlockEffect;
+        }
+    }
 
     public BreakBlockEffect(Identifier id) {
         super(id);
         this.drop = false;
+        this.magicStrength = 0.5f;
         this.filter = null;
     }
 
     public BreakBlockEffect(Identifier id, JsonObject obj) {
         super(id, obj);
         this.drop = obj.has("drop") && obj.get("drop").getAsBoolean();
+        if (obj.has("magic_strength")) {
+            this.magicStrength = obj.get("magic_strength").getAsFloat();
+        } else {
+            this.magicStrength = 0.5f;
+        }
         if (obj.has("filter")) {
             this.filter = new BlockStatePredicate(obj.get("filter"));
         } else {
@@ -36,32 +60,92 @@ public class BreakBlockEffect extends SimpleUseEffect {
         }
     }
 
-    @Override
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
-        if (this.filter != null && !this.filter.test(world.getBlockState(pos))) {
-            return ActionResult.PASS;
+    public class Used extends UseEffect.Used implements ProtectionBreakingEffect {
+        private final float magicStrength;
+
+        protected Used(SpellBuildCondition.Context ctx) {
+            super(BreakBlockEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
+
+            var magStrength = BreakBlockEffect.this.magicStrength;
+            for (var reaction : this.effectReactions) {
+                if (reaction instanceof Reaction r) {
+                    magStrength = r.magicStrength.applyMultiple(magStrength, ctx.stackSize);
+                }
+            }
+            this.magicStrength = magStrength;
         }
 
-        if (world.breakBlock(pos, this.drop, cast.getCaster(world))) {
-            return ActionResult.SUCCESS;
-        } else {
-            return ActionResult.PASS;
+        protected Used(JsonObject obj) {
+            super(BreakBlockEffect.this, obj);
+            this.magicStrength = obj.get("magic_strength").getAsFloat();
+        }
+
+        @Override
+        public @NotNull ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
+            if (BreakBlockEffect.this.filter != null && !BreakBlockEffect.this.filter.test(world.getBlockState(pos))) {
+                return ActionResult.PASS;
+            }
+
+            var eventResult = MagicBlockEvents.DAMAGE.invoker().onBlockMagicDamaged(cast, this, world, pos);
+            if (eventResult.equals(ActionResult.FAIL) || eventResult.equals(ActionResult.CONSUME) || eventResult.equals(ActionResult.CONSUME_PARTIAL)) {
+                return eventResult;
+            }
+
+            if (world.breakBlock(pos, BreakBlockEffect.this.drop, cast.getCaster(world))) {
+                return ActionResult.SUCCESS;
+            } else {
+                return ActionResult.PASS;
+            }
+        }
+
+        @Override
+        public @NotNull ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
+            var world = (ServerWorld) entity.getWorld();
+
+            if (BreakBlockEffect.this.filter != null && !BreakBlockEffect.this.filter.test(world.getBlockState(entity.getBlockPos()))) {
+                return ActionResult.PASS;
+            }
+
+            var eventResult = MagicBlockEvents.DAMAGE.invoker().onBlockMagicDamaged(cast, this, world, entity.getBlockPos());
+            if (eventResult.equals(ActionResult.FAIL) || eventResult.equals(ActionResult.CONSUME) || eventResult.equals(ActionResult.CONSUME_PARTIAL)) {
+                return eventResult;
+            }
+
+            if (world.breakBlock(entity.getBlockPos(), BreakBlockEffect.this.drop, cast.getCaster(world))) {
+                return ActionResult.SUCCESS;
+            } else {
+                return ActionResult.PASS;
+            }
+        }
+
+        @Override
+        public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
+            obj.addProperty("magic_strength", this.magicStrength);
+        }
+
+        @Override
+        public @NotNull FloatModifier calculateEffectReduction(ServerSpellCast cast, float protectionStrength) {
+            if (protectionStrength > this.magicStrength) {
+                return FloatModifier.ZEROED;
+            }
+            return FloatModifier.NOOP;
+        }
+
+        @Override
+        public boolean willDissolveProtection(ServerSpellCast cast, float protectionStrength) {
+            return this.magicStrength >= protectionStrength * 2;
         }
     }
 
     @Override
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
-        var world = (ServerWorld) entity.getWorld();
+    public UseEffect.@NotNull Used use(SpellBuildCondition.Context ctx) {
+        return new Used(ctx);
+    }
 
-        if (this.filter != null && !this.filter.test(world.getBlockState(entity.getBlockPos()))) {
-            return ActionResult.PASS;
-        }
-
-        if (world.breakBlock(entity.getBlockPos(), this.drop, cast.getCaster(world))) {
-            return ActionResult.SUCCESS;
-        } else {
-            return ActionResult.PASS;
-        }
+    @Override
+    public UseEffect.@NotNull Used usedFromJson(JsonObject obj) {
+        return new Used(obj);
     }
 
     @Override

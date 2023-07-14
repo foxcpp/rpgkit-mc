@@ -46,7 +46,7 @@ public class SpawnEntityEffect extends SimpleUseEffect {
 
 
     @Override
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         if (!this.inBlock) {
             pos = pos.add(direction.getVector());
         }
@@ -60,7 +60,7 @@ public class SpawnEntityEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         var world = (ServerWorld) entity.getWorld();
         var ent = this.entityType.create(world, this.customNbt, null, null, entity.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
         if (ent == null) {

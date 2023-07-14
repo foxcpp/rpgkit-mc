@@ -53,7 +53,7 @@ public class PlaceBlockEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         BlockPos target;
         if (this.replace) {
             target = pos;
@@ -70,7 +70,7 @@ public class PlaceBlockEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         var world = (ServerWorld) entity.getWorld();
 
         BlockPos target;

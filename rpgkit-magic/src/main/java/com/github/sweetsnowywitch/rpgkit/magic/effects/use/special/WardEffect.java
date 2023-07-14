@@ -1,20 +1,22 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use.special;
 
 import com.github.sweetsnowywitch.rpgkit.magic.MagicArea;
+import com.github.sweetsnowywitch.rpgkit.magic.ProtectionBreakingEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.components.ModComponents;
 import com.github.sweetsnowywitch.rpgkit.magic.components.chunk.MagicEffectsComponent;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.use.SimpleUseEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.events.MagicBlockEvents;
+import com.github.sweetsnowywitch.rpgkit.magic.items.SpellItem;
+import com.github.sweetsnowywitch.rpgkit.magic.json.FloatModifier;
+import com.github.sweetsnowywitch.rpgkit.magic.json.IntModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
-import com.github.sweetsnowywitch.rpgkit.magic.statuseffects.ModStatusEffects;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -33,7 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class WardEffect extends SimpleUseEffect {
-    private static class Listener implements AttackBlockCallback, UseBlockCallback {
+    private static class Listener implements AttackBlockCallback, UseBlockCallback, MagicBlockEvents.Damage, MagicBlockEvents.Interact {
         @Override
         public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
             if (WardEffect.isBlockProtected(world, pos, player)) {
@@ -44,8 +46,69 @@ public class WardEffect extends SimpleUseEffect {
 
         @Override
         public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+            // Allow to apply spells on warded blocks - they might even break the ward.
+            if (player.getStackInHand(hand).getItem() instanceof SpellItem) {
+                return ActionResult.PASS;
+            }
             if (WardEffect.isBlockProtected(world, hitResult.getBlockPos(), player)) {
                 return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
+        }
+
+        @Override
+        public @NotNull ActionResult onBlockMagicDamaged(ServerSpellCast cast, UseEffect.Used effect, ServerWorld world, BlockPos pos) {
+            if (!WardEffect.isBlockProtected(world, pos, cast.getPlayerCaster(world))) {
+                return ActionResult.PASS;
+            }
+
+            if (effect.effect instanceof ProtectionBreakingEffect pbue) {
+                return this.checkProtectionBreakingEffect(pbue, cast, world, pos, false);
+            }
+            if (effect instanceof ProtectionBreakingEffect pbue) {
+                return this.checkProtectionBreakingEffect(pbue, cast, world, pos, false);
+            }
+
+            return ActionResult.CONSUME;
+        }
+
+        @Override
+        public @NotNull ActionResult onBlockMagicInteract(ServerSpellCast cast, UseEffect.Used effect, ServerWorld world, BlockPos pos) {
+            if (!WardEffect.isBlockProtected(world, pos, cast.getPlayerCaster(world))) {
+                return ActionResult.PASS;
+            }
+
+            if (effect.effect instanceof ProtectionBreakingEffect pbue) {
+                return this.checkProtectionBreakingEffect(pbue, cast, world, pos, true);
+            }
+            if (effect instanceof ProtectionBreakingEffect pbue) {
+                return this.checkProtectionBreakingEffect(pbue, cast, world, pos, true);
+            }
+
+            return ActionResult.CONSUME;
+        }
+
+        private ActionResult checkProtectionBreakingEffect(ProtectionBreakingEffect pbue, ServerSpellCast cast, ServerWorld world, BlockPos pos, boolean allowBypass) {
+            var comp = world.getChunk(pos).getComponent(ModComponents.CHUNK_MAGIC_EFFECTS);
+            var areas = comp.getAreas(pos, Area.class);
+
+            var strength = 0f;
+            for (var area : areas) {
+                if (area.getStrength() > strength) {
+                    strength = area.getStrength();
+                }
+            }
+
+            if (pbue.willDissolveProtection(cast, strength)) {
+                comp.removeAreas(areas);
+                return ActionResult.PASS;
+            }
+            if (!allowBypass) {
+                return ActionResult.CONSUME;
+            }
+
+            if (pbue.calculateEffectReduction(cast, strength).apply(1) == 0) {
+                return ActionResult.CONSUME;
             }
             return ActionResult.PASS;
         }
@@ -55,13 +118,15 @@ public class WardEffect extends SimpleUseEffect {
         var l = new Listener();
         UseBlockCallback.EVENT.register(l);
         AttackBlockCallback.EVENT.register(l);
+        MagicBlockEvents.DAMAGE.register(l);
+        MagicBlockEvents.INTERACT.register(l);
     }
 
     public static class Area extends MagicArea {
-        private final int strength;
+        private final float strength;
         private final @Nullable UUID holderId;
 
-        public Area(BlockBox box, SpellEffect effect, SpellCast cast, int maxAge, int strength, @Nullable UUID holderId) {
+        public Area(BlockBox box, SpellEffect effect, SpellCast cast, int maxAge, float strength, @Nullable UUID holderId) {
             super(box, effect, cast, maxAge);
             this.strength = strength;
             this.holderId = holderId;
@@ -69,7 +134,7 @@ public class WardEffect extends SimpleUseEffect {
 
         public Area(Identifier effectID, NbtCompound tag) {
             super(effectID, tag);
-            this.strength = tag.getInt("Strength");
+            this.strength = tag.getFloat("Strength");
             if (tag.containsUuid("HolderId")) {
                 this.holderId = tag.getUuid("HolderId");
             } else {
@@ -80,16 +145,46 @@ public class WardEffect extends SimpleUseEffect {
         @Override
         public void writeToNbt(NbtCompound tag) {
             super.writeToNbt(tag);
-            tag.putInt("Strength", this.strength);
+            tag.putFloat("Strength", this.strength);
             if (this.holderId != null) {
                 tag.putUuid("HolderId", this.holderId);
             }
         }
+
+        public float getStrength() {
+            return strength;
+        }
     }
 
-    private final int strength;
+    private final float strength;
     private final int duration;
     private final boolean allowCaster;
+
+    public static class Reaction extends SpellReaction {
+        private final FloatModifier strength;
+        private final IntModifier duration;
+
+        public Reaction(JsonObject obj) {
+            super(Type.EFFECT, obj);
+            if (obj.has("magic_strength")) {
+                this.strength = new FloatModifier(obj.get("magic_strength"));
+            } else {
+                this.strength = FloatModifier.NOOP;
+            }
+            if (obj.has("duration")) {
+                this.duration = new IntModifier(obj.get("duration"));
+            } else {
+                this.duration = IntModifier.NOOP;
+            }
+        }
+
+        @Override
+        public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
+            obj.add("magic_strength", this.strength.toJson());
+            obj.add("duration", this.duration.toJson());
+        }
+    }
 
     public WardEffect(Identifier id) {
         super(id);
@@ -101,7 +196,7 @@ public class WardEffect extends SimpleUseEffect {
     public WardEffect(Identifier id, JsonObject obj) {
         super(id, obj);
         if (obj.has("strength")) {
-            this.strength = obj.get("strength").getAsInt();
+            this.strength = obj.get("strength").getAsFloat();
         } else {
             this.strength = 1;
         }
@@ -118,31 +213,25 @@ public class WardEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
-        if (entity.getUuid().equals(cast.getCasterUuid()) && this.allowCaster) {
-            return ActionResult.PASS;
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+        var duration = this.duration;
+        var magStrength = this.strength;
+        for (var reaction : reactions) {
+            if (reaction instanceof Reaction r) {
+                duration = r.duration.applyMultiple(duration, used.reactionStackSize);
+                magStrength = r.strength.applyMultiple(magStrength, used.reactionStackSize);
+            }
+        }
+        for (var reaction : used.getGlobalReactions()) {
+            if (reaction instanceof Reaction r) {
+                duration = r.duration.applyMultiple(duration, used.reactionStackSize);
+                magStrength = r.strength.applyMultiple(magStrength, used.reactionStackSize);
+            }
         }
 
-        if (!(entity instanceof LivingEntity le)) {
-            return ActionResult.PASS;
-        }
-
-        var caster = ((ServerWorld) entity.getWorld()).getEntity(cast.getCasterUuid());
-
-        le.addStatusEffect(
-                new StatusEffectInstance(ModStatusEffects.SEALED,
-                        this.duration, 0,
-                        false, false),
-                caster
-        );
-        return ActionResult.SUCCESS;
-    }
-
-    @Override
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         MagicEffectsComponent.addGlobalArea(world,
-                new Area(new BlockBox(pos), this, cast, this.duration,
-                        this.strength, this.allowCaster ? cast.getCasterUuid() : null));
+                new Area(new BlockBox(pos), this, cast, duration,
+                        magStrength, this.allowCaster ? cast.getCasterUuid() : null));
         return ActionResult.SUCCESS;
     }
 
@@ -152,9 +241,13 @@ public class WardEffect extends SimpleUseEffect {
         return areas.size() == 0;
     }
 
-    public static boolean isBlockProtected(World world, BlockPos pos, PlayerEntity player) {
+    public static boolean isBlockProtected(World world, BlockPos pos, @Nullable PlayerEntity player) {
         var comp = world.getChunk(pos).getComponent(ModComponents.CHUNK_MAGIC_EFFECTS);
         var areas = comp.getAreas(pos, WardEffect.Area.class);
+
+        if (player == null && areas.size() > 0) {
+            return true;
+        }
 
         for (var area : areas) {
             if (area.holderId == null || !area.holderId.equals(player.getUuid())) {

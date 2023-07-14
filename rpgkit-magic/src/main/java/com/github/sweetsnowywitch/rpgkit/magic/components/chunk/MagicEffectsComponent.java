@@ -64,17 +64,43 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
 
     public void addArea(MagicArea area) {
         if (this.areas == null) {
-            this.hasEffects = new BitSetVoxelSet(16, chunk.getHeight(), 16);
             this.areas = new ArrayList<>();
         }
-        assert this.hasEffects == null;
+        if (this.hasEffects == null) {
+            this.hasEffects = new BitSetVoxelSet(16, chunk.getHeight(), 16);
+        }
 
         this.areas.add(area);
-
         int cnt = this.computeHasEffects(this.hasEffects, area);
 
         RPGKitMagicMod.LOGGER.info("Created MagicEffectsComponent area of {} in {} with {} affected blocks at {}",
                 area.getEffectID(), this.chunk.getPos(), cnt, area.getBox());
+
+        this.lastChange = Instant.now();
+        this.chunk.setNeedsSaving(true);
+        ModComponents.CHUNK_MAGIC_EFFECTS.sync(this.chunk);
+    }
+
+    public void removeAreas(Iterable<? extends MagicArea> areas) {
+        if (this.areas == null) {
+            return;
+        }
+
+        boolean removed = false;
+        for (var area : areas) {
+            if (this.areas.remove(area)) {
+                removed = true;
+            }
+        }
+
+        if (!removed) {
+            return;
+        }
+
+        if (this.areas.size() == 0) {
+            this.areas = null;
+        }
+        this.computeHasEffects();
 
         this.lastChange = Instant.now();
         this.chunk.setNeedsSaving(true);
@@ -86,13 +112,14 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
             return;
         }
 
-        if (this.areas.remove(area)) {
-            this.computeHasEffects();
+        if (!this.areas.remove(area)) {
+            return;
         }
+
         if (this.areas.size() == 0) {
             this.areas = null;
-            this.hasEffects = null;
         }
+        this.computeHasEffects();
 
         this.lastChange = Instant.now();
         this.chunk.setNeedsSaving(true);
@@ -118,7 +145,7 @@ public class MagicEffectsComponent implements Component, ServerTickingComponent,
     }
 
     private void computeHasEffects() {
-        if (this.areas == null) {
+        if (this.areas == null || this.areas.size() == 0) {
             this.hasEffects = null;
             return;
         }

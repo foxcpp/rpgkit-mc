@@ -25,10 +25,13 @@ public class UseEffects {
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "spawn_entity"), SpawnEntityEffect::new);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "fall_block"), FallBlockEffect::new);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "heal"), HealEffect::new);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "insert_item"), InsertItemEffect::new);
 
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "potion"), PotionEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "damage"), DamageEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "push"), PushEffect.Reaction::new);
+        Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "ward"), WardEffect.Reaction::new);
+        Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "break_block"), BreakBlockEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "fall_block"), FallBlockEffect.Reaction::new);
 
         Registry.register(MagicRegistries.EFFECT_AREAS, new Identifier(RPGKitMagicMod.MOD_ID, "ward"), MagicArea.factoryFor(WardEffect.Area::new));

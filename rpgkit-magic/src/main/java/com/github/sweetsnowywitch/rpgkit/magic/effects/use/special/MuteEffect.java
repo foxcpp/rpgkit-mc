@@ -52,7 +52,7 @@ public class MuteEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         if (!(entity instanceof LivingEntity le)) {
             return ActionResult.PASS;
         }
@@ -69,9 +69,9 @@ public class MuteEffect extends SimpleUseEffect {
     }
 
     @Override
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         // TODO: Apply to block via SpellArea.
-        return null;
+        return ActionResult.PASS;
     }
 
     @Override

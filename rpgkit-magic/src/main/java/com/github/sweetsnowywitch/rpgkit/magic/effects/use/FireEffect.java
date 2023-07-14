@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
+import com.github.sweetsnowywitch.rpgkit.magic.events.MagicBlockEvents;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
@@ -12,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -20,7 +22,11 @@ public class FireEffect extends SimpleUseEffect {
         super(id, obj);
     }
 
-    public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    public @NotNull ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+        var eventResult = MagicBlockEvents.DAMAGE.invoker().onBlockMagicDamaged(cast, used, world, pos);
+        if (eventResult.equals(ActionResult.FAIL) || eventResult.equals(ActionResult.CONSUME) || eventResult.equals(ActionResult.CONSUME_PARTIAL)) {
+            return eventResult;
+        }
         if (this.lit(cast, world, pos, direction)) {
             return ActionResult.SUCCESS;
         }
@@ -28,7 +34,7 @@ public class FireEffect extends SimpleUseEffect {
     }
 
     @Override
-    public ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
+    public @NotNull ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
         entity.setOnFire(true);
         entity.setOnFireFor(5);
         return ActionResult.SUCCESS;

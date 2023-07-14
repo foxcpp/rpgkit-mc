@@ -116,6 +116,10 @@ public abstract class SpellEffect implements JsonHelpers.JsonSerializable {
         return Objects.hash(typeId);
     }
 
+    public ImmutableList<SpellReaction> getPotentialReactions() {
+        return this.reactions;
+    }
+
     @MustBeInvokedByOverriders
     public void toJson(@NotNull JsonObject obj) {
         obj.addProperty("type", this.typeId.toString());

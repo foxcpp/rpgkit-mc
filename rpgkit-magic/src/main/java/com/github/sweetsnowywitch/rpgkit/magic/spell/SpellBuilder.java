@@ -61,8 +61,18 @@ public final class SpellBuilder {
         }
     }
 
-    public @NotNull SpellForm determineUseForm() {
-        return this.determinePendingSpell().getUseForm();
+    public @NotNull SpellForm determinePendingUseForm() {
+        SpellForm useForm = ModForms.RAY;
+        int useFormWeight = -9999;
+
+        for (var el : this.pendingElements) {
+            if (el.getPreferredForm() != null && el.getPreferredFormWeight() > useFormWeight) {
+                useForm = el.getPreferredForm();
+                useFormWeight = el.getPreferredFormWeight();
+            }
+        }
+
+        return useForm;
     }
 
     public @NotNull Spell determinePendingSpell() {
@@ -71,48 +81,55 @@ public final class SpellBuilder {
         var useEffects = new ImmutableList.Builder<UseEffect.Used>();
         var globalReactions = new ImmutableList.Builder<SpellReaction>();
 
-        SpellForm useForm = ModForms.RAY;
-        int useFormWeight = -9999;
+        var effectiveElements = new HashMap<SpellElement, Integer>();
+        for (var el : this.pendingElements) {
+            effectiveElements.merge(el, 1, Integer::sum);
+        }
 
         var ctx = new SpellBuildCondition.Context();
         ctx.caster = null;
         ctx.elements = this.pendingElements;
 
-        for (var el : this.pendingElements) {
-            ctx.element = el;
+        for (var ent : effectiveElements.entrySet()) {
+            ctx.element = ent.getKey();
+            ctx.stackSize = ent.getValue();
 
-            el.itemEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
-                    map(eff -> eff.use(ctx)).forEach(itemEffects::add);
-            el.areaEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
-                    map(eff -> eff.use(ctx)).forEach(areaEffects::add);
-            el.useEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
-                    map(eff -> eff.use(ctx)).forEach(useEffects::add);
-            el.globalReactions().stream().filter(eff -> eff.shouldAdd(ctx)).forEach(globalReactions::add);
+            ctx.element.itemEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
+                    map(eff -> eff.use(ctx)).forEach(eff -> {
+                        for (int i = 0; i < ctx.stackSize; i++) {
+                            globalReactions.addAll(eff.getGlobalReactions());
+                        }
+                        itemEffects.add(eff);
+                    });
+            ctx.element.areaEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
+                    map(eff -> eff.use(ctx)).forEach(eff -> {
+                        for (int i = 0; i < ctx.stackSize; i++) {
+                            globalReactions.addAll(eff.getGlobalReactions());
+                        }
+                        areaEffects.add(eff);
+                    });
+            ctx.element.useEffects().stream().filter(eff -> eff.shouldAdd(ctx)).
+                    map(eff -> eff.use(ctx)).forEach(eff -> {
+                        for (int i = 0; i < ctx.stackSize; i++) {
+                            globalReactions.addAll(eff.getGlobalReactions());
+                        }
+                        useEffects.add(eff);
+                    });
 
-            if (el.getPreferredForm() != null && el.getPreferredFormWeight() > useFormWeight) {
-                useForm = el.getPreferredForm();
-                useFormWeight = el.getPreferredFormWeight();
+            for (int i = 0; i < ctx.stackSize; i++) {
+                ctx.element.globalReactions().stream().
+                        filter(r -> r.shouldAdd(ctx)).
+                        forEach(globalReactions::add);
             }
         }
 
         var itemEffectsBuilt = itemEffects.build();
         var areaEffectsBuilt = areaEffects.build();
         var useEffectsBuilt = useEffects.build();
-
-        for (var eff : itemEffectsBuilt) {
-            globalReactions.addAll(eff.getGlobalReactions());
-        }
-        for (var eff : areaEffectsBuilt) {
-            globalReactions.addAll(eff.getGlobalReactions());
-        }
-        for (var eff : useEffectsBuilt) {
-            globalReactions.addAll(eff.getGlobalReactions());
-        }
-
         return new Spell(
                 itemEffectsBuilt, areaEffectsBuilt, useEffectsBuilt,
                 globalReactions.build(),
-                useForm);
+                this.determinePendingUseForm());
     }
 
     public void finishSpell() {

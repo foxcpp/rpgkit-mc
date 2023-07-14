@@ -26,24 +26,34 @@ public abstract class SimpleUseEffect extends UseEffect {
     }
 
     public class Used extends UseEffect.Used {
+        public final int reactionStackSize;
+
         protected Used(SpellBuildCondition.Context ctx) {
             super(SimpleUseEffect.this, new ArrayList<>(), new ArrayList<>(), ctx);
+            this.reactionStackSize = ctx.stackSize;
         }
 
         protected Used(JsonObject obj) {
             super(SimpleUseEffect.this, obj);
+            this.reactionStackSize = obj.get("reaction_stack_size").getAsInt();
         }
 
         @Override
         @NotNull
         public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
-            return SimpleUseEffect.this.useOnBlock(cast, world, pos, direction, this.effectReactions);
+            return SimpleUseEffect.this.useOnBlock(cast, this, world, pos, direction, this.effectReactions);
         }
 
         @Override
         @NotNull
         public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
-            return SimpleUseEffect.this.useOnEntity(cast, entity, this.effectReactions);
+            return SimpleUseEffect.this.useOnEntity(cast, this, entity, this.effectReactions);
+        }
+
+        @Override
+        public void toJson(@NotNull JsonObject obj) {
+            super.toJson(obj);
+            obj.addProperty("reaction_stack_size", this.reactionStackSize);
         }
     }
 
@@ -60,8 +70,12 @@ public abstract class SimpleUseEffect extends UseEffect {
     }
 
     @NotNull
-    protected abstract ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions);
+    protected ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+        return ActionResult.PASS;
+    }
 
     @NotNull
-    protected abstract ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions);
+    protected ActionResult useOnEntity(ServerSpellCast cast, SimpleUseEffect.Used used, Entity entity, List<SpellReaction> reactions) {
+        return ActionResult.PASS;
+    }
 }

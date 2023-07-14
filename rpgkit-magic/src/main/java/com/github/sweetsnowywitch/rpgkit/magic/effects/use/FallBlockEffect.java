@@ -2,11 +2,13 @@ package com.github.sweetsnowywitch.rpgkit.magic.effects.use;
 
 import com.github.sweetsnowywitch.rpgkit.VectorUtils;
 import com.github.sweetsnowywitch.rpgkit.magic.EffectVector;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.events.MagicBlockEvents;
 import com.github.sweetsnowywitch.rpgkit.magic.json.BlockStatePredicate;
+import com.github.sweetsnowywitch.rpgkit.magic.json.DoubleModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellReaction;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -22,15 +24,15 @@ import java.util.List;
 public class FallBlockEffect extends SimpleUseEffect {
     public static class Reaction extends SpellReaction {
 
-        public final double velocity;
+        public final DoubleModifier velocity;
         public final EffectVector vector;
 
         public Reaction(JsonObject obj) {
             super(Type.EFFECT, obj);
             if (obj.has("velocity")) {
-                this.velocity = obj.get("velocity").getAsDouble();
+                this.velocity = new DoubleModifier(obj.get("velocity"));
             } else {
-                this.velocity = 0;
+                this.velocity = DoubleModifier.NOOP;
             }
             if (obj.has("vector")) {
                 this.vector = EffectVector.valueOf(obj.get("vector").getAsString().toUpperCase());
@@ -39,9 +41,14 @@ public class FallBlockEffect extends SimpleUseEffect {
             }
         }
 
+        @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof FallBlockEffect;
+        }
+
         public void toJson(@NotNull JsonObject obj) {
             super.toJson(obj);
-            obj.addProperty("velocity", this.velocity);
+            obj.add("velocity", this.velocity.toJson());
             obj.addProperty("vector", this.vector.name().toLowerCase());
         }
     }
@@ -79,7 +86,7 @@ public class FallBlockEffect extends SimpleUseEffect {
 
     @Override
     @NotNull
-    protected ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
+    protected ActionResult useOnBlock(ServerSpellCast cast, SimpleUseEffect.Used used, ServerWorld world, BlockPos pos, Direction direction, List<SpellReaction> reactions) {
         var bs = world.getBlockState(pos);
         if (bs.isAir()) {
             return ActionResult.PASS;
@@ -91,14 +98,19 @@ public class FallBlockEffect extends SimpleUseEffect {
             return ActionResult.PASS;
         }
 
+        var eventResult = MagicBlockEvents.DAMAGE.invoker().onBlockMagicDamaged(cast, used, world, pos);
+        if (eventResult.equals(ActionResult.FAIL) || eventResult.equals(ActionResult.CONSUME) || eventResult.equals(ActionResult.CONSUME_PARTIAL)) {
+            return eventResult;
+        }
+
         var entity = FallingBlockEntity.spawnFromBlock(world, pos, bs);
 
         var castDirection = VectorUtils.direction(cast.getOriginPitch(), cast.getOriginYaw());
         double velocity = this.velocity;
         Vec3d effectDirection = null;
         for (var reaction : reactions) {
-            if (reaction instanceof PushEffect.Reaction r) {
-                velocity += r.velocity;
+            if (reaction instanceof Reaction r) {
+                velocity = r.velocity.apply(velocity);
                 if (effectDirection != null) {
                     effectDirection = effectDirection.add(r.vector.direction(entity.getPos(), cast.getOriginPos(), castDirection));
                 } else {
@@ -117,16 +129,12 @@ public class FallBlockEffect extends SimpleUseEffect {
     }
 
     @Override
-    @NotNull
-    protected ActionResult useOnEntity(ServerSpellCast cast, Entity entity, List<SpellReaction> reactions) {
-        return ActionResult.PASS;
-    }
-
-    @Override
     public void toJson(@NotNull JsonObject obj) {
         super.toJson(obj);
         if (this.filter != null) {
             obj.add("filter", this.filter.toJson());
         }
+        obj.addProperty("velocity", this.velocity);
+        obj.addProperty("vector", this.vector.name().toLowerCase());
     }
 }

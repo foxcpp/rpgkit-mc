@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ItemTransmuteMapping {
+public class ItemTransmuteMapping implements ItemMapping {
     protected record Entry(Predicate<ItemStack> ingredient, float weight,
                            @Nullable Supplier<ItemStack> replacement,
                            ImmutableList<LootFunction> functions) {
@@ -94,7 +94,7 @@ public class ItemTransmuteMapping {
         this.defaultEntry = defaultEnt;
     }
 
-    public ItemStack transmute(ItemStack in, LootContext context) {
+    public ItemStack apply(ItemStack in, LootContext context) {
         var candidateTotalWeight = 0f;
         for (var mapping : this.mappings) {
             if (mapping.ingredient.test(in)) {
