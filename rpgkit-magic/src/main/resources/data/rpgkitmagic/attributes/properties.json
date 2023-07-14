@@ -1,9 +1,9 @@
 {
   "values": {
-    "csmprpgkit:max_mana": {
+    "rpgkitmagic:max_mana": {
       "integer": "0.0"
     },
-    "csmprpgkit:mana_regen_speed": {
+    "rpgkitmagic:mana_regen_speed": {
       "multiplier": "1.0"
     }
   }

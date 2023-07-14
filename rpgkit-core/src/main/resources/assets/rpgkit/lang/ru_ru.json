@@ -1,0 +1,33 @@
+{
+  "command.rpgkit.exp.query": "Текущий уровень: %d (неиспользованных очков: %d), опыт сверх текущего уровня: %d.",
+  "commands.rpgkit.class.levelup.not_enough_levels": "Недостаточно очков прокачки для повышения уровня.",
+  "commands.rpgkit.class.levelup.success": "уровень увеличен до %s.",
+  "commands.rpgkit.class.list": "Классы игрока:",
+  "commands.rpgkit.class.reset.success": "Классы %s были сброшены.",
+  "commands.rpgkit.exp.add.success_multiple": "%d очков опыта выдано %d целям.",
+  "commands.rpgkit.exp.add.success_single": "%d очков опыта выдано %s.",
+  "commands.rpgkit.exp.reset.success_multiple": "Сброшены очки опыта у %d целей.",
+  "commands.rpgkit.exp.reset.success_single": "Очки опыта %s были сброшены.",
+
+  "rpgkit.class.rpgkit.rouge": "Вор",
+  "rpgkit.class.rpgkit.warrior": "Воин",
+  "rpgkit.class.rpgkit.wizard": "Волшебник",
+
+  "rpgkit.advancement.root": "Герой Кубов и Магии",
+  "rpgkit.advancement.root.desc": "Установить RPGkit",
+
+  "rpgkit.gui.page.rpgkit.title": "Классы",
+  "rpgkit.gui.page.attributes.tooltip.button.class_class_points": "Прогресс получения очков классов: %s",
+  "rpgkit.gui.page.attributes.text.class_points": "Доступные очки классов: %s",
+  "rpgkit.gui.page.attributes.tooltip.class_points[0]": "Нераспределённые очки",
+  "rpgkit.gui.page.attributes.tooltip.class_points[1]": "для прокачки классов",
+  "rpgkit.gui.page.attributes.text.class_rouge": "Уровень Вора: %s",
+  "rpgkit.gui.page.attributes.tooltip.button.class_rouge": "Класс Вора",
+  "rpgkit.gui.page.attributes.tooltip.class_rouge": "Вор",
+  "rpgkit.gui.page.attributes.text.class_warrior": "Уровень Воина: %s",
+  "rpgkit.gui.page.attributes.tooltip.button.class_warrior": "Класс Воина",
+  "rpgkit.gui.page.attributes.tooltip.class_warrior": "Воин",
+  "rpgkit.gui.page.attributes.text.class_wizard": "Уровень Мага: %s",
+  "rpgkit.gui.page.attributes.tooltip.button.class_wizard": "Класс Мага",
+  "rpgkit.gui.page.attributes.tooltip.class_wizard": "Маг"
+}

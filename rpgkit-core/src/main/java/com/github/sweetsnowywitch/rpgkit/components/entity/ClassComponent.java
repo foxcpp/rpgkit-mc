@@ -5,12 +5,15 @@ import com.github.sweetsnowywitch.rpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.rpgkit.classes.CharacterClass;
 import com.github.sweetsnowywitch.rpgkit.classes.Perk;
 import com.github.sweetsnowywitch.rpgkit.classes.ServerTickablePerk;
+import com.github.sweetsnowywitch.rpgkit.classes.perks.AttributePerk;
 import com.github.sweetsnowywitch.rpgkit.components.ModComponents;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.command.AttributeCommand;
+import net.minecraft.server.command.ExecuteCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +37,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
     };
 
     private final LivingEntity provider;
+    private int totalExp;
     private int currentLevelExp;
     private int currentLevel;
     private int undistributedLevels;
@@ -41,6 +45,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
 
     private final Map<Identifier, ArrayList<Perk>> perks; // cache, computed from classLevels on load/update.
     private final ArrayList<ServerTickablePerk> tickablePerks; // cached, computed from classLevels on load/update
+    private final ArrayList<AttributePerk> attributePerks; // cached, computed from classLevels on load/update
 
     public ClassComponent(LivingEntity provider) {
         this.provider = provider;
@@ -48,10 +53,12 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
         this.currentLevelExp = 0;
         this.currentLevel = 0;
         this.undistributedLevels = 0;
+        this.totalExp = 0;
         this.classLevels = new HashMap<>();
 
         this.perks = new HashMap<>();
         this.tickablePerks = new ArrayList<>();
+        this.attributePerks = new ArrayList<>();
     }
 
     @Override
@@ -59,6 +66,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
         this.currentLevelExp = tag.getInt("CurrentLevelExp");
         this.currentLevel = tag.getInt("CurrentLevel");
         this.undistributedLevels = tag.getInt("UndistributedLevels");
+        this.totalExp = tag.getInt("TotalExp");
 
         this.classLevels.clear();
         var classLevels = tag.getCompound("ClassLevels");
@@ -76,6 +84,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
         tag.putInt("CurrentLevelExp", this.currentLevelExp);
         tag.putInt("CurrentLevel", this.currentLevel);
         tag.putInt("UndistributedLevels", this.undistributedLevels);
+        tag.putInt("TotalExp", this.totalExp);
         var classLevels = new NbtCompound();
         for (var ent : this.classLevels.entrySet()) {
             classLevels.putInt(ent.getKey().toString(), ent.getValue());
@@ -100,6 +109,10 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
                         if (perk instanceof ServerTickablePerk stp) {
                             this.tickablePerks.add(stp);
                         }
+                        else if (perk instanceof AttributePerk ap && !attributePerks.contains(ap)) {
+                            
+                            this.attributePerks.add(ap);
+                        }
                     }
                 }
             }
@@ -117,6 +130,10 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
 
     public int getUndistributedLevels() {
         return this.undistributedLevels;
+    }
+
+    public int getTotalExp() {
+        return this.totalExp;
     }
 
     public int getCurrentLevel() {
@@ -151,6 +168,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
 
         this.currentLevel = 0;
         this.currentLevelExp = 0;
+        this.totalExp = 0;
         this.undistributedLevels = 0;
 
         ModComponents.CLASS.sync(this.provider);
@@ -184,6 +202,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
         }
 
         this.currentLevelExp += value;
+        this.totalExp += value;
 
         while (this.currentLevel < REQUIRED_LEVEL_EXP.length - 1 && this.currentLevelExp >= REQUIRED_LEVEL_EXP[this.currentLevel + 1]) {
             this.currentLevelExp -= REQUIRED_LEVEL_EXP[this.currentLevel + 1];

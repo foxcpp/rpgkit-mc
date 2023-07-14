@@ -1,8 +1,9 @@
-package com.github.sweetsnowywitch.csmprpgkit.classes;
+package com.github.sweetsnowywitch.rpgkit.classes;
 
-import com.github.sweetsnowywitch.csmprpgkit.ModRegistries;
-import com.github.sweetsnowywitch.csmprpgkit.RPGKitMod;
-import com.github.sweetsnowywitch.csmprpgkit.commands.ModCommands;
+import com.github.sweetsnowywitch.rpgkit.ModRegistries;
+import com.github.sweetsnowywitch.rpgkit.RPGKitMod;
+import com.github.sweetsnowywitch.rpgkit.commands.ModCommands;
+import com.github.sweetsnowywitch.rpgkit.components.ModComponents;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 
 public class ServerButtonHandler {
     public static final Identifier PACKET_ID = new Identifier(RPGKitMod.MOD_ID, "levelup_button");
-    public static int CLASS_POINTS_COUNTER = 0;
 
     public enum Action {
         PRESS_CLASS_BUTTON,
@@ -54,7 +54,6 @@ public class ServerButtonHandler {
         players.add(player);
         try {
             ModCommands.expAdd(server.getCommandSource(), players, amount);
-            CLASS_POINTS_COUNTER += amount;
         } catch (CommandSyntaxException e) {
             throw new RuntimeException(e);
         }

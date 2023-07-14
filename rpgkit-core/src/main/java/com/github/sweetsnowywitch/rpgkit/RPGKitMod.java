@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit;
 
+import com.github.sweetsnowywitch.rpgkit.classes.ServerButtonHandler;
 import com.github.sweetsnowywitch.rpgkit.classes.abilities.ModAbilities;
 import com.github.sweetsnowywitch.rpgkit.classes.listener.AdvancementsListener;
 import com.github.sweetsnowywitch.rpgkit.classes.listener.ClassReloadListener;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ public class RPGKitMod implements ModInitializer {
     public static final Random RANDOM = new Random();
     public static final String MOD_ID = "rpgkit";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final ServerButtonHandler SERVER_BUTTON_HANDLER = new ServerButtonHandler();
 
     public static final ServerDataSyncer DATA_SYNCER = new ServerDataSyncer();
 
@@ -41,6 +44,8 @@ public class RPGKitMod implements ModInitializer {
         ModPerks.register();
         DATA_SYNCER.registerListener(new ClassReloadListener());
         DATA_SYNCER.registerListener(new AdvancementsListener());
+
+        SERVER_BUTTON_HANDLER.register();
 
         LOGGER.info("RPGKit Core loaded");
     }

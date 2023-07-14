@@ -6,7 +6,7 @@
       "abilities": {},
       "perks": [
         {
-          "type": "csmprpgkit:combo",
+          "type": "rpgkit:combo",
           "combo": 4,
           "maxCombo": 5,
           "modifier": 1.5
@@ -19,8 +19,8 @@
       "abilities": {},
       "perks": [
         {
-          "type": "csmprpgkit:single_kill",
-          "id": "minecraft:regeneration",
+          "type": "rpgkit:single_kill",
+          "id": "minecraft:resistance",
           "duration": 200,
           "amplifier": 0
         }
@@ -32,7 +32,7 @@
       "abilities": {},
       "perks": [
         {
-          "type": "csmprpgkit:rest",
+          "type": "rpgkit:rest",
           "id": "minecraft:regeneration",
           "duration": 60,
           "amplifier": 0,
@@ -46,7 +46,7 @@
       "abilities": {},
       "perks": [
         {
-          "type": "csmprpgkit:single_kill",
+          "type": "rpgkit:single_kill",
           "id": "minecraft:strength",
           "playerKill": true,
           "duration": 600,
@@ -60,7 +60,7 @@
       "abilities": {},
       "perks": [
         {
-          "type": "csmprpgkit:kill_streak",
+          "type": "rpgkit:kill_streak",
           "id": "minecraft:generic.max_health",
           "modifier": 1.0,
           "penalty": 2,

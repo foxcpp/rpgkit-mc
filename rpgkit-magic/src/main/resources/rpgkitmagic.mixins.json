@@ -4,16 +4,12 @@
   "package": "com.github.sweetsnowywitch.rpgkit.magic.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ComboMixin",
     "EntityMixin",
-    "ExperienceRewardMixin",
     "ExplosionAccessor",
     "ExplosionMixin",
-    "KillStreakMixin",
     "LivingEntityMixin",
     "PlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "SingleKillMixin",
     "VibrationListenerAccessor",
     "VibrationListenerMixin"
   ],

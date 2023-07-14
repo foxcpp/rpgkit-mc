@@ -30,7 +30,7 @@ public abstract class SingleKillMixin extends PlayerEntity {
 
         for (var rawPerk : perks) {
             var perk = (SingleKillPerk) rawPerk;
-            if (perk.getStatusEffect() != null && (!perk.isOnlyPlayerKill() || target.isPlayer())) {
+            if (perk.getStatusEffect() != null && !target.isAlive() && (!perk.isOnlyPlayerKill() || target.isPlayer())) {
                 this.addStatusEffect(new StatusEffectInstance(perk.getStatusEffect(), perk.getDuration(),
                         perk.getAmplifier(), false, false), this);
             }

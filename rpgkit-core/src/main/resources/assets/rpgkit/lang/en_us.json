@@ -1,0 +1,33 @@
+{
+  "command.rpgkit.exp.query": "Current level: %d (unused: %d), current level experience: %d.",
+  "commands.rpgkit.class.levelup.not_enough_levels": "Not enough unused levels to levelup class.",
+  "commands.rpgkit.class.levelup.success": "level has been increased to %s.",
+  "commands.rpgkit.class.list": "Player classes:",
+  "commands.rpgkit.class.reset.success": "%s's classes has been reset.",
+  "commands.rpgkit.exp.add.success_multiple": "%d experience points given to %d targets.",
+  "commands.rpgkit.exp.add.success_single": "%d experience points given to %s.",
+  "commands.rpgkit.exp.reset.success_multiple": "Reset experience points of %d targets.",
+  "commands.rpgkit.exp.reset.success_single": "%s's experience points reset.",
+
+  "rpgkit.class.rpgkit.rouge": "Rouge",
+  "rpgkit.class.rpgkit.warrior": "Warrior",
+  "rpgkit.class.rpgkit.wizard": "Wizard",
+
+  "rpgkit.advancement.root": "Hero of Cubes and Magic",
+  "rpgkit.advancement.root.desc": "Download RPGkit",
+
+  "rpgkit.gui.page.rpgkit.title": "Classes",
+  "rpgkit.gui.page.attributes.tooltip.button.class_class_points": "Class points progress: %s",
+  "rpgkit.gui.page.attributes.text.class_points": "Free class points: %s",
+  "rpgkit.gui.page.attributes.tooltip.class_points[0]": "Undistributed points",
+  "rpgkit.gui.page.attributes.tooltip.class_points[1]": "for classes' level ups",
+  "rpgkit.gui.page.attributes.text.class_rouge": "Rouge lvl: %s",
+  "rpgkit.gui.page.attributes.tooltip.button.class_rouge": "Rouge class",
+  "rpgkit.gui.page.attributes.tooltip.class_rouge": "Rouge",
+  "rpgkit.gui.page.attributes.text.class_warrior": "Warrior lvl: %s",
+  "rpgkit.gui.page.attributes.tooltip.button.class_warrior": "Warrior class",
+  "rpgkit.gui.page.attributes.tooltip.class_warrior": "Warrior",
+  "rpgkit.gui.page.attributes.text.class_wizard": "Wizard lvl: %s",
+  "rpgkit.gui.page.attributes.tooltip.button.class_wizard": "Wizard class",
+  "rpgkit.gui.page.attributes.tooltip.class_wizard": "Wizard"
+}

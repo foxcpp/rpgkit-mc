@@ -1,6 +1,6 @@
-package com.github.sweetsnowywitch.csmprpgkit.effects;
+package com.github.sweetsnowywitch.rpgkit.magic.statuseffects;
 
-import com.github.sweetsnowywitch.csmprpgkit.components.ModComponents;
+import com.github.sweetsnowywitch.rpgkit.magic.components.ModComponents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;

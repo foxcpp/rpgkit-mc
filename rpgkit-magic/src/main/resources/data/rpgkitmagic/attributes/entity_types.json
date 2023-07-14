@@ -1,0 +1,8 @@
+{
+  "values": {
+    "minecraft:player": {
+      "rpgkitmagic:max_mana": 0.0,
+      "rpgkitmagic:mana_regen_speed": 0.005
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
+        {
+          "type": "rpgkit:combo",
+          "combo": 0,
+          "maxCombo": 1000,
+          "modifier": 2
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
+        {
+          "type": "rpgkit:single_kill",
+          "id": "minecraft:speed",
+          "duration": 200,
+          "amplifier": 1
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
+        {
+          "type": "rpgkit:rest",
+          "id": "rpgkitmagic:sound_mute",
+          "duration": 60,
+          "amplifier": 0,
+          "restTime": 1200
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
+        {
+          "type": "rpgkit:single_kill",
+          "id": "minecraft:invisibility",
+          "playerKill": true,
+          "duration": 600,
+          "amplifier": 0
+        }
+      ]
+    },
+    {
+      "level": 20,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
+        {
+          "type": "rpgkit:kill_streak",
+          "id": "minecraft:generic.movement_speed",
+          "modifier": 0.03,
+          "penalty": 2,
+          "maxStreak": 10
+        }
+      ]
+    }
+  ]
+}
