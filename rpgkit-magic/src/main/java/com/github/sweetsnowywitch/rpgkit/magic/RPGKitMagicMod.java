@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.rpgkit.magic;
 
 import com.github.sweetsnowywitch.rpgkit.RPGKitMod;
 import com.github.sweetsnowywitch.rpgkit.events.SubcommandRegisterCallback;
+import com.github.sweetsnowywitch.rpgkit.magic.blocks.ModBlocks;
 import com.github.sweetsnowywitch.rpgkit.magic.commands.ModCommands;
 import com.github.sweetsnowywitch.rpgkit.magic.commands.SpellFormArgument;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.ModEffects;
@@ -45,6 +46,7 @@ public class RPGKitMagicMod implements ModInitializer {
         ModStatusEffects.register();
         ModEntities.register();
         ModItems.register();
+        ModBlocks.register();
         ModParticles.register();
         ModAttributes.register();
 
