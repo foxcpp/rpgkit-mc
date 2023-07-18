@@ -57,8 +57,8 @@ public class DoubleModifier implements JsonHelpers.JsonSerializable {
         // (val * mul^3 + add*mul^2 + add*mul + add
         // and so on.
 
-        var res = 0;
-        var mulFact = 1;
+        double res = 0;
+        double mulFact = 1;
         for (int i = 0; i < count; i++) {
             res += add * mulFact;
             mulFact *= this.mul;

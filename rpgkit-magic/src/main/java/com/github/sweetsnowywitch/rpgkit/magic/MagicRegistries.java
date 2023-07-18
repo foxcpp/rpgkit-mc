@@ -34,5 +34,5 @@ public class MagicRegistries {
     public static final Map<Identifier, Aspect> ASPECTS = new HashMap<>();
     public static final SpellRecipeMap<Aspect> ASPECT_RECIPES = new SpellRecipeMap<>();
     public static final Map<Identifier, Map<String, Float>> ITEM_COSTS = new HashMap<>();
-    public static final Map<Identifier, ItemTransmuteMapping> TRANSMUTE_MAPPINGS = new HashMap<>();
+    public static final Map<Identifier, ItemMapping> TRANSMUTE_MAPPINGS = new HashMap<>();
 }
