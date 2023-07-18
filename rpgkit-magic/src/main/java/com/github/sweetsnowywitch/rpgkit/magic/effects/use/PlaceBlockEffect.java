@@ -61,7 +61,7 @@ public class PlaceBlockEffect extends SimpleUseEffect {
             target = pos.add(direction.getVector());
         }
 
-        if (this.filter != null && !this.filter.test(world.getBlockState(target))) {
+        if (this.filter != null && !this.filter.test(world.getBlockState(pos))) {
             return ActionResult.PASS;
         }
 

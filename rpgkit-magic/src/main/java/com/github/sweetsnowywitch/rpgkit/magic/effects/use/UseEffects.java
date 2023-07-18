@@ -26,13 +26,23 @@ public class UseEffects {
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "fall_block"), FallBlockEffect::new);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "heal"), HealEffect::new);
         Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "insert_item"), InsertItemEffect::new);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "transfer_mana"), TransferManaEffect::new);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "place_fluid"), PlaceFluidEffect::new);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "transmute_block"), TransmuteBlockEffect::new);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "area_spread"), AreaSpreadEffect::new);
+        Registry.register(MagicRegistries.USE_EFFECTS, new Identifier(RPGKitMagicMod.MOD_ID, "freeze"), FreezeEffect::new);
 
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "potion"), PotionEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "damage"), DamageEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "push"), PushEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "ward"), WardEffect.Reaction::new);
+        Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "explosion"), ExplosionEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "break_block"), BreakBlockEffect.Reaction::new);
         Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "fall_block"), FallBlockEffect.Reaction::new);
+        Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "heal"), HealEffect.Reaction::new);
+        Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "transfer_mana"), TransferManaEffect.Reaction::new);
+        Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "area_spread"), AreaSpreadEffect.Reaction::new);
+        Registry.register(MagicRegistries.REACTIONS, new Identifier(RPGKitMagicMod.MOD_ID, "freeze"), FreezeEffect.Reaction::new);
 
         Registry.register(MagicRegistries.EFFECT_AREAS, new Identifier(RPGKitMagicMod.MOD_ID, "ward"), MagicArea.factoryFor(WardEffect.Area::new));
         WardEffect.registerListener();

@@ -16,14 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public abstract class UseEffect extends SpellEffect {
-    protected UseEffect(Identifier id) {
-        super(id);
-    }
-
-    protected UseEffect(Identifier id, JsonObject obj) {
-        super(id, obj);
-    }
-
     @FunctionalInterface
     public interface JsonFactory {
         UseEffect createEffectFromJSON(Identifier id, JsonObject obj);
@@ -42,12 +34,22 @@ public abstract class UseEffect extends SpellEffect {
         public abstract ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction);
 
         @NotNull
-        public abstract ActionResult useOnEntity(ServerSpellCast cast, Entity entity);
+        public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
+            return this.useOnBlock(cast, (ServerWorld) entity.getWorld(), entity.getBlockPos(), Direction.UP);
+        }
 
         public static UseEffect.Used fromJson(JsonObject obj) {
             var effect = UseEffect.fromJson(obj.getAsJsonObject("effect"));
             return effect.usedFromJson(obj);
         }
+    }
+
+    protected UseEffect(Identifier id) {
+        super(id);
+    }
+
+    protected UseEffect(Identifier id, JsonObject obj) {
+        super(id, obj);
     }
 
     @NotNull
