@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ public class PushEffect extends UseEffect {
     public static class Reaction extends SpellReaction {
         public final DoubleModifier velocity;
         public final FloatModifier magicStrength;
-        public final EffectVector vector;
+        public final @Nullable EffectVector vector;
         public final boolean disregardCurrentVelocity;
 
         public Reaction(JsonObject obj) {
@@ -45,7 +46,7 @@ public class PushEffect extends UseEffect {
             if (obj.has("vector")) {
                 this.vector = EffectVector.valueOf(obj.get("vector").getAsString().toUpperCase());
             } else {
-                this.vector = EffectVector.FROM_ORIGIN;
+                this.vector = null;
             }
             this.disregardCurrentVelocity = obj.has("disregard_current_velocity") &&
                     obj.get("disregard_current_velocity").getAsBoolean();
@@ -59,7 +60,9 @@ public class PushEffect extends UseEffect {
         public void toJson(@NotNull JsonObject obj) {
             super.toJson(obj);
             obj.add("velocity", this.velocity.toJson());
-            obj.addProperty("vector", this.vector.name().toLowerCase());
+            if (this.vector != null) {
+                obj.addProperty("vector", this.vector.name().toLowerCase());
+            }
             obj.addProperty("disregard_current_velocity", this.disregardCurrentVelocity);
         }
 
@@ -153,8 +156,8 @@ public class PushEffect extends UseEffect {
         public @NotNull ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
             var castDirection = VectorUtils.direction(cast.getOriginPitch(), cast.getOriginYaw());
             Vec3d effectDirection = null;
-            for (var reaction : reactions) {
-                if (reaction instanceof Reaction r) {
+            for (var reaction : this.effectReactions) {
+                if (reaction instanceof Reaction r && r.vector != null) {
                     if (effectDirection != null) {
                         effectDirection = effectDirection.add(r.vector.direction(entity.getPos(), cast.getOriginPos(), castDirection));
                     } else {
@@ -203,12 +206,12 @@ public class PushEffect extends UseEffect {
 
         @Override
         public FloatModifier calculateEffectReduction(ServerSpellCast cast, float protectionStrength) {
-            return null;
+            return new FloatModifier(0, Math.max(protectionStrength - this.magicStrength, 0) / protectionStrength);
         }
 
         @Override
         public boolean willDissolveProtection(ServerSpellCast cast, float protectionStrength) {
-            return false;
+            return this.magicStrength > 2 * protectionStrength;
         }
     }
 

@@ -1,7 +1,9 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.area;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
+import com.github.sweetsnowywitch.rpgkit.magic.EffectVector;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.AreaEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.ModEntities;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.PersistentMagicEntity;
 import com.github.sweetsnowywitch.rpgkit.magic.json.IntModifier;
@@ -17,6 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -39,6 +42,11 @@ public class PersistentAreaEffect extends AreaEffect {
             } else {
                 this.effectInterval = IntModifier.NOOP;
             }
+        }
+
+        @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof PersistentAreaEffect;
         }
 
         @Override
@@ -102,6 +110,9 @@ public class PersistentAreaEffect extends AreaEffect {
 
             var ent = new PersistentMagicEntity(ModEntities.PERSISTENT_MAGIC, world, boundingBox, this.durationTicks, this.effectIntervalTicks);
             ent.setCast(subCast);
+            if (PersistentAreaEffect.this.particleVector != null) {
+                ent.setParticleVector(PersistentAreaEffect.this.particleVector);
+            }
 
             world.spawnEntity(ent);
             return ActionResult.SUCCESS;
@@ -110,12 +121,14 @@ public class PersistentAreaEffect extends AreaEffect {
 
     protected final int durationTicks;
     protected final int effectIntervalTicks;
+    protected final @Nullable EffectVector particleVector;
     protected final ImmutableList<AreaEffect> effects;
 
     protected PersistentAreaEffect(Identifier id) {
         super(id);
         this.durationTicks = 60;
         this.effectIntervalTicks = 20;
+        this.particleVector = null;
         this.effects = ImmutableList.of();
     }
 
@@ -131,6 +144,11 @@ public class PersistentAreaEffect extends AreaEffect {
             this.effectIntervalTicks = obj.get("interval").getAsInt();
         } else {
             this.effectIntervalTicks = 20;
+        }
+        if (obj.has("particle_vector")) {
+            this.particleVector = EffectVector.fromJson(obj.get("particle_vector"));
+        } else {
+            this.particleVector = null;
         }
         if (obj.has("area_effects")) {
             this.effects = JsonHelpers.fromJsonList(obj.getAsJsonArray("area_effects"), AreaEffect::fromJson);
@@ -154,6 +172,7 @@ public class PersistentAreaEffect extends AreaEffect {
         super.toJson(obj);
         obj.addProperty("duration", this.durationTicks);
         obj.addProperty("interval", this.effectIntervalTicks);
+        obj.add("particle_vector", this.particleVector.toJson());
         obj.add("area_effects", JsonHelpers.toJsonList(this.effects));
     }
 }

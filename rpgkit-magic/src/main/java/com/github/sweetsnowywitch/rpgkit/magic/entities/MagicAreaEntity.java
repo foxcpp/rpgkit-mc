@@ -1,6 +1,7 @@
 package com.github.sweetsnowywitch.rpgkit.magic.entities;
 
 import com.github.sweetsnowywitch.rpgkit.TrackedHandlers;
+import com.github.sweetsnowywitch.rpgkit.magic.EffectVector;
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.particle.GenericSpellParticleEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
@@ -17,8 +18,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public abstract class MagicAreaEntity extends Entity {
     // Populated only on logical server side.
@@ -27,6 +31,7 @@ public abstract class MagicAreaEntity extends Entity {
     public static final TrackedData<Box> AREA = DataTracker.registerData(MagicAreaEntity.class, TrackedHandlers.BOX);
     public static final TrackedData<SpellCast> CAST = DataTracker.registerData(MagicAreaEntity.class, SpellCast.TRACKED_HANDLER);
     public static final TrackedData<Boolean> NO_PARTICLES = DataTracker.registerData(MagicAreaEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Optional<EffectVector>> PARTICLE_VECTOR = DataTracker.registerData(MagicAreaEntity.class, EffectVector.OPTIONAL_TRACKED_HANDLER);
     protected int particleColor;
     protected ParticleEffect particleEffect;
 
@@ -41,6 +46,7 @@ public abstract class MagicAreaEntity extends Entity {
         this.dataTracker.startTracking(AREA, Box.from(this.getPos()));
         this.dataTracker.startTracking(CAST, SpellCast.EMPTY);
         this.dataTracker.startTracking(NO_PARTICLES, false);
+        this.dataTracker.startTracking(PARTICLE_VECTOR, Optional.empty());
     }
 
     @Override
@@ -54,6 +60,11 @@ public abstract class MagicAreaEntity extends Entity {
         }
         this.maxAge = nbt.getInt("MaxAge");
         this.dataTracker.set(NO_PARTICLES, nbt.getBoolean("NoParticles"));
+        if (nbt.contains("ParticleVector")) {
+            this.dataTracker.set(PARTICLE_VECTOR, Optional.of(EffectVector.valueOf(nbt.getString("ParticleVector"))));
+        } else {
+            this.dataTracker.set(PARTICLE_VECTOR, Optional.empty());
+        }
     }
 
     @Override
@@ -74,6 +85,9 @@ public abstract class MagicAreaEntity extends Entity {
 
         nbt.putInt("MaxAge", this.maxAge);
         nbt.putBoolean("NoParticles", this.dataTracker.get(NO_PARTICLES));
+
+        var particleVector = this.dataTracker.get(PARTICLE_VECTOR);
+        particleVector.ifPresent(effectVector -> nbt.putString("ParticleVector", effectVector.name()));
     }
 
     public void increaseMaxAge(int duration) {
@@ -116,16 +130,31 @@ public abstract class MagicAreaEntity extends Entity {
         return this.dataTracker.get(AREA);
     }
 
+    public void setParticleVector(EffectVector vec) {
+        this.dataTracker.set(PARTICLE_VECTOR, Optional.of(vec));
+    }
+
     protected void spawnParticles() {
         var area = this.getArea();
         var volume = (area.maxX - area.minX) * (area.maxZ - area.minZ) * (area.maxY - area.minY);
 
+        var vector = this.dataTracker.get(PARTICLE_VECTOR);
+
         for (int i = 0; i < volume / 160 || i == 0; i++) {
-            this.world.addParticle(this.particleEffect,
-                    RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX),
-                    RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY),
-                    RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ),
-                    0, 0, 0);
+            if (vector.isPresent()) {
+                var x = RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX);
+                var y = RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY);
+                var z = RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ);
+                var direction = vector.get().direction(new Vec3d(x, y, z), this.getPos(), Vec3d.ZERO);
+                this.world.addParticle(this.particleEffect, x, y, z,
+                        direction.x, direction.y, direction.z);
+            } else {
+                this.world.addParticle(this.particleEffect,
+                        RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX),
+                        RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY),
+                        RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ),
+                        0, 0, 0);
+            }
         }
     }
 

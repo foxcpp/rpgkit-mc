@@ -57,6 +57,8 @@ public class RPGKitMagicMod implements ModInitializer {
         ArgumentTypeRegistry.registerArgumentType(new Identifier(MOD_ID, "spell_form"), SpellFormArgument.class,
                 ConstantArgumentSerializer.of(SpellFormArgument::spellForm));
         TrackedDataHandlerRegistry.register(SpellCast.TRACKED_HANDLER);
+        TrackedDataHandlerRegistry.register(EffectVector.TRACKED_HANDLER);
+        TrackedDataHandlerRegistry.register(EffectVector.OPTIONAL_TRACKED_HANDLER);
         ModEffects.register();
         ModForms.register();
         Registry.register(Registry.SCREEN_HANDLER, Identifier.of(MOD_ID, "catalyst_bag"), CATALYST_BAG_SCREEN_HANDLER);
