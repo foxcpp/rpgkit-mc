@@ -89,7 +89,7 @@ public class ServerDataSyncer {
 
         if (player != null) {
             var buf = PacketByteBufs.create();
-            buf.writeString(jsonBlob);
+            buf.writeString(jsonBlob, 1024 * 1024);
             ServerPlayNetworking.send(player, SERVER_DATA_SYNC_PACKET_ID, buf);
             RPGKitMod.LOGGER.info("Sent mod registries to {}", player);
         } else {
