@@ -13,10 +13,11 @@
   "rpgkit.magic.help.area_cast": "Press %s to cast the spell on area around you.",
   "rpgkit.magic.help.self_cast": "Press %s to apply the spell to yourself.",
   "rpgkit.magic.help.catalyst_bag": "If you have a catalyst bag, press %s to open it (you must have it in your hotbar)",
-
+  "rpgkit.magic.no_effect_spell_cast": "Nothing happens...",
+  "rpgkit.magic.not_enough_mana": "Too much mana required to cast the spell."
+  "rpgkit.magic.help.catalyst_bag": "If you have a catalyst bag, press %s to open it (you must have it in your hotbar)",
   "attribute.name.player.rpgkitmagic.max_mana": "Max mana points",
   "attribute.name.player.rpgkitmagic.mana_regen_speed": "Mana regen speed",
-
   "rpgkit.gui.page.magic.title": "Classes and Magic",
   "rpgkit.gui.page.attributes.text.max_mana": "Mana: %s/%s",
   "rpgkit.gui.page.attributes.tooltip.max_mana": "Current MP / Max MP",

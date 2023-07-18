@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -83,7 +84,11 @@ public class SpellItem extends Item implements IAnimatable {
         }
 
         try {
-            return context.getPlayer().getComponent(ModComponents.CAST).performCastOnBlock(context.getBlockPos(), context.getSide());
+            var res = context.getPlayer().getComponent(ModComponents.CAST).performCastOnBlock(context.getBlockPos(), context.getSide());
+            if (res.equals(ActionResult.FAIL) || res.equals(ActionResult.PASS)) {
+                context.getPlayer().sendMessage(Text.translatable("rpgkit.magic.no_effect_spell_cast"), true);
+            }
+            return res;
         } catch (Exception ex) {
             RPGKitMagicMod.LOGGER.error("Exception happening while trying to perform cast", ex);
         }
@@ -100,7 +105,11 @@ public class SpellItem extends Item implements IAnimatable {
         }
 
         try {
-            return user.getComponent(ModComponents.CAST).performCastOnEntity(entity);
+            var res = user.getComponent(ModComponents.CAST).performCastOnEntity(entity);
+            if (res.equals(ActionResult.FAIL) || res.equals(ActionResult.PASS)) {
+                user.sendMessage(Text.translatable("rpgkit.magic.no_effect_spell_cast"), true);
+            }
+            return res;
         } catch (Exception ex) {
             RPGKitMagicMod.LOGGER.error("Exception happening while trying to perform cast", ex);
         }

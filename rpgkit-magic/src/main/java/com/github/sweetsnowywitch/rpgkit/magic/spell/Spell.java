@@ -96,12 +96,19 @@ public class Spell {
     }
 
     public TypedActionResult<ItemStack> useOnItem(ServerSpellCast cast, ServerWorld world, ItemStack stack, @Nullable Inventory container, @Nullable Entity holder) {
-        TypedActionResult<ItemStack> lastResult = TypedActionResult.success(stack);
+        TypedActionResult<ItemStack> lastResult = TypedActionResult.pass(stack);
+        boolean success = false;
         for (var eff : this.itemEffects) {
             lastResult = eff.useOnItem(cast, world, stack, container, holder);
+            if (lastResult.getResult().equals(ActionResult.SUCCESS)) {
+                success = true;
+            }
             if (lastResult.getResult().equals(ActionResult.CONSUME) || lastResult.getResult().equals(ActionResult.FAIL)) {
                 break;
             }
+        }
+        if (success) {
+            return TypedActionResult.success(stack);
         }
         return lastResult;
     }
@@ -111,23 +118,37 @@ public class Spell {
     }
 
     public ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
-        ActionResult lastResult = ActionResult.CONSUME;
+        ActionResult lastResult = ActionResult.PASS;
+        boolean success = false;
         for (var eff : this.useEffects) {
             lastResult = eff.useOnBlock(cast, world, pos, direction);
-            if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
-                break;
+            if (lastResult.equals(ActionResult.SUCCESS)) {
+                success = true;
             }
+            if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
+                return lastResult;
+            }
+        }
+        if (success) {
+            return ActionResult.SUCCESS;
         }
         return lastResult;
     }
 
     public ActionResult useOnEntity(ServerSpellCast cast, Entity entity) {
         ActionResult lastResult = ActionResult.CONSUME;
+        boolean success = false;
         for (var eff : this.useEffects) {
             lastResult = eff.useOnEntity(cast, entity);
+            if (lastResult.equals(ActionResult.SUCCESS)) {
+                success = true;
+            }
             if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
                 break;
             }
+        }
+        if (success) {
+            return ActionResult.SUCCESS;
         }
         return lastResult;
     }

@@ -13,10 +13,10 @@
   "rpgkit.magic.help.area_cast": "Нажми %s, чтобы применить заклинание вокруг себя.",
   "rpgkit.magic.help.self_cast": "Нажми %s, чтобы применить заклинание к себе.",
   "rpgkit.magic.help.catalyst_bag": "Если в хотбаре есть сумка с реагентами, нажми %s, чтобы открыть её.",
-
+  "rpgkit.magic.no_effect_spell_cast": "Ничего не произошло...",
+  "rpgkit.magic.not_enough_mana": "Слишком много маны требуется для использования этого заклинания."
   "attribute.name.player.rpgkitmagic.max_mana": "Максимум очков маны",
   "attribute.name.player.rpgkitmagic.mana_regen_speed": "Скорость восстановления маны",
-
   "rpgkit.gui.page.magic.title": "Классы и Магия",
   "rpgkit.gui.page.attributes.text.max_mana": "Мана: %s/%s",
   "rpgkit.gui.page.attributes.tooltip.max_mana": "Текущие ОМ / Максимум ОМ",
