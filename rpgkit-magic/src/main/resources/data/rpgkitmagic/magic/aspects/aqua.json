@@ -12,8 +12,260 @@
     "id": "rpgkitmagic:blast",
     "weight": 1
   },
-  "generic_effects": [
+  "area_effects": [
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "entity_coverage": 1,
+      "effects": [
+        {
+          "type": "rpgkitmagic:extinguish"
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "area_coverage": 0.3,
+      "effects": [
+        {
+          "type": "rpgkitmagic:place_fluid",
+          "fluid": "minecraft:water",
+          "level": 1
+        },
+        {
+          "type": "rpgkitmagic:place_fluid",
+          "fluid": "minecraft:water",
+          "level": 2,
+          "condition": {
+            "stacked": {
+              "min": 2,
+              "max": 2
+            }
+          }
+        },
+        {
+          "type": "rpgkitmagic:place_fluid",
+          "fluid": "minecraft:water",
+          "level": 4,
+          "condition": {
+            "stacked": {
+              "min": 3,
+              "max": 3
+            }
+          }
+        },
+        {
+          "type": "rpgkitmagic:place_fluid",
+          "fluid": "minecraft:water",
+          "level": 6,
+          "condition": {
+            "stacked": {
+              "min": 4,
+              "max": 4
+            }
+          }
+        },
+        {
+          "type": "rpgkitmagic:place_fluid",
+          "fluid": "minecraft:flowing_water",
+          "level": 6,
+          "condition": {
+            "stacked": {
+              "min": 4,
+              "max": 4
+            }
+          }
+        }
+      ],
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:surface_spray",
+          "area_coverage": {
+            "add": 0.1
+          },
+          "condition": {
+            "stacked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "area_coverage": 0.1,
+      "effects": [
+        {
+          "type": "rpgkitmagic:place_fluid",
+          "fluid": "minecraft:water",
+          "level": 1
+        }
+      ],
+      "condition": {
+        "first_element": false
+      }
+    }
   ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:extinguish"
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:water",
+      "level": 2,
+      "condition": {
+        "first_element": true
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:water",
+      "level": 4,
+      "condition": {
+        "first_element": true,
+        "stacked": {
+          "min": 2,
+          "max": 2
+        }
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:water",
+      "level": 6,
+      "condition": {
+        "first_element": true,
+        "stacked": {
+          "min": 3,
+          "max": 3
+        }
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:water",
+      "level": 8,
+      "condition": {
+        "first_element": true,
+        "stacked": 4
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:water",
+      "still": true,
+      "condition": {
+        "first_element": true,
+        "stacked": 5
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:water",
+      "level": 2,
+      "condition": {
+        "first_element": false,
+        "stacked": {
+          "min": 3,
+          "max": 3
+        }
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:water",
+      "level": 2,
+      "condition": {
+        "first_element": false,
+        "stacked": {
+          "min": 4,
+          "max": 4
+        }
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_fluid",
+      "fluid": "minecraft:flowing_water",
+      "level": 6,
+      "condition": {
+        "first_element": false,
+        "stacked": {
+          "min": 4,
+          "max": 4
+        }
+      }
+    },
+    {
+      "type": "rpgkitmagic:transmute_block",
+      "mapping": "rpgkitmagic:botanic_rainbow",
+      "condition": {
+        "first_element": true,
+        "stacked": 3
+      }
+    },
+    {
+      "type": "rpgkitmagic:transmute_block",
+      "mapping": "rpgkitmagic:concrete_powder_rainbow",
+      "condition": {
+        "first_element": true,
+        "stacked": 3
+      }
+    },
+    {
+      "type": "rpgkitmagic:transmute_block",
+      "mapping": "rpgkitmagic:glass_rainbow",
+      "condition": {
+        "first_element": true,
+        "stacked": 3
+      }
+    },
+    {
+      "type": "rpgkitmagic:transmute_block",
+      "mapping": "rpgkitmagic:glass_pane_rainbow",
+      "condition": {
+        "first_element": true,
+        "stacked": 3
+      }
+    },
+    {
+      "type": "rpgkitmagic:transmute_block",
+      "mapping": "rpgkitmagic:wool_rainbow"
+    }
+  ],
+  "item_effects": [
+    {
+      "type": "rpgkitmagic:transmute_item",
+      "mapping": "rpgkitmagic:botanic_rainbow",
+      "preserve_count": true
+    },
+    {
+      "type": "rpgkitmagic:transmute_item",
+      "mapping": "rpgkitmagic:concrete_powder_rainbow",
+      "preserve_count": true
+    },
+    {
+      "type": "rpgkitmagic:transmute_item",
+      "mapping": "rpgkitmagic:glass_rainbow",
+      "preserve_count": true
+    },
+    {
+      "type": "rpgkitmagic:transmute_item",
+      "mapping": "rpgkitmagic:glass_pane_rainbow",
+      "preserve_count": true
+    },
+    {
+      "type": "rpgkitmagic:transmute_item",
+      "mapping": "rpgkitmagic:wool_rainbow",
+      "preserve_count": true
+    },
+    {
+      "type": "rpgkitmagic:transmute_item",
+      "mapping": "rpgkitmagic:fill_water",
+      "condition": {
+        "first_element": true,
+        "stacked": 5
+      }
+    }
   ]
 }

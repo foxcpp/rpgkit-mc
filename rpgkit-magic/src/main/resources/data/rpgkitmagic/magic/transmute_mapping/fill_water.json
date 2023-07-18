@@ -1,0 +1,83 @@
+{
+  "type": "item",
+  "mappings": [
+    {
+      "ingredient": [
+        {
+          "item": "minecraft:potion"
+        },
+        {
+          "item": "minecraft:glass_bottle"
+        }
+      ],
+      "weight": 0.50,
+      "replacement": "minecraft:potion",
+      "functions": [
+        {
+          "function": "minecraft:set_potion",
+          "id": "minecraft:water"
+        }
+      ]
+    },
+    {
+      "ingredient": [
+        {
+          "item": "minecraft:potion"
+        },
+        {
+          "item": "minecraft:glass_bottle"
+        }
+      ],
+      "weight": 0.25,
+      "replacement": "minecraft:potion",
+      "functions": [
+        {
+          "function": "minecraft:set_potion",
+          "id": "minecraft:mundane"
+        }
+      ]
+    },
+    {
+      "ingredient": [
+        {
+          "item": "minecraft:potion"
+        },
+        {
+          "item": "minecraft:glass_bottle"
+        }
+      ],
+      "weight": 0.10,
+      "replacement": "minecraft:potion",
+      "functions": [
+        {
+          "function": "minecraft:set_potion",
+          "id": "minecraft:thick"
+        }
+      ]
+    },
+    {
+      "ingredient": [
+        {
+          "item": "minecraft:potion"
+        },
+        {
+          "item": "minecraft:glass_bottle"
+        }
+      ],
+      "weight": 0.15,
+      "replacement": "minecraft:potion",
+      "functions": [
+        {
+          "function": "minecraft:set_potion",
+          "id": "minecraft:awkward"
+        }
+      ]
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:bucket"
+      },
+      "replacement": "minecraft:water_bucket"
+    }
+  ]
+}

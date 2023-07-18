@@ -7,13 +7,92 @@
     "interitio": "1"
   },
   "recipes": [
+    [
+      "rpgkitmagic:aqua",
+      "rpgkitmagic:terra"
+    ]
   ],
   "use_form": {
     "id": "rpgkitmagic:charge",
     "weight": 2
   },
-  "generic_effects": [
+  "area_effects": [
+    {
+      "type": "rpgkitmagic:lingering_potion",
+      "id": "minecraft:slowness",
+      "duration": 20,
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:lingering_potion",
+          "id": "minecraft:slowness",
+          "duration": {
+            "add": 20
+          },
+          "condition": {
+            "stacked": 2
+          }
+        },
+        {
+          "for": "rpgkitmagic:lingering_potion",
+          "id": "minecraft:slowness",
+          "duration": {
+            "add": 1200
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:pervicax"
+          }
+        }
+      ]
+    }
   ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:freeze",
+      "duration": 20,
+      "condition": {
+        "or": [
+          {
+            "first_element": true
+          },
+          {
+            "stacked": 4
+          }
+        ]
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:freeze",
+          "duration": {
+            "add": 20
+          },
+          "condition": {
+            "stacked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:potion",
+      "id": "minecraft:slowness",
+      "duration": 60,
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:potion",
+          "id": "minecraft:slowness",
+          "duration": {
+            "add": 20
+          },
+          "condition": {
+            "stacked": 2
+          }
+        }
+      ]
+    }
   ]
 }

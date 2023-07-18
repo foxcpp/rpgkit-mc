@@ -7,13 +7,49 @@
     "interitio": "1.22"
   },
   "recipes": [
+    [
+      "rpgkitmagic:aqua",
+      "rpgkitmagic:ordino"
+    ]
   ],
   "use_form": {
     "id": "rpgkitmagic:ray",
     "weight": 2
   },
-  "generic_effects": [
-  ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:heal",
+      "amount": 6,
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:heal",
+          "amount": {
+            "add": 2
+          },
+          "condition": {
+            "first_element": true,
+            "stacked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:bone_meal",
+      "condition": {
+        "first_element": true,
+        "stacked": 2
+      }
+    },
+    {
+      "type": "rpgkitmagic:spawn_entity",
+      "id": "minecraft:chicken",
+      "condition": {
+        "first_element": true,
+        "stacked": 5
+      }
+    }
   ]
 }

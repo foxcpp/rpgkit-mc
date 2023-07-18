@@ -1,0 +1,76 @@
+{
+  "type": "block",
+  "mappings": [
+    {
+      "predicate": {
+        "block": "minecraft:stone"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:cobblestone"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:polished_granite"
+      },
+      "replacement": "minecraft:granite"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:polished_diorite"
+      },
+      "replacement": "minecraft:diorite"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:polished_andesite"
+      },
+      "replacement": "minecraft:andesite"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:stone"
+      },
+      "weight": 0.2,
+      "replacement": "minecraft:gravel"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:stone"
+      },
+      "weight": 0.1,
+      "replacement": "minecraft:sand"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:cobblestone"
+      },
+      "weight": 0.7
+    },
+    {
+      "predicate": {
+        "block": "minecraft:cobblestone"
+      },
+      "weight": 0.21,
+      "replacement": "minecraft:gravel"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:cobblestone"
+      },
+      "weight": 0.09,
+      "replacement": "minecraft:sand"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:stone_bricks"
+      },
+      "replacement": "minecraft:cracked_stone_bricks"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:deepslate_bricks"
+      },
+      "replacement": "minecraft:cracked_deepslate_bricks"
+    }
+  ]
+}

@@ -1,20 +1,20 @@
 {
   "kind": "effect",
   "costs": {
-    "magicae": "22",
-    "regeneratio": "1.4",
-    "mutatio": "2.7",
-    "interitio": "5.4"
+    "magicae": "35",
+    "regeneratio": "1.1",
+    "mutatio": "1.7",
+    "interitio": "7"
   },
   "recipes": [
     [
       "rpgkitmagic:natura",
-      "rpgkitmagic:interitio"
+      "rpgkitmagic:nox"
     ]
   ],
   "use_form": {
-    "id": "rpgkitmagic:blast",
-    "weight": 1
+    "id": "rpgkitmagic:ray",
+    "weight": 2
   },
   "area_effects": [
     {
@@ -24,7 +24,7 @@
       "effects": [
         {
           "type": "rpgkitmagic:damage",
-          "damage": 2,
+          "damage": 6,
           "condition": {
             "or": [
               {
@@ -55,18 +55,19 @@
     },
     {
       "type": "rpgkitmagic:lingering_potion",
-      "id": "minecraft:poison",
+      "id": "minecraft:wither",
       "duration": 80,
-      "amplifier": 2,
+      "amplifier": 3,
       "condition": {
-        "first_element": true
+        "first_element": true,
+        "stacked": 4
       }
     }
   ],
   "use_effects": [
     {
       "type": "rpgkitmagic:damage",
-      "damage": 2,
+      "damage": 10,
       "condition": {
         "or": [
           {
@@ -91,11 +92,12 @@
     },
     {
       "type": "rpgkitmagic:potion",
-      "id": "minecraft:poison",
+      "id": "minecraft:wither",
       "duration": 80,
-      "amplifier": 2,
+      "amplifier": 5,
       "condition": {
-        "first_element": true
+        "first_element": true,
+        "stacked": 4
       }
     },
     {

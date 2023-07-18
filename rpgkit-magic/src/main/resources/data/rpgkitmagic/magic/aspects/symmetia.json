@@ -1,15 +1,15 @@
 {
   "kind": "effect",
   "costs": {
-    "magicae": "22",
-    "regeneratio": "1.82",
+    "magicae": "27",
+    "regeneratio": "0.5",
     "mutatio": "4",
-    "interitio": "0.75"
+    "interitio": "0.1"
   },
   "recipes": [
     [
-      "rpgkitmagic:motus",
-      "rpgkitmagic:aqua"
+      "rpgkitmagic:ordino",
+      "rpgkitmagic:interitio"
     ]
   ],
   "use_form": {

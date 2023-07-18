@@ -12,8 +12,48 @@
     "id": "rpgkitmagic:blast",
     "weight": 1
   },
-  "generic_effects": [
-  ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:fire"
+    },
+    {
+      "type": "rpgkitmagic:damage",
+      "damage": 4,
+      "condition": {
+        "first_element": true,
+        "stacked": 4
+      }
+    },
+    {
+      "type": "rpgkitmagic:break_block",
+      "magic_strength": 4,
+      "filter": [
+        "#minecraft:fences",
+        "#minecraft:flowers",
+        "#minecraft:trapdoors",
+        "#minecraft:doors",
+        "#minecraft:pressure_plates",
+        "#minecraft:wool",
+        "#minecraft:saplings",
+        "#minecraft:replceable_plants",
+        "#minecraft:snow",
+        "#minecraft:fall_damage_resetting"
+      ],
+      "condition": {
+        "first_element": true,
+        "stacked": 4
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:break_block",
+          "magic_strength": {
+            "add": 1
+          },
+          "condition": {
+            "stacked": 5
+          }
+        }
+      ]
+    }
   ]
 }

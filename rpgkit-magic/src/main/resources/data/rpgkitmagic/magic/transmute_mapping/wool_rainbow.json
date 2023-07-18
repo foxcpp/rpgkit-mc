@@ -1,0 +1,117 @@
+{
+  "type": "block",
+  "mappings": [
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.1,
+      "replacement": "minecraft:white_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.016,
+      "replacement": "minecraft:orange_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:magenta_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.009,
+      "replacement": "minecraft:light_blue_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.08,
+      "replacement": "minecraft:yellow_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.003,
+      "replacement": "minecraft:lime_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.008,
+      "replacement": "minecraft:pink_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.007,
+      "replacement": "minecraft:gray_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.0007,
+      "replacement": "minecraft:light_gray_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.009,
+      "replacement": "minecraft:cyan_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.0072,
+      "replacement": "minecraft:purple_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.09,
+      "replacement": "minecraft:blue_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.02,
+      "replacement": "minecraft:brown_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.03,
+      "replacement": "minecraft:green_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.08,
+      "replacement": "minecraft:red_wool"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:wool"
+      },
+      "weight": 0.07,
+      "replacement": "minecraft:black_wool"
+    }
+  ]
+}

@@ -1,26 +1,31 @@
 {
   "kind": "effect",
   "costs": {
-    "magicae": "24",
-    "regeneratio": "1.5",
-    "mutatio": "2.2",
-    "interitio": "5"
+    "magicae": "25",
+    "regeneratio": "0.7",
+    "mutatio": "1",
+    "interitio": "2"
   },
   "recipes": [
     [
-      "rpgkitmagic:aer",
-      "rpgkitmagic:interitio"
+      "rpgkitmagic:motus",
+      "rpgkitmagic:terra"
+    ],
+    [
+      "rpgkitmagic:motus",
+      "rpgkitmagic:nox"
     ]
   ],
   "use_form": {
-    "id": "rpgkitmagic:blast",
+    "id": "rpgkitmagic:charge",
     "weight": 1
   },
   "use_effects": [
     {
       "type": "rpgkitmagic:potion",
       "id": "minecraft:slowness",
-      "duration": 30,
+      "duration": 60,
+      "amplifier": 3,
       "condition": {
         "first_element": true
       },

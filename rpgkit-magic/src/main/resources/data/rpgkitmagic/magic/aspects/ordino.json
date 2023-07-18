@@ -10,5 +10,16 @@
   "use_form": {
     "id": "rpgkitmagic:ray",
     "weight": 2
-  }
+  },
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:ward",
+      "magic_strength": 4,
+      "duration": 600,
+      "condition": {
+        "first_element": true,
+        "stacked": 5
+      }
+    }
+  ]
 }

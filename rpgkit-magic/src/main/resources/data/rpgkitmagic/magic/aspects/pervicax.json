@@ -7,13 +7,13 @@
     "interitio": "1.6"
   },
   "recipes": [
+    [
+      "rpgkitmagic:tempus",
+      "rpgkitmagic:terra"
+    ]
   ],
   "use_form": {
     "id": "rpgkitmagic:ray",
     "weight": 2
-  },
-  "generic_effects": [
-  ],
-  "generic_reactions": [
-  ]
+  }
 }

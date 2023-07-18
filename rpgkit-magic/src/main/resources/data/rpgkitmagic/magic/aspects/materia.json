@@ -1,0 +1,19 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "20",
+    "regeneratio": "1.1",
+    "mutatio": "1.4",
+    "interitio": "1.1"
+  },
+  "recipes": [
+    [
+      "rpgkitmagic:terra",
+      "rpgkitmagic:ordino"
+    ]
+  ],
+  "use_form": {
+    "id": "rpgkitmagic:charge",
+    "weight": 2
+  }
+}

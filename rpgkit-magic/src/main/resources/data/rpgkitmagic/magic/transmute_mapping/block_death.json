@@ -1,0 +1,100 @@
+{
+  "type": "block",
+  "mappings": [
+    {
+      "predicate": {
+        "block": "minecraft:grass"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:dirt"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:podzol"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:dirt"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:rooted_dirt"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:dirt"
+    },
+    {
+      "predicate": {
+        "block": "minecraft:grass"
+      },
+      "weight": 0.3,
+      "replacement": "minecraft:coarse_dirt"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:saplings"
+      },
+      "weight": 0.3,
+      "replacement": "minecraft:dead_bush"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:saplings"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:air"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.3,
+      "replacement": "minecraft:dead_bush"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:air"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:crops"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:air"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:crops"
+      },
+      "weight": 0.3
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:replaceable_plants"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:air"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:replaceable_plants"
+      },
+      "weight": 0.3
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:farmland"
+      },
+      "weight": 0.7,
+      "replacement": "minecraft:grass"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:farmland"
+      },
+      "weight": 0.3
+    }
+  ]
+}

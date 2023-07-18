@@ -12,8 +12,68 @@
     "id": "rpgkitmagic:charge",
     "weight": 3
   },
-  "generic_effects": [
+  "area_effects": [
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "entity_coverage": 0.9,
+      "area_coverage": 0.3,
+      "effects": [
+        {
+          "type": "rpgkitmagic:damage",
+          "damage": 6,
+          "condition": {
+            "first_element": true
+          },
+          "reactions": [
+            {
+              "for": "rpgkitmagic:damage",
+              "damage": {
+                "add": 2
+              },
+              "condition": {
+                "stacked": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "rpgkitmagic:place_block",
+          "block": "minecraft:rooted_dirt",
+          "replace": true,
+          "condition": {
+            "first_element": true,
+            "stacked": 5
+          }
+        }
+      ]
+    }
   ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:damage",
+      "damage": 6,
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:damage",
+          "damage": {
+            "add": 2
+          },
+          "condition": {
+            "stacked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:place_block",
+      "block": "minecraft:rooted_dirt",
+      "condition": {
+        "first_element": true,
+        "stacked": 5
+      }
+    }
   ]
 }

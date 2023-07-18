@@ -1,0 +1,117 @@
+{
+  "type": "block",
+  "mappings": [
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:dandelion"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:poppy"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:blue_orchid"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.03,
+      "replacement": "minecraft:allium"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:azure_bluet"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:dandelion"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:red_tulip"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:orange_tulip"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:white_tulip"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:pink_tulip"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.03,
+      "replacement": "minecraft:oxeye_daisy"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:cornflower"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.05,
+      "replacement": "minecraft:lily_of_the_valley"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.03,
+      "replacement": "minecraft:brown_mushroom"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.03,
+      "replacement": "minecraft:red_mushroom"
+    },
+    {
+      "predicate": {
+        "tag": "minecraft:flowers"
+      },
+      "weight": 0.001,
+      "replacement": "minecraft:wither_rose"
+    }
+  ]
+}

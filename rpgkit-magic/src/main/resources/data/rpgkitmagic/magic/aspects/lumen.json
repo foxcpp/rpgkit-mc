@@ -16,8 +16,66 @@
     "id": "rpgkitmagic:ray",
     "weight": 2
   },
-  "generic_effects": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:fire",
+      "lit": true,
+      "fire": false,
+      "condition": {
+        "or": [
+          {
+            "first_element": true
+          },
+          {
+            "stacked": 4
+          }
+        ]
+      }
+    },
+    {
+      "type": "rpgkitmagic:place_block",
+      "filter": {
+        "not": [
+          "minecraft:furnace",
+          "minecraft:campfire",
+          "minecraft:candle"
+        ]
+      },
+      "block": "rpgkitmagic:magic_light",
+      "condition": {
+        "first_element": true
+      }
+    },
+    {
+      "type": "rpgkitmagic:insert_item",
+      "filter": "minecraft:furnace",
+      "slot": 1,
+      "entries": [
+        {
+          "weight": 1,
+          "item": "rpgkitmagic:magic_fuel"
+        }
+      ],
+      "max_count": 1,
+      "condition": {
+        "first_element": true,
+        "stacked": 3
+      }
+    }
   ],
-  "generic_reactions": [
+  "item_effects": [
+    {
+      "type": "rpgkitmagic:give_item",
+      "entries": [
+        {
+          "weight": 1,
+          "item": "rpgkitmagic:magic_fuel"
+        }
+      ],
+      "condition": {
+        "first_element": true,
+        "stacked": 3
+      }
+    }
   ]
 }

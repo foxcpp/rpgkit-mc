@@ -7,13 +7,152 @@
     "interitio": "3.2"
   },
   "recipes": [
+    [
+      "rpgkitmagic:materia",
+      "rpgkitmagic:interitio"
+    ]
   ],
   "use_form": {
     "id": "rpgkitmagic:charge",
     "weight": 2
   },
-  "generic_effects": [
+  "area_effects": [
+    {
+      "type": "rpgkitmagic:persistent_area",
+      "interval": 1,
+      "particle_vector": "towards_origin",
+      "duration": 80,
+      "area_effects": [
+        {
+          "type": "rpgkitmagic:surface_spray",
+          "entity_coverage": 0.95,
+          "effects": [
+            {
+              "type": "rpgkitmagic:push",
+              "vector": "towards_origin",
+              "velocity": 0.5,
+              "reactions": [
+                {
+                  "for": "rpgkitmagic:push",
+                  "velocity": {
+                    "mul": 1.2
+                  }
+                },
+                {
+                  "for": "rpgkitmagic:push",
+                  "vector": "from_origin",
+                  "condition": {
+                    "has_element": "rpgkitmagic:symmetia"
+                  }
+                },
+                {
+                  "for": "rpgkitmagic:push",
+                  "vector": "up",
+                  "condition": {
+                    "has_element": "rpgkitmagic:sursum"
+                  }
+                },
+                {
+                  "for": "rpgkitmagic:push",
+                  "velocity": {
+                    "mul": 0.5
+                  },
+                  "condition": {
+                    "has_element": "rpgkitmagic:nox"
+                  }
+                },
+                {
+                  "for": "rpgkitmagic:push",
+                  "velocity": {
+                    "mul": 0.7
+                  },
+                  "condition": {
+                    "has_element": "rpgkitmagic:tardus"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:persistent_area",
+          "duration": {
+            "add": 1200
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:pervicax"
+          }
+        },
+        {
+          "for": "rpgkitmagic:persistent_area",
+          "duration": {
+            "add": 36000
+          },
+          "condition": {
+            "has_element": {
+              "element": "rpgkitmagic:pervicax",
+              "min": 4
+            }
+          }
+        }
+      ]
+    }
   ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:push",
+      "vector": "towards_origin",
+      "velocity": 0.5,
+      "reactions": [
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 1.2
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "vector": "from_origin",
+          "condition": {
+            "has_element": "rpgkitmagic:symmetia"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "vector": "up",
+          "condition": {
+            "has_element": "rpgkitmagic:sursum"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 0.5
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:nox"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 0.7
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:tardus"
+          }
+        }
+      ]
+    }
+  ],
+  "item_effects": [
+    {
+      "type": "rpgkitmagic:consume_item"
+    }
   ]
 }

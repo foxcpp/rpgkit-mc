@@ -1,0 +1,19 @@
+{
+  "kind": "effect",
+  "costs": {
+    "magicae": "62",
+    "regeneratio": "4",
+    "mutatio": "2",
+    "interitio": "0.5"
+  },
+  "recipes": [
+    [
+      "rpgkitmagic:materia",
+      "rpgkitmagic:statera"
+    ]
+  ],
+  "use_form": {
+    "id": "rpgkitmagic:blast",
+    "weight": 2
+  }
+}

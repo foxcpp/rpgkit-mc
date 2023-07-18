@@ -7,9 +7,180 @@
     "interitio": "0.5"
   },
   "recipes": [
+    [
+      "rpgkitmagic:materia",
+      "rpgkitmagic:aer"
+    ]
   ],
   "use_form": {
     "id": "rpgkitmagic:ray",
     "weight": 3
-  }
+  },
+  "area_effects": [
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "area_coverage": 0.5,
+      "entity_coverage": 0.8,
+      "effects": [
+        {
+          "type": "rpgkitmagic:potion",
+          "id": "minecraft:speed",
+          "duration": 120,
+          "amplifier": 0,
+          "condition": {
+            "first_element": true,
+            "stacked": 4
+          }
+        },
+        {
+          "type": "rpgkitmagic:fall_block",
+          "vector": "from_origin",
+          "velocity": 0.2,
+          "filter": [
+            "#minecraft:fences",
+            "#minecraft:flowers",
+            "#minecraft:trapdoors",
+            "#minecraft:doors",
+            "#minecraft:pressure_plates",
+            "#minecraft:wool",
+            "#minecraft:saplings",
+            "#minecraft:replceable_plants",
+            "#minecraft:snow",
+            "#minecraft:fall_damage_resetting"
+          ],
+          "condition": {
+            "stacked": 3
+          }
+        },
+        {
+          "type": "rpgkitmagic:push",
+          "vector": "from_origin",
+          "velocity": 0.8,
+          "reactions": [
+            {
+              "for": "rpgkitmagic:push",
+              "velocity": {
+                "mul": 1.2
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "vector": "towards_origin",
+              "condition": {
+                "has_element": "rpgkitmagic:symmetia"
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "vector": "up",
+              "condition": {
+                "has_element": "rpgkitmagic:sursum"
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "velocity": {
+                "mul": 0.5
+              },
+              "condition": {
+                "has_element": "rpgkitmagic:nox"
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "velocity": {
+                "mul": 0.7
+              },
+              "condition": {
+                "has_element": "rpgkitmagic:tardus"
+              }
+            }
+          ],
+          "condition": {
+            "first_element": true
+          }
+        }
+      ]
+    }
+  ],
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:potion",
+      "id": "minecraft:speed",
+      "duration": 120,
+      "amplifier": 0,
+      "condition": {
+        "first_element": true,
+        "stacked": 4
+      }
+    },
+    {
+      "type": "rpgkitmagic:fall_block",
+      "vector": "from_origin",
+      "velocity": 0.2,
+      "filter": [
+        "#minecraft:fences",
+        "#minecraft:flowers",
+        "#minecraft:trapdoors",
+        "#minecraft:doors",
+        "#minecraft:pressure_plates",
+        "#minecraft:wool",
+        "#minecraft:saplings",
+        "#minecraft:replceable_plants",
+        "#minecraft:snow",
+        "#minecraft:fall_damage_resetting"
+      ],
+      "condition": {
+        "stacked": 3
+      }
+    },
+    {
+      "type": "rpgkitmagic:push",
+      "vector": "from_origin",
+      "velocity": 0.8,
+      "reactions": [
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 1.2
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "vector": "towards_origin",
+          "condition": {
+            "has_element": "rpgkitmagic:symmetia"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "vector": "up",
+          "condition": {
+            "has_element": "rpgkitmagic:sursum"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 0.5
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:nox"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 0.7
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:tardus"
+          }
+        }
+      ],
+      "condition": {
+        "first_element": true
+      }
+    }
+  ]
 }

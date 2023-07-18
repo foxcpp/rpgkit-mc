@@ -12,8 +12,104 @@
     "id": "rpgkitmagic:blast",
     "weight": 1
   },
-  "generic_effects": [
-  ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:damage",
+      "damage": 3,
+      "reactions": [
+        {
+          "for": "rpgkitmagic:damage",
+          "damage": {
+            "add": 2
+          },
+          "condition": {
+            "stacked": 2
+          }
+        }
+      ],
+      "condition": {
+        "or": [
+          {
+            "first_element": true
+          },
+          {
+            "stacked": 3
+          }
+        ]
+      }
+    },
+    {
+      "type": "rpgkitmagic:transmute_block",
+      "mapping": "rpgkitmagic:block_shatter",
+      "condition": {
+        "first_element": true,
+        "stacked": 4
+      }
+    },
+    {
+      "type": "rpgkitmagic:explosion",
+      "power": 0.5,
+      "condition": {
+        "first_element": true,
+        "stacked": 5
+      }
+    },
+    {
+      "type": "rpgkitmagic:break_block",
+      "magic_strength": 1,
+      "filter": [
+        "#minecraft:fences",
+        "#minecraft:flowers",
+        "#minecraft:trapdoors",
+        "#minecraft:doors",
+        "#minecraft:pressure_plates",
+        "#minecraft:wool",
+        "#minecraft:saplings",
+        "#minecraft:replceable_plants",
+        "#minecraft:snow",
+        "#minecraft:fall_damage_resetting",
+        "#minecraft:leaves",
+        "#c:glass_blocks",
+        "#c:glass_panes"
+      ],
+      "condition": {
+        "first_element": true,
+        "stacked": 2
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:break_block",
+          "magic_strength": {
+            "add": 1
+          },
+          "condition": {
+            "stacked": {
+              "min": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:break_block",
+      "magic_strength": 1,
+      "condition": {
+        "first_element": true,
+        "stacked": 4
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:break_block",
+          "magic_strength": {
+            "add": 1
+          },
+          "condition": {
+            "stacked": {
+              "min": 2
+            }
+          }
+        }
+      ]
+    }
   ]
 }

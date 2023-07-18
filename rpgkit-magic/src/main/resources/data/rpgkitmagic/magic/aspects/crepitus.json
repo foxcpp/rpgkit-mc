@@ -7,13 +7,178 @@
     "interitio": "6"
   },
   "recipes": [
+    [
+      "rpgkitmagic:ignis",
+      "rpgkitmagic:interitio"
+    ]
   ],
   "use_form": {
     "id": "rpgkitmagic:blast",
     "weight": 1
   },
-  "generic_effects": [
+  "area_effects": [
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "area_coverage": 0.25,
+      "effects": [
+        {
+          "type": "rpgkitmagic:transmute_block",
+          "mapping": "rpgkitmagic:block_shatter"
+        },
+        {
+          "type": "rpgkitmagic:break_block",
+          "filter": [
+            "#minecraft:leaves",
+            "#c:glass_blocks",
+            "#c:glass_panes"
+          ]
+        },
+        {
+          "type": "rpgkitmagic:explosion",
+          "power_multiplier": 3,
+          "condition": {
+            "first_element": true
+          },
+          "reactions": [
+            {
+              "for": "rpgkitmagic:explosion",
+              "power": {
+                "add": 0.5
+              },
+              "condition": {
+                "stacked": 2
+              }
+            },
+            {
+              "for": "rpgkitmagic:explosion",
+              "break_blocks": true,
+              "condition": {
+                "stacked": 3
+              }
+            },
+            {
+              "for": "rpgkitmagic:explosion",
+              "power": {
+                "add": 0.3
+              },
+              "condition": {
+                "has_element": {
+                  "element": "rpgkitmagic:ignis",
+                  "min": 1
+                }
+              }
+            },
+            {
+              "for": "rpgkitmagic:explosion",
+              "power": {
+                "add": 0.4
+              },
+              "condition": {
+                "has_element": {
+                  "element": "rpgkitmagic:ignis",
+                  "min": 2
+                }
+              }
+            },
+            {
+              "for": "rpgkitmagic:explosion",
+              "power": {
+                "add": 0.5
+              },
+              "condition": {
+                "has_element": {
+                  "element": "rpgkitmagic:ignis",
+                  "min": 3
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "condition": {
+        "first_element": true
+      }
+    }
   ],
-  "generic_reactions": [
+  "use_effects": [
+    {
+      "type": "rpgkitmagic:explosion",
+      "power_multiplier": 1,
+      "condition": {
+        "first_element": true
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:explosion",
+          "power": {
+            "add": 1.1
+          },
+          "condition": {
+            "stacked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:explosion",
+      "power_multiplier": 1,
+      "condition": {
+        "first_element": false,
+        "stacked": 3
+      }
+    },
+    {
+      "type": "rpgkitmagic:area_spread",
+      "radius": 2,
+      "effect": [
+        {
+          "type": "rpgkitmagic:surface_spray",
+          "area_coverage": 0.25,
+          "effects": [
+            {
+              "type": "rpgkitmagic:transmute_block",
+              "mapping": "rpgkitmagic:block_shatter"
+            },
+            {
+              "type": "rpgkitmagic:break_block",
+              "filter": [
+                "#minecraft:leaves",
+                "#c:glass_blocks",
+                "#c:glass_panes"
+              ]
+            }
+          ]
+        }
+      ],
+      "condition": {
+        "first_element": true
+      }
+    }
+  ],
+  "item_effects": [
+    {
+      "type": "rpgkitmagic:caster_apply",
+      "effects": [
+        {
+          "type": "rpgkitmagic:explosion",
+          "power": 1
+        },
+        {
+          "type": "rpgkitmagic:damage",
+          "damage": 2
+        }
+      ],
+      "condition": {
+        "first_element": true
+      }
+    },
+    {
+      "type": "rpgkitmagic:transmute_item",
+      "mapping": "rpgkitmagic:block_shatter",
+      "condition": {
+        "first_element": true,
+        "stacked": 2
+      }
+    }
   ]
 }

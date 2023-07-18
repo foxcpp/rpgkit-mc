@@ -12,19 +12,325 @@
     "id": "rpgkitmagic:blast",
     "weight": 1
   },
+  "area_effects": [
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "area_coverage": 0.25,
+      "entity_coverage": 0,
+      "effects": [
+        {
+          "type": "rpgkitmagic:fall_block",
+          "vector": "from_origin",
+          "velocity": 0.2,
+          "filter": [
+            "#minecraft:fences",
+            "#minecraft:flowers",
+            "#minecraft:trapdoors",
+            "#minecraft:doors",
+            "#minecraft:pressure_plates",
+            "#minecraft:wool",
+            "#minecraft:saplings",
+            "#minecraft:replceable_plants",
+            "#minecraft:snow",
+            "#minecraft:fall_damage_resetting"
+          ],
+          "condition": {
+            "stacked": 5
+          }
+        },
+        {
+          "type": "rpgkitmagic:break_block",
+          "filter": [
+            "#minecraft:leaves",
+            "#c:glass_blocks",
+            "#c:glass_panes"
+          ],
+          "magic_strength": 1,
+          "condition": {
+            "stacked": 4
+          },
+          "reactions": [
+            {
+              "for": "rpgkitmagic:break_block",
+              "magic_strength": {
+                "add": 0.25
+              },
+              "condition": {
+                "stacked": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:surface_spray",
+      "area_coverage": 0,
+      "entity_coverage": 0.99,
+      "effects": [
+        {
+          "type": "rpgkitmagic:transfer_mana",
+          "spell_factor": 0.1,
+          "condition": {
+            "stacked": 2
+          },
+          "reactions": [
+            {
+              "for": "rpgkitmagic:transfer_mana",
+              "spell_factor": {
+                "add": 0.1
+              },
+              "condition": {
+                "stacked": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "rpgkitmagic:push",
+          "vector": "from_origin",
+          "velocity": 0.5,
+          "reactions": [
+            {
+              "for": "rpgkitmagic:push",
+              "velocity": {
+                "mul": 1.2
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "vector": "towards_origin",
+              "condition": {
+                "has_element": "rpgkitmagic:symmetia"
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "vector": "forward",
+              "condition": {
+                "has_element": "rpgkitmagic:motus"
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "vector": "up",
+              "condition": {
+                "has_element": "rpgkitmagic:sursum"
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "velocity": {
+                "mul": 0.5
+              },
+              "condition": {
+                "has_element": "rpgkitmagic:nox"
+              }
+            },
+            {
+              "for": "rpgkitmagic:push",
+              "velocity": {
+                "mul": 0.7
+              },
+              "condition": {
+                "has_element": "rpgkitmagic:tardus"
+              }
+            }
+          ]
+        },
+        {
+          "type": "rpgkitmagic:damage",
+          "damage": 2,
+          "reactions": [
+            {
+              "for": "rpgkitmagic:damage",
+              "damage": {
+                "add": 1
+              },
+              "condition": {
+                "stacked": 4
+              }
+            },
+            {
+              "for": "rpgkitmagic:damage",
+              "damage": {
+                "add": 2
+              },
+              "condition": {
+                "has_element": "rpgkitmagic:crepitus"
+              }
+            },
+            {
+              "for": "rpgkitmagic:damage",
+              "damage": {
+                "add": 4
+              },
+              "condition": {
+                "has_element": "rpgkitmagic:mors"
+              }
+            }
+          ],
+          "condition": {
+            "stacked": 3
+          }
+        }
+      ],
+      "condition": {
+        "first_element": true
+      }
+    }
+  ],
   "use_effects": [
     {
-      "type": "rpgkitmagic:damage",
-      "damage": 1,
+      "type": "rpgkitmagic:transfer_mana",
+      "spell_factor": 0.1,
+      "condition": {
+        "first_element": true,
+        "stacked": 2
+      },
+      "reactions": [
+        {
+          "for": "rpgkitmagic:transfer_mana",
+          "spell_factor": {
+            "add": 0.1
+          },
+          "condition": {
+            "stacked": 3
+          }
+        }
+      ]
+    },
+    {
+      "type": "rpgkitmagic:push",
+      "vector": "from_origin",
+      "velocity": 0.7,
       "condition": {
         "first_element": true
       },
       "reactions": [
         {
-          "for": "rpgkitmagic:damage",
-          "damage": 1
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 1.2
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "vector": "towards_origin",
+          "condition": {
+            "has_element": "rpgkitmagic:symmetia"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "vector": "forward",
+          "condition": {
+            "has_element": "rpgkitmagic:motus"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "vector": "up",
+          "condition": {
+            "has_element": "rpgkitmagic:sursum"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 0.5
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:nox"
+          }
+        },
+        {
+          "for": "rpgkitmagic:push",
+          "velocity": {
+            "mul": 0.7
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:tardus"
+          }
         }
       ]
+    },
+    {
+      "type": "rpgkitmagic:damage",
+      "damage": 2,
+      "reactions": [
+        {
+          "for": "rpgkitmagic:damage",
+          "damage": {
+            "add": 1
+          },
+          "condition": {
+            "stacked": 4
+          }
+        },
+        {
+          "for": "rpgkitmagic:damage",
+          "damage": {
+            "add": 2
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:crepitus"
+          }
+        },
+        {
+          "for": "rpgkitmagic:damage",
+          "damage": {
+            "add": 4
+          },
+          "condition": {
+            "has_element": "rpgkitmagic:mors"
+          }
+        }
+      ],
+      "condition": {
+        "stacked": 3
+      }
+    },
+    {
+      "type": "rpgkitmagic:fall_block",
+      "vector": "from_origin",
+      "velocity": 0.7,
+      "filter": [
+        "#minecraft:fences",
+        "#minecraft:flowers",
+        "#minecraft:trapdoors",
+        "#minecraft:pressure_plates",
+        "#minecraft:wool",
+        "#minecraft:saplings",
+        "#minecraft:replceable_plants",
+        "#minecraft:snow",
+        "#minecraft:fall_damage_resetting"
+      ],
+      "condition": {
+        "stacked": 5
+      }
+    },
+    {
+      "type": "rpgkitmagic:break_block",
+      "filter": [
+        "#minecraft:doors"
+      ],
+      "condition": {
+        "stacked": 5
+      }
+    },
+    {
+      "type": "rpgkitmagic:break_block",
+      "filter": [
+        "#minecraft:leaves",
+        "#c:glass_blocks",
+        "#c:glass_panes"
+      ],
+      "condition": {
+        "stacked": 4
+      }
     }
+  ],
+  "item_effects": [
   ]
 }
