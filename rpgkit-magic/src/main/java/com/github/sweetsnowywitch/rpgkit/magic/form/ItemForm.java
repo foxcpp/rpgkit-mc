@@ -1,6 +1,8 @@
 package com.github.sweetsnowywitch.rpgkit.magic.form;
 
+import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
+import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellElement;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.SpellForm;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
@@ -8,6 +10,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemForm extends SpellForm {
@@ -24,6 +27,26 @@ public class ItemForm extends SpellForm {
             var items = caster.getHandItems();
             if (items.iterator().hasNext()) {
                 targetStack = items.iterator().next();
+            }
+        }
+        if (targetStack == null) {
+            targetStack = ItemStack.EMPTY.copy();
+        }
+
+        if (targetStack.getCount() > 1) {
+            var cost = cast.getCost(SpellElement.COST_MAGICAE);
+            var ms = cast.getManaSource(world);
+            if (ms != null) {
+                if (!ms.spendMana(cost * (targetStack.getCount() - 1))) {
+                    RPGKitMagicMod.LOGGER.info("Cast failed due to mana overspending (too many items) ({}) of {}", cost, ms);
+                    var player = cast.getPlayerCaster(world);
+                    if (player != null) {
+                        player.sendMessage(Text.translatable("rpgkit.magic.not_enough_mana"), true);
+                    }
+                    return;
+                }
+            } else {
+                return;
             }
         }
 
