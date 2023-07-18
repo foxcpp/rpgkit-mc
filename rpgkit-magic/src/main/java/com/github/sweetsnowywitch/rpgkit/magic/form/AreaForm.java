@@ -78,7 +78,7 @@ public class AreaForm extends SpellForm {
                 SpellElement.COST_INTERITIO, 2f
         ), ImmutableMap.of());
 
-        this.radius = 2;
+        this.radius = 4;
         this.shape = Shape.BOX;
     }
 
