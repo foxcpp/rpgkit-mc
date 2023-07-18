@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.components.entity;
 
+import com.github.sweetsnowywitch.rpgkit.magic.ManaSource;
 import com.github.sweetsnowywitch.rpgkit.magic.ModAttributes;
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.components.ModComponents;
@@ -11,7 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class ManaComponent implements AutoSyncedComponent, ServerTickingComponent {
+public class ManaComponent implements AutoSyncedComponent, ServerTickingComponent, ManaSource {
     private final LivingEntity provider;
     private double value;
 
@@ -48,24 +49,37 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
         ModComponents.MANA.sync(this.provider);
     }
 
-    public void spendMana(double cost) {
+    public void addMana(double value) {
+        this.value += value;
+        var max = this.getMaxValue();
+        if (this.value > max) {
+            this.value = max;
+        }
+        ModComponents.MANA.sync(this.provider);
+    }
+
+    public boolean spendMana(double cost) {
         if (this.provider instanceof PlayerEntity p && p.getAbilities().creativeMode) {
-            return;
+            return true;
         }
 
+        var ok = true;
         this.value -= cost;
         if (this.value < 0) {
             var damage = (float) (-this.value * this.getHealthMultiplier());
             if (damage > this.provider.getHealth() - 0.5f) {
                 damage = this.provider.getHealth() - 0.5f;
+                ok = false;
             }
             if (this.provider.getHealth() <= 1) {
                 damage = 10;
+                ok = false;
             }
             this.provider.damage(DamageSource.MAGIC, damage);
             this.value = 0;
         }
         ModComponents.MANA.sync(this.provider);
+        return ok;
     }
 
     public double getValue() {
@@ -107,5 +121,10 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
             return ModAttributes.MANA_HEALTH_FACTOR.getDefaultValue();
         }
         return attr.getValue();
+    }
+
+    @Override
+    public String toString() {
+        return "ManaComponent of " + this.provider.toString();
     }
 }

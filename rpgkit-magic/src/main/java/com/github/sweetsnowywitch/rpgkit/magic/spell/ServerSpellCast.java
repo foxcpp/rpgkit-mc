@@ -1,5 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.spell;
 
+import com.github.sweetsnowywitch.rpgkit.magic.ManaSource;
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.components.ModComponents;
 import net.minecraft.entity.Entity;
@@ -7,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,15 +71,23 @@ public class ServerSpellCast extends SpellCast {
             return;
         }
 
-        this.form.startCast(this, world, caster);
-
-        if (caster instanceof PlayerEntity player) {
+        var ms = this.getManaSource(world);
+        if (ms != null) {
             var cost = this.costs.getOrDefault(SpellElement.COST_MAGICAE, (float) 0);
             if (cost != null) {
-                RPGKitMagicMod.LOGGER.debug("Consuming {} mana points of {}", cost, player);
-                player.getComponent(ModComponents.MANA).spendMana((int) ((float) cost));
+                RPGKitMagicMod.LOGGER.debug("Consuming {} mana points of {}", cost, ms);
+                if (!ms.spendMana(cost)) {
+                    RPGKitMagicMod.LOGGER.info("Cast failed due to mana overspending ({}) of {}", cost, ms);
+                    var player = this.getPlayerCaster(world);
+                    if (player != null) {
+                        player.sendMessage(Text.translatable("rpgkit.magic.not_enough_mana"), true);
+                    }
+                    return;
+                }
             }
         }
+
+        this.form.startCast(this, world, caster);
     }
 
     public void writeToNbt(NbtCompound nbt) {
@@ -89,6 +99,16 @@ public class ServerSpellCast extends SpellCast {
 
     public UUID getCasterUuid() {
         return this.casterUuid;
+    }
+
+    public @Nullable ManaSource getManaSource(@NotNull ServerWorld world) {
+        // in the future there will be other potential mana sources such as magic batteries placed
+        // in the world.
+        var caster = this.getCaster(world);
+        if (caster == null) {
+            return null;
+        }
+        return ModComponents.MANA.maybeGet(caster).orElse(null);
     }
 
     public @Nullable Entity getCaster(@NotNull ServerWorld world) {
