@@ -13,6 +13,7 @@ public class ModAttributes {
     public static final EntityAttribute MANA_REGEN = make("mana_regen", 1, 0, 200);
     public static final EntityAttribute MANA_REGEN_SPEED = make("mana_regen_speed", 0.005, 0, 1);
     public static final EntityAttribute MANA_HEALTH_FACTOR = make("mana_health_factor", 10, 0, 10);
+    public static final EntityAttribute MAGIC_STRENGTH_BONUS = make("magic_strength_bonus", 0, 0, 10);
 
     private static EntityAttribute make(final String name, final double base, final double min, final double max) {
         return new ClampedEntityAttribute("attribute.name.player." + RPGKitMagicMod.MOD_ID + '.' + name, base, min, max).setTracked(true);
@@ -23,12 +24,15 @@ public class ModAttributes {
         Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_regen"), MANA_REGEN);
         Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_regen_speed"), MANA_REGEN_SPEED);
         Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_health_factor"), MANA_HEALTH_FACTOR);
+        Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "magic_strength_bonus"), MAGIC_STRENGTH_BONUS);
 
         FabricDefaultAttributeRegistry.register(EntityType.PLAYER,
                 PlayerEntity.createPlayerAttributes().
                         add(MAX_MANA).
                         add(MANA_REGEN).
                         add(MANA_REGEN_SPEED).
-                        add(MANA_HEALTH_FACTOR));
+                        add(MANA_HEALTH_FACTOR).
+                        add(MAGIC_STRENGTH_BONUS)
+        );
     }
 }
