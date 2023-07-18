@@ -1,6 +1,6 @@
 package com.github.sweetsnowywitch.rpgkit.magic.effects.item;
 
-import com.github.sweetsnowywitch.rpgkit.magic.ItemTransmuteMapping;
+import com.github.sweetsnowywitch.rpgkit.magic.ItemMapping;
 import com.github.sweetsnowywitch.rpgkit.magic.MagicRegistries;
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.ItemEffect;
@@ -22,11 +22,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 public class TransmuteItemEffect extends ItemEffect {
-    protected final ItemTransmuteMapping mapping;
+    protected final ItemMapping mapping;
+    private final String mappingId;
+    protected final boolean preserveCount;
 
     protected TransmuteItemEffect(Identifier id) {
         super(id);
         this.mapping = null;
+        this.preserveCount = false;
+        this.mappingId = null;
 
         RPGKitMagicMod.LOGGER.warn("TransformItemEffect is not configured, will be no-op");
     }
@@ -40,8 +44,11 @@ public class TransmuteItemEffect extends ItemEffect {
 
         this.mapping = MagicRegistries.TRANSMUTE_MAPPINGS.get(new Identifier(obj.get("mapping").getAsString()));
         if (this.mapping == null) {
-            throw new IllegalArgumentException("transmute mapping does not exist");
+            throw new IllegalArgumentException("transmute mapping does not exist: " + obj.get("mapping").getAsString());
         }
+        this.mappingId = obj.get("mapping").getAsString();
+
+        this.preserveCount = obj.has("preserve_count") && obj.get("preserve_count").getAsBoolean();
     }
 
     public class Used extends ItemEffect.Used {
@@ -62,6 +69,7 @@ public class TransmuteItemEffect extends ItemEffect {
             if (stack.isEmpty()) {
                 return TypedActionResult.pass(stack);
             }
+            var originalCount = stack.getCount();
 
             var lcb = new LootContext.Builder(world);
             lcb.luck(0.5f);
@@ -78,7 +86,12 @@ public class TransmuteItemEffect extends ItemEffect {
             lcb.parameter(LootContextParameters.THIS_ENTITY, thisEntity);
             var context = lcb.build(LootContextTypes.SELECTOR);
 
-            return TypedActionResult.success(TransmuteItemEffect.this.mapping.apply(stack, context));
+            var res = TransmuteItemEffect.this.mapping.apply(stack, context);
+            if (TransmuteItemEffect.this.preserveCount) {
+                res.setCount(originalCount);
+            }
+
+            return TypedActionResult.success(res);
         }
     }
 
@@ -90,5 +103,12 @@ public class TransmuteItemEffect extends ItemEffect {
     @Override
     public @NotNull Used usedFromJson(JsonObject obj) {
         return new Used(obj);
+    }
+
+    @Override
+    public void toJson(@NotNull JsonObject obj) {
+        super.toJson(obj);
+        obj.addProperty("mapping", this.mappingId);
+        obj.addProperty("preserve_count", this.preserveCount);
     }
 }

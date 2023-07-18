@@ -107,7 +107,6 @@ public class ItemTransmuteMapping implements ItemMapping {
         }
 
         var pick = RPGKitMagicMod.RANDOM.nextFloat();
-
         var noMatch = true;
         var weightAccum = 0f;
         for (var mapping : this.mappings) {
@@ -115,7 +114,7 @@ public class ItemTransmuteMapping implements ItemMapping {
                 continue;
             }
 
-            weightAccum += mapping.weight;
+            weightAccum += mapping.weight / candidateTotalWeight;
             if (weightAccum < pick) {
                 continue;
             }

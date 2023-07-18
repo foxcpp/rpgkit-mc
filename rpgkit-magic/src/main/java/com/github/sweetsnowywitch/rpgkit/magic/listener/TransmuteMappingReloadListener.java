@@ -1,9 +1,7 @@
 package com.github.sweetsnowywitch.rpgkit.magic.listener;
 
 import com.github.sweetsnowywitch.rpgkit.ServerDataSyncer;
-import com.github.sweetsnowywitch.rpgkit.magic.ItemTransmuteMapping;
-import com.github.sweetsnowywitch.rpgkit.magic.MagicRegistries;
-import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
+import com.github.sweetsnowywitch.rpgkit.magic.*;
 import com.google.gson.JsonElement;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
@@ -32,13 +30,19 @@ public class TransmuteMappingReloadListener extends JsonDataLoader implements Id
     }
 
     public void loadSynced(Map<Identifier, JsonElement> prepared) {
-        var mappings = new HashMap<Identifier, ItemTransmuteMapping>();
+        var mappings = new HashMap<Identifier, ItemMapping>();
 
         for (var ent : prepared.entrySet()) {
             try {
                 var model = ent.getValue().getAsJsonObject();
 
-                mappings.put(ent.getKey(), ItemTransmuteMapping.ofItemStack(ent.getKey(), model));
+                switch (model.get("type").getAsString()) {
+                    case "item" -> mappings.put(ent.getKey(), ItemTransmuteMapping.ofItemStack(ent.getKey(), model));
+                    case "block" ->
+                            mappings.put(ent.getKey(), BlockStateTransmuteMapping.ofBlockState(ent.getKey(), model));
+                    default ->
+                            throw new IllegalArgumentException("type for transmute_mapping must be either item or block");
+                }
 
                 RPGKitMagicMod.LOGGER.debug("Loaded transmute mapping {}", ent.getKey());
             } catch (Exception e) {

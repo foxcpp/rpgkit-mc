@@ -1,10 +1,7 @@
 package com.github.sweetsnowywitch.rpgkit.magic.json;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.TagKey;
@@ -21,6 +18,7 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
     protected final @Nullable Block block;
     protected final @Nullable TagKey<Block> tag;
     protected final @Nullable List<BlockStatePredicate> or;
+    protected final @Nullable BlockStatePredicate not;
 
     public BlockStatePredicate(JsonElement el) {
         if (el instanceof JsonPrimitive p) {
@@ -35,6 +33,27 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
                 this.tag = null;
             }
             this.or = null;
+            this.not = null;
+        } else if (el instanceof JsonObject obj) {
+            if (obj.has("not")) {
+                this.not = new BlockStatePredicate(obj.get("not"));
+                this.block = null;
+                this.tag = null;
+            } else {
+                this.not = null;
+                if (obj.has("block")) {
+                    this.block = Registry.BLOCK.get(new Identifier(obj.get("block").getAsString()));
+                    this.tag = null;
+                } else if (obj.has("tag")) {
+                    var tag = TagKey.of(Registry.BLOCK_KEY, new Identifier(obj.get("tag").getAsString()));
+
+                    this.block = null;
+                    this.tag = tag;
+                } else {
+                    throw new IllegalArgumentException("block or tag is required for BlockStatePredicate");
+                }
+            }
+            this.or = null;
         } else if (el instanceof JsonArray arr) {
             var predicates = new ArrayList<BlockStatePredicate>(arr.size());
             for (var arrEl : arr) {
@@ -44,10 +63,12 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
             this.block = null;
             this.tag = null;
             this.or = predicates;
+            this.not = null;
         } else if (el.isJsonNull()) {
             this.block = null;
             this.tag = null;
             this.or = null;
+            this.not = null;
         } else {
             throw new IllegalArgumentException("unexpected json value");
         }
@@ -65,12 +86,20 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
                 jsonArr.add(el.toJson());
             }
             return jsonArr;
+        } else if (this.not != null) {
+            var jsonObj = new JsonObject();
+            jsonObj.add("not", this.not.toJson());
+            return jsonObj;
         }
         return JsonNull.INSTANCE;
     }
 
     @Override
     public boolean test(BlockState blockState) {
+        if (this.not != null) {
+            return !this.not.test(blockState);
+        }
+
         if (this.block != null) {
             return blockState.isOf(this.block);
         }
@@ -89,5 +118,32 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
         }
 
         return false;
+    }
+
+    @Override
+    public String toString() {
+        if (this.block != null) {
+            return "BlockStatePredicate[" + Registry.BLOCK.getId(this.block) + "]";
+        }
+        if (this.tag != null) {
+            return "BlockStatePredicate[#" + this.tag.id() + "]";
+        }
+        if (this.or != null) {
+            var builder = new StringBuilder();
+            builder.append("BlockStatePredicate[");
+            for (var pred : this.or) {
+                if (pred.block != null) {
+                    builder.append(Registry.BLOCK.getId(pred.block));
+                } else if (pred.tag != null) {
+                    builder.append("#").append(pred.tag.id());
+                } else {
+                    builder.append(pred);
+                }
+                builder.append(", ");
+            }
+            builder.append("]");
+            return builder.toString();
+        }
+        return "BlockStatePredicate[empty]";
     }
 }
