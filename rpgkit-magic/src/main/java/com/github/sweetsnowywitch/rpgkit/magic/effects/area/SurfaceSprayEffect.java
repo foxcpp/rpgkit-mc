@@ -3,6 +3,7 @@ package com.github.sweetsnowywitch.rpgkit.magic.effects.area;
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
 import com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.AreaEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.json.FloatModifier;
 import com.github.sweetsnowywitch.rpgkit.magic.spell.ServerSpellCast;
@@ -36,6 +37,11 @@ public class SurfaceSprayEffect extends AreaEffect {
             } else {
                 this.entityCoverage = new FloatModifier(1f);
             }
+        }
+
+        @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof SurfaceSprayEffect;
         }
 
         @Override
@@ -124,6 +130,7 @@ public class SurfaceSprayEffect extends AreaEffect {
             );
 
             ActionResult lastResult = ActionResult.PASS;
+            boolean success = false;
 
             if (this.areaCoverage > 0) {
                 var startPos = cast.getOriginPos();
@@ -148,6 +155,9 @@ public class SurfaceSprayEffect extends AreaEffect {
 
                             if (RPGKitMagicMod.RANDOM.nextFloat() <= this.areaCoverage) {
                                 lastResult = this.apply(cast, world, pos, Direction.UP);
+                                if (lastResult.equals(ActionResult.SUCCESS)) {
+                                    success = true;
+                                }
                                 if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
                                     return lastResult;
                                 }
@@ -166,12 +176,18 @@ public class SurfaceSprayEffect extends AreaEffect {
                         RPGKitMagicMod.RANDOM.nextFloat() <= this.entityCoverage);
                 for (var ent : targetEnts) {
                     lastResult = this.apply(cast, ent);
+                    if (lastResult.equals(ActionResult.SUCCESS)) {
+                        success = true;
+                    }
                     if (lastResult.equals(ActionResult.CONSUME) || lastResult.equals(ActionResult.FAIL)) {
                         return lastResult;
                     }
                 }
             }
 
+            if (lastResult.equals(ActionResult.PASS) && success) {
+                return ActionResult.SUCCESS;
+            }
             return lastResult;
         }
     }

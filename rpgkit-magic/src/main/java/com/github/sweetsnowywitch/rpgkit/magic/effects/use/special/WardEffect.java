@@ -179,6 +179,11 @@ public class WardEffect extends SimpleUseEffect {
         }
 
         @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof WardEffect;
+        }
+
+        @Override
         public void toJson(@NotNull JsonObject obj) {
             super.toJson(obj);
             obj.add("magic_strength", this.strength.toJson());

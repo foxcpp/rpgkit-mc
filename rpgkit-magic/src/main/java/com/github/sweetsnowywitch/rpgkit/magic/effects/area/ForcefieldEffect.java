@@ -2,6 +2,7 @@ package com.github.sweetsnowywitch.rpgkit.magic.effects.area;
 
 import com.github.sweetsnowywitch.rpgkit.JsonHelpers;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.AreaEffect;
+import com.github.sweetsnowywitch.rpgkit.magic.effects.SpellEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.effects.UseEffect;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.ForcefieldEntity;
 import com.github.sweetsnowywitch.rpgkit.magic.entities.ModEntities;
@@ -33,6 +34,11 @@ public class ForcefieldEffect extends AreaEffect {
             } else {
                 this.duration = IntModifier.NOOP;
             }
+        }
+
+        @Override
+        public boolean appliesTo(SpellEffect effect) {
+            return effect instanceof ForcefieldEffect;
         }
 
         @Override
