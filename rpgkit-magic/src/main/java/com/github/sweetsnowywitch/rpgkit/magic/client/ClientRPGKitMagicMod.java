@@ -41,10 +41,10 @@ public class ClientRPGKitMagicMod implements ClientModInitializer {
     public static final Identifier RPGKIT_PAGE = new Identifier(RPGKitMagicMod.MOD_ID, "rpgkit_page");
 
     public static final KeyBinding ACTIVATE_SPELL_BUILD_KEY = new KeyBinding(
-            "key." + RPGKitMagicMod.MOD_ID + ".magic.spell_build",
+            "key.rpgkit.magic.spell_build",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_F,
-            "category." + RPGKitMagicMod.MOD_ID + ".magic"
+            "category.rpgkit.magic"
     );
 
     public static final SpellBuildKeyboardHandler SPELL_BUILD_KEYBOARD_HANDLER = new SpellBuildKeyboardHandler();
