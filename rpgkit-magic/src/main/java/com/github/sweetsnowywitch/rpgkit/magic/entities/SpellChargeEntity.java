@@ -149,6 +149,9 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
     }
 
     protected void spawnParticles() {
+        if (this.particleEffect == null) {
+            return; // not initialized yet
+        }
         this.world.addParticle(this.particleEffect,
                 this.getX(), this.getY(), this.getZ(),
                 0, 0, 0);
