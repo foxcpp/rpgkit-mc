@@ -36,6 +36,7 @@ public class SpellRayEntity extends Entity {
     public int rayBaseColor = 0x00FFFFFF; // ARGB, calculated on client-side only
     protected ParticleEffect particleEffect; // calcualted on client-side only
     private boolean canHitItems;
+    private RaycastContext.FluidHandling fluidHandling;
     private BlockPos previousBlockHit;
     private Entity previousEntityHit;
 
@@ -44,6 +45,7 @@ public class SpellRayEntity extends Entity {
         this.ignoreCameraFrustum = true;
         this.maxAge = 3 * 20;
         this.canHitItems = false;
+        this.fluidHandling = RaycastContext.FluidHandling.ANY;
 
         this.previousBlockHit = null;
         this.previousEntityHit = null;
@@ -74,6 +76,10 @@ public class SpellRayEntity extends Entity {
         if (nbt.contains("CanHitItems")) {
             this.canHitItems = nbt.getBoolean("CanHitItems");
         }
+
+        if (nbt.contains("FluidHandling")) {
+            this.fluidHandling = RaycastContext.FluidHandling.valueOf(nbt.getString("FluidHandling"));
+        }
     }
 
     @Override
@@ -99,6 +105,7 @@ public class SpellRayEntity extends Entity {
         }
 
         nbt.putBoolean("CanHitItems", this.canHitItems);
+        nbt.putString("FluidHandling", this.fluidHandling.name());
     }
 
     @Override
@@ -121,6 +128,10 @@ public class SpellRayEntity extends Entity {
             return this.cast;
         }
         return this.dataTracker.get(CAST);
+    }
+
+    public void setFluidHandling(RaycastContext.FluidHandling fluidHandling) {
+        this.fluidHandling = fluidHandling;
     }
 
     public void setMaxAge(int maxAge) {
@@ -246,7 +257,7 @@ public class SpellRayEntity extends Entity {
         var raycastEnd = this.getAimOrigin().add(rotVec.x * 50f, rotVec.y * 50f, rotVec.z * 50f);
         BlockHitResult hitResult = this.world.raycast(new RaycastContext(
                 raycastStart, raycastEnd,
-                RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
+                RaycastContext.ShapeType.COLLIDER, this.fluidHandling,
                 this));
         if (hitResult.getType() != HitResult.Type.MISS) {
             raycastEnd = hitResult.getPos().add(rotVec);
@@ -261,7 +272,7 @@ public class SpellRayEntity extends Entity {
         raycastStart = this.getPos().add(rotVec.x, rotVec.y, rotVec.z);
         hitResult = this.world.raycast(new RaycastContext(
                 raycastStart, raycastEnd,
-                RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
+                RaycastContext.ShapeType.COLLIDER, this.fluidHandling,
                 this));
         if (hitResult.getType() != HitResult.Type.MISS) {
             raycastEnd = hitResult.getPos().add(rotVec);
