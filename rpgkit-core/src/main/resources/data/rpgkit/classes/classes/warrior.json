@@ -2,38 +2,69 @@
   "levels": [
     {
       "level": 1,
-      "proficiency": [
-        "rpgkit:strength"
-      ],
-      "abilities": {
-        "rpgkit:strength": 1
-      },
+      "proficiency": [],
+      "abilities": {},
       "perks": [
         {
-          "type": "rpgkit:kill_streak",
-          "id": "minecraft:generic.movement_speed",
-          "modifier": 0.1,
-          "penalty": 3,
-          "maxStreak": 10
-        },
+          "type": "rpgkit:combo",
+          "combo": 4,
+          "maxCombo": 5,
+          "modifier": 1.5
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
         {
           "type": "rpgkit:single_kill",
-          "id": "minecraft:regeneration",
+          "id": "minecraft:resistance",
           "duration": 200,
           "amplifier": 0
-        },
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
         {
           "type": "rpgkit:rest",
-          "id": "minecraft:invisibility",
+          "id": "minecraft:regeneration",
           "duration": 60,
           "amplifier": 0,
           "restTime": 600
-        },
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
         {
-          "type": "rpgkit:combo",
-          "combo": 0,
-          "maxCombo": 3,
-          "modifier": 2
+          "type": "rpgkit:single_kill",
+          "id": "minecraft:strength",
+          "playerKill": true,
+          "duration": 600,
+          "amplifier": 0
+        }
+      ]
+    },
+    {
+      "level": 20,
+      "proficiency": [],
+      "abilities": {},
+      "perks": [
+        {
+          "type": "rpgkit:kill_streak",
+          "id": "minecraft:generic.max_health",
+          "modifier": 1.0,
+          "penalty": 2,
+          "maxStreak": 10
         }
       ]
     }

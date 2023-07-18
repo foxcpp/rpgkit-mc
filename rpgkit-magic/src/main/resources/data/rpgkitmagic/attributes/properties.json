@@ -1,0 +1,10 @@
+{
+  "values": {
+    "rpgkitmagic:max_mana": {
+      "integer": "0.0"
+    },
+    "rpgkitmagic:mana_regen_speed": {
+      "multiplier": "1.0"
+    }
+  }
+}

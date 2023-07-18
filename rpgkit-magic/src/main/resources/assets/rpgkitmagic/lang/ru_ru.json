@@ -1,11 +1,9 @@
 {
   "commands.rpgkit.unknown_spell_element": "Неизвестный элемент (нет такого аспекта или предмета)",
-  "rpgkit.class.rpgkit.warrior": "Воин",
-  "rpgkit.class.rpgkit.wizard": "Волшебник",
   "item.rpgkit.catalyst_bag": "Сумка для реагентов",
   "rpgkit.magic.must_have_mana": "Вам нужна магическая энергия, чтобы творить заклинания",
   "rpgkit.magic.must_have_empty_hand": "Вам нужна свободная рука, чтобы творить заклинания",
-  "category.rpgkit.magic": "CSMP RPGKit - Магия",
+  "category.rpgkit.magic": "RPGKit - Магия",
   "key.rpgkit.magic.spell_build": "Начать сборку заклинания",
   "rpgkit.magic.spell.rpgkit.generic": "Безымянное заклинание",
   "rpgkit.magic.spell_build": "",
@@ -14,5 +12,14 @@
   "rpgkit.magic.help.use_cast": "Нажми ПКМ, чтобы применить заклинание (иногда нужно зажать, чтобы контролировать его)",
   "rpgkit.magic.help.area_cast": "Нажми %s, чтобы применить заклинание вокруг себя.",
   "rpgkit.magic.help.self_cast": "Нажми %s, чтобы применить заклинание к себе.",
-  "rpgkit.magic.help.catalyst_bag": "Если в хотбаре есть сумка с реагентами, нажми %s, чтобы открыть её."
+  "rpgkit.magic.help.catalyst_bag": "Если в хотбаре есть сумка с реагентами, нажми %s, чтобы открыть её.",
+
+  "attribute.name.player.rpgkitmagic.max_mana": "Максимум очков маны",
+  "attribute.name.player.rpgkitmagic.mana_regen_speed": "Скорость восстановления маны",
+
+  "rpgkit.gui.page.magic.title": "Классы и Магия",
+  "rpgkit.gui.page.attributes.text.max_mana": "Мана: %s/%s",
+  "rpgkit.gui.page.attributes.tooltip.max_mana": "Текущие ОМ / Максимум ОМ",
+  "rpgkit.gui.page.attributes.text.mana_regen_speed": "Восстановление маны: %s",
+  "rpgkit.gui.page.attributes.tooltip.mana_regen_speed": "Скорость восстановления маны"
 }

@@ -10,7 +10,7 @@ public class ComboPerk extends Perk {
 
     private final int combo;
     private final int maxCombo;
-    private final int modifier;
+    private final float modifier;
 
     public ComboPerk(Identifier typeId) {
         super(typeId);
@@ -19,7 +19,7 @@ public class ComboPerk extends Perk {
         this.modifier = DEFAULT_MODIFIER;
     }
 
-    public ComboPerk(Identifier typeId, int combo, int maxCombo, int modifier) {
+    public ComboPerk(Identifier typeId, int combo, int maxCombo, float modifier) {
         super(typeId);
         this.combo = combo;
         this.maxCombo = maxCombo;
@@ -40,7 +40,7 @@ public class ComboPerk extends Perk {
 
         var modifier = this.modifier;
         if (obj.has("modifier")) {
-            modifier = obj.get("modifier").getAsInt();
+            modifier = obj.get("modifier").getAsFloat();
         }
         return new ComboPerk(this.typeId, combo, maxCombo, modifier);
     }
@@ -62,7 +62,7 @@ public class ComboPerk extends Perk {
         return maxCombo;
     }
 
-    public int getModifier() {
+    public float getModifier() {
         return modifier;
     }
 }
