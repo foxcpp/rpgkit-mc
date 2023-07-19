@@ -10,8 +10,8 @@ import net.minecraft.util.registry.Registry;
 
 public class ModAttributes {
     public static final EntityAttribute MAX_MANA = make("max_mana", 0, 0, 2000);
-    public static final EntityAttribute MANA_REGEN = make("mana_regen", 1, 0, 200);
-    public static final EntityAttribute MANA_REGEN_SPEED = make("mana_regen_speed", 0.005, 0, 1);
+    public static final EntityAttribute MANA_REGEN = make("mana_regen", 0, 0, 200);
+    public static final EntityAttribute MANA_REGEN_SPEED = make("mana_regen_speed", 0, 0, 1);
     public static final EntityAttribute MANA_HEALTH_FACTOR = make("mana_health_factor", 10, 0, 10);
     public static final EntityAttribute MAGIC_STRENGTH_BONUS = make("magic_strength_bonus", 0, 0, 10);
 
