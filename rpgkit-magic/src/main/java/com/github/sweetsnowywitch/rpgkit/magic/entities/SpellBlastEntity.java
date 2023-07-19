@@ -124,6 +124,11 @@ public class SpellBlastEntity extends MagicAreaEntity {
 
     @Override
     protected void spawnParticles() {
+        if (this.particleEffect == null) {
+            // might not be initialized if server sync lags
+            return;
+        }
+
         var origin = this.dataTracker.get(PARTICLE_ORIGIN);
 
         if (origin.isPresent()) {

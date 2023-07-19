@@ -135,6 +135,11 @@ public abstract class MagicAreaEntity extends Entity {
     }
 
     protected void spawnParticles() {
+        if (this.particleEffect == null) {
+            // might not be initialized if server sync lags
+            return;
+        }
+
         var area = this.getArea();
         var volume = (area.maxX - area.minX) * (area.maxZ - area.minZ) * (area.maxY - area.minY);
 
