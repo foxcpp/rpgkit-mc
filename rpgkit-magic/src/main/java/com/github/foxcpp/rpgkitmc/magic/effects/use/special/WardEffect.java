@@ -243,7 +243,7 @@ public class WardEffect extends SimpleUseEffect {
     public static boolean isBlockProtected(World world, BlockPos pos) {
         var comp = world.getChunk(pos).getComponent(ModComponents.CHUNK_MAGIC_EFFECTS);
         var areas = comp.getAreas(pos, WardEffect.Area.class);
-        return areas.size() == 0;
+        return areas.size() != 0;
     }
 
     public static boolean isBlockProtected(World world, BlockPos pos, @Nullable PlayerEntity player) {
