@@ -5,7 +5,6 @@
   "name": "RPGKit - Magic",
   "description": "Data-driven elemental magic system",
   "authors": [
-    "SweetSnowyWitch",
     {
       "name": "foxcpp",
       "contact": {
@@ -13,24 +12,25 @@
         "email": "fox.cpp@disroot.org"
       }
     },
+    "SweetSnowyWitch",
     "4K (default4k)"
   ],
   "contact": {
-    "issues": "https://github.com/SweetSnowyWitch/cryotherapy-smp/issues",
-    "sources": "https://github.com/SweetSnowyWitch/cryotherapy-smp"
+    "issues": "https://github.com/foxcpp/rpgkit-mc/issues",
+    "sources": "https://github.com/foxcpp/rpgkit-mc"
   },
   "license": "MIT",
   "icon": "assets/rpgkitmagic/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.github.sweetsnowywitch.rpgkit.magic.client.ClientRPGKitMagicMod"
+      "com.github.foxcpp.rpgkitmc.magic.client.ClientRPGKitMagicMod"
     ],
     "main": [
-      "com.github.sweetsnowywitch.rpgkit.magic.RPGKitMagicMod"
+      "com.github.foxcpp.rpgkitmc.magic.RPGKitMagicMod"
     ],
     "cardinal-components": [
-      "com.github.sweetsnowywitch.rpgkit.magic.components.ModComponents"
+      "com.github.foxcpp.rpgkitmc.magic.components.ModComponents"
     ]
   },
   "custom": {

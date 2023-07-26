@@ -1,4 +1,0 @@
-dependencies {
-    annotationProcessor api(project(path: ":rpgkit-core", configuration: "namedElements"))
-    annotationProcessor api(project(path: ":rpgkit-magic", configuration: "namedElements"))
-}

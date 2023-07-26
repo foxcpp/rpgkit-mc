@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    "rpgkitmagic:amulets/copper_lapis",
+    "rpgkitmagic:amulets/copper_amethyst",
+    "rpgkitmagic:amulets/copper_quartz",
+    "rpgkitmagic:amulets/copper_redstone",
+    "rpgkitmagic:amulets/copper_diamond",
+    "rpgkitmagic:amulets/copper_emerald",
+    "rpgkitmagic:amulets/iron_lapis",
+    "rpgkitmagic:amulets/iron_amethyst",
+    "rpgkitmagic:amulets/iron_quartz",
+    "rpgkitmagic:amulets/iron_redstone",
+    "rpgkitmagic:amulets/iron_diamond",
+    "rpgkitmagic:amulets/iron_emerald",
+    "rpgkitmagic:amulets/gold_lapis",
+    "rpgkitmagic:amulets/gold_amethyst",
+    "rpgkitmagic:amulets/gold_quartz",
+    "rpgkitmagic:amulets/gold_redstone",
+    "rpgkitmagic:amulets/gold_diamond",
+    "rpgkitmagic:amulets/gold_emerald",
+    "rpgkitmagic:amulets/netherite_lapis",
+    "rpgkitmagic:amulets/netherite_amethyst",
+    "rpgkitmagic:amulets/netherite_quartz",
+    "rpgkitmagic:amulets/netherite_redstone",
+    "rpgkitmagic:amulets/netherite_diamond",
+    "rpgkitmagic:amulets/netherite_emerald"
+  ]
+}

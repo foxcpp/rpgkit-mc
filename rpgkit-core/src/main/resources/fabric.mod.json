@@ -5,7 +5,6 @@
   "name": "RPGKit - Core Components",
   "description": "Multi-purpose data-driven RPG mod (core components)",
   "authors": [
-    "SweetSnowyWitch",
     {
       "name": "foxcpp",
       "contact": {
@@ -13,23 +12,24 @@
         "email": "fox.cpp@disroot.org"
       }
     },
+    "SweetSnowyWitch",
     "4K (default4k)"
   ],
   "contact": {
-    "repo": "https://github.com/SweetSnowyWitch/cryotherapy-smp"
+    "repo": "https://github.com/foxcpp/rpgkit-mc"
   },
   "license": "MIT",
   "icon": "assets/rpgkit/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.github.sweetsnowywitch.rpgkit.client.ClientRPGKitMod"
+      "com.github.foxcpp.rpgkitmc.client.ClientRPGKitMod"
     ],
     "main": [
-      "com.github.sweetsnowywitch.rpgkit.RPGKitMod"
+      "com.github.foxcpp.rpgkitmc.RPGKitMod"
     ],
     "cardinal-components": [
-      "com.github.sweetsnowywitch.rpgkit.components.ModComponents"
+      "com.github.foxcpp.rpgkitmc.components.ModComponents"
     ]
   },
   "custom": {

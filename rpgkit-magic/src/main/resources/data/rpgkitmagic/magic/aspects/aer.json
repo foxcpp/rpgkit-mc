@@ -70,7 +70,7 @@
       "effects": [
         {
           "type": "rpgkitmagic:transfer_mana",
-          "spell_factor": 0.1,
+          "spell_factor": 0.7,
           "condition": {
             "stacked": 2
           },
@@ -183,7 +183,7 @@
   "use_effects": [
     {
       "type": "rpgkitmagic:transfer_mana",
-      "spell_factor": 0.1,
+      "spell_factor": 0.7,
       "condition": {
         "first_element": true,
         "stacked": 2
