@@ -157,7 +157,7 @@ public class ExplosionEffect extends UseEffect {
         super(id);
         this.blastResistanceDecrease = 0f;
         this.dropBlocks = false;
-        this.breakBlocks = true;
+        this.breakBlocks = false;
         this.powerMultiplier = 0.05f;
     }
 
@@ -169,7 +169,7 @@ public class ExplosionEffect extends UseEffect {
             this.blastResistanceDecrease = 0f;
         }
         this.dropBlocks = obj.has("drop_blocks") && obj.get("drop_blocks").getAsBoolean();
-        this.breakBlocks = !obj.has("break_blocks") || obj.get("break_blocks").getAsBoolean();
+        this.breakBlocks = obj.has("break_blocks") && obj.get("break_blocks").getAsBoolean();
         if (obj.has("power")) {
             this.powerMultiplier = obj.get("power").getAsFloat();
         } else {
