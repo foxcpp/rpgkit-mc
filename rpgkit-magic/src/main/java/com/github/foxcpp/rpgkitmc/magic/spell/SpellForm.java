@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -60,5 +61,9 @@ public abstract class SpellForm {
             throw new IllegalStateException("toString called to unregistered SpellForm");
         }
         return id.toString();
+    }
+
+    public @Nullable Entity getProjectile(ServerSpellCast cast, ServerWorld world) {
+        return null;
     }
 }

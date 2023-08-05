@@ -5,8 +5,8 @@ import com.github.foxcpp.rpgkitmc.magic.RPGKitMagicMod;
 import com.github.foxcpp.rpgkitmc.magic.MagicArea;
 import com.github.foxcpp.rpgkitmc.magic.effects.use.special.MuteEffect;
 import com.github.foxcpp.rpgkitmc.magic.effects.use.special.WardEffect;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class UseEffects {
     public static void register() {

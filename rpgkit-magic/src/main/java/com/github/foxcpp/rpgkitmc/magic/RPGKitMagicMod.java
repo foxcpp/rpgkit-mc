@@ -21,9 +21,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class RPGKitMagicMod implements ModInitializer {
         TrackedDataHandlerRegistry.register(EffectVector.OPTIONAL_TRACKED_HANDLER);
         ModEffects.register();
         ModForms.register();
-        Registry.register(Registry.SCREEN_HANDLER, Identifier.of(MOD_ID, "catalyst_bag"), CATALYST_BAG_SCREEN_HANDLER);
+        Registry.register(Registries.SCREEN_HANDLER, Identifier.of(MOD_ID, "catalyst_bag"), CATALYST_BAG_SCREEN_HANDLER);
         SERVER_SPELL_BUILD_HANDLER.register();
 
         LOGGER.info("RPGKit Magic loaded");

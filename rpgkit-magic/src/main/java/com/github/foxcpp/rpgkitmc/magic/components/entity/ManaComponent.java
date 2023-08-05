@@ -12,6 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -98,7 +99,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
                             TrinketsApi.onTrinketBroken(manaItem.getRight(), manaItem.getLeft(), ent));
                     if (this.provider.damage(DamageSource.MAGIC, 1)) {
                         this.provider.world.playSoundFromEntity(null, this.provider,
-                                SoundEvents.BLOCK_AMETHYST_CLUSTER_BREAK, SoundCategory.PLAYERS,
+                                Registries.SOUND_EVENT.getEntry(SoundEvents.BLOCK_AMETHYST_CLUSTER_BREAK), SoundCategory.PLAYERS,
                                 1f, 0.4f, 1);
                     }
                     this.value += restoredMana;

@@ -10,10 +10,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ public class PotionEffect extends SimpleUseEffect {
 
             if (obj.has("id")) {
                 var effectId = new Identifier(obj.get("id").getAsString());
-                var effect = Registry.STATUS_EFFECT.get(effectId);
+                var effect = Registries.STATUS_EFFECT.get(effectId);
                 RPGKitMagicMod.LOGGER.debug("PotionEffect.Reaction populated with potion effect {}", effectId);
                 if (effect == null) {
                     throw new IllegalStateException("unknown potion effect");
@@ -62,7 +62,7 @@ public class PotionEffect extends SimpleUseEffect {
             super.toJson(obj);
 
             if (this.effect != null) {
-                var id = Registry.STATUS_EFFECT.getId(this.effect);
+                var id = Registries.STATUS_EFFECT.getId(this.effect);
                 if (id == null) {
                     throw new IllegalStateException("potion effect with unregistered effect");
                 }
@@ -105,7 +105,7 @@ public class PotionEffect extends SimpleUseEffect {
 
         if (obj.has("id")) {
             var effectId = new Identifier(obj.get("id").getAsString());
-            var effect = Registry.STATUS_EFFECT.get(effectId);
+            var effect = Registries.STATUS_EFFECT.get(effectId);
             RPGKitMagicMod.LOGGER.debug("PotionEffect populated with potion effect {}", effectId);
             if (effect == null) {
                 throw new IllegalStateException("unknown potion effect");
@@ -144,7 +144,7 @@ public class PotionEffect extends SimpleUseEffect {
             return "PotionEffect[]";
         }
         return "PotionEffect[%s,amp=%d,dur=%s]".formatted(
-                Objects.requireNonNull(Registry.STATUS_EFFECT.getId(this.statusEffect)).toString(),
+                Objects.requireNonNull(Registries.STATUS_EFFECT.getId(this.statusEffect)).toString(),
                 this.baseAmplifier, this.baseDuration);
     }
 
@@ -186,7 +186,7 @@ public class PotionEffect extends SimpleUseEffect {
     public void toJson(@NotNull JsonObject obj) {
         super.toJson(obj);
         if (this.statusEffect != null) {
-            var id = Registry.STATUS_EFFECT.getId(this.statusEffect);
+            var id = Registries.STATUS_EFFECT.getId(this.statusEffect);
             if (id == null) {
                 throw new IllegalStateException("potion effect with unregistered effect");
             }

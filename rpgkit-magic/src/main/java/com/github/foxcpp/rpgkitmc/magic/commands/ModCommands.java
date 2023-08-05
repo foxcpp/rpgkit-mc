@@ -11,12 +11,12 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.registry.Registry;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -56,8 +56,8 @@ public class ModCommands implements SubcommandRegisterCallback {
             if (asp != null) {
                 builder.addElement(SpellElement.of(asp));
             } else {
-                var item = Registry.ITEM.get(id);
-                if (!item.equals(Registry.ITEM.get(Registry.ITEM.getDefaultId()))) {
+                var item = Registries.ITEM.get(id);
+                if (!item.equals(Registries.ITEM.get(Registries.ITEM.getDefaultId()))) {
                     builder.addElement(SpellElement.of(item));
                 } else {
                     throw new SimpleCommandExceptionType(Text.literal("Unknown element identifier (no such aspect or item)")).create();

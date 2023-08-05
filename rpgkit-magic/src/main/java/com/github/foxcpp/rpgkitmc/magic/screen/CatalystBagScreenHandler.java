@@ -8,13 +8,13 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class CatalystBagScreenHandler extends ScreenHandler {
     private final ScreenHandlerType<CatalystBagScreenHandler> type;
@@ -56,9 +56,28 @@ public class CatalystBagScreenHandler extends ScreenHandler {
     }
 
     @Override
+    public ItemStack quickMove(PlayerEntity player, int index) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(index);
+        if (slot.hasStack()) {
+            ItemStack itemStack2 = slot.getStack();
+            itemStack = itemStack2.copy();
+            if (index < this.inventory.size() ? !this.insertItem(itemStack2, this.inventory.size(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.size(), false)) {
+                return ItemStack.EMPTY;
+            }
+            if (itemStack2.isEmpty()) {
+                slot.setStack(ItemStack.EMPTY);
+            } else {
+                slot.markDirty();
+            }
+        }
+        return itemStack;
+    }
+
+    @Override
     public void onSlotClick(int slotId, int clickData, SlotActionType actionType, PlayerEntity playerEntity) {
         if (slotId >= 0) { // slotId < 0 are used for networking internals
-            var catalystTag = TagKey.of(Registry.ITEM_KEY, Identifier.of(RPGKitMagicMod.MOD_ID, "catalyst"));
+            var catalystTag = TagKey.of(Registries.ITEM.getKey(), Identifier.of(RPGKitMagicMod.MOD_ID, "catalyst"));
             ItemStack stack = this.getSlot(slotId).getStack();
 
             if (stack.getItem().equals(ModItems.CATALYST_BAG)) {
@@ -86,25 +105,6 @@ public class CatalystBagScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
         return this.inventory.canPlayerUse(player);
-    }
-
-    @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
-        ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
-            itemStack = itemStack2.copy();
-            if (index < this.inventory.size() ? !this.insertItem(itemStack2, this.inventory.size(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.size(), false)) {
-                return ItemStack.EMPTY;
-            }
-            if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
-        }
-        return itemStack;
     }
 
     @Override

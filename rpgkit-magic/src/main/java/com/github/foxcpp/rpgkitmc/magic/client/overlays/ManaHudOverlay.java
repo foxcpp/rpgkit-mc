@@ -51,7 +51,7 @@ public class ManaHudOverlay implements HudRenderCallback {
             x = width / 2;
             y = height;
 
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             RenderSystem.setShaderTexture(0, EMPTY_MANA);

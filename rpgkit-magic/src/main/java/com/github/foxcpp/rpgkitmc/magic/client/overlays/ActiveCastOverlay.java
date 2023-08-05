@@ -164,7 +164,7 @@ public class ActiveCastOverlay implements HudRenderCallback {
     }
 
     public void drawElement(MatrixStack matrixStack, int x, int y, @Nullable SpellElement element, float scale) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         RenderSystem.setShaderTexture(0, FRAME_TEXTURE);

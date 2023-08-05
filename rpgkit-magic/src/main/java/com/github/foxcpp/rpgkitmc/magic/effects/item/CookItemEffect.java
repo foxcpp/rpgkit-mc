@@ -11,10 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ public class CookItemEffect extends ItemEffect {
     protected CookItemEffect(Identifier id, JsonObject obj) {
         super(id, obj);
         if (obj.has("recipe_type")) {
-            var recipeType = Registry.RECIPE_TYPE.get(new Identifier(obj.get("recipe_type").getAsString()));
+            var recipeType = Registries.RECIPE_TYPE.get(new Identifier(obj.get("recipe_type").getAsString()));
             if (recipeType == null) {
                 throw new IllegalArgumentException("unknown recipe_type: " + obj.get("recipe_type"));
             }
@@ -82,7 +82,7 @@ public class CookItemEffect extends ItemEffect {
     @Override
     public void toJson(@NotNull JsonObject obj) {
         super.toJson(obj);
-        obj.addProperty("recipe_type", Objects.requireNonNull(Registry.RECIPE_TYPE.getId(this.recipeType)).toString());
+        obj.addProperty("recipe_type", Objects.requireNonNull(Registries.RECIPE_TYPE.getId(this.recipeType)).toString());
         if (this.filter != null) {
             obj.add("filter", this.filter.toJson());
         }

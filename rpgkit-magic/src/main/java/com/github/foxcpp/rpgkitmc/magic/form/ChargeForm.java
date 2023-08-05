@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ChargeForm extends SpellForm {
     public static class Reaction extends SpellReaction {
@@ -81,5 +82,10 @@ public class ChargeForm extends SpellForm {
                 ent.discard();
             }
         }
+    }
+
+    @Override
+    public @Nullable Entity getProjectile(ServerSpellCast cast, ServerWorld world) {
+        return world.getEntity(cast.customData.getUuid("ChargeEntityUUID"));
     }
 }

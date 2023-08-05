@@ -9,9 +9,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +87,7 @@ public sealed interface SpellElement permits Aspect, ItemElement {
         if (asp != null) {
             element = SpellElement.of(asp);
         } else {
-            var item = Registry.ITEM.get(id);
+            var item = Registries.ITEM.get(id);
             if (!item.equals(Items.AIR)) {
                 element = SpellElement.of(item);
             }

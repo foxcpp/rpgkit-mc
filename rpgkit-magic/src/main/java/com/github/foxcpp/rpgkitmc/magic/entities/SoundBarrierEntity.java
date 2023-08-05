@@ -41,11 +41,6 @@ public class SoundBarrierEntity extends MagicAreaEntity {
         nbt.putBoolean("MuteInside", this.dataTracker.get(MUTE_INSIDE));
     }
 
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
-    }
-
     public boolean shouldMuteInside() {
         return this.dataTracker.get(MUTE_INSIDE);
     }

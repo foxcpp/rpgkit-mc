@@ -9,8 +9,8 @@ import net.minecraft.loot.LootGsons;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,7 @@ public class ItemTransmuteMapping implements ItemMapping {
             var ingredient = Ingredient.fromJson(elementObj.get("ingredient"));
             Item replacement;
             if (elementObj.has("replacement")) {
-                replacement = Registry.ITEM.getCodec().parse(JsonOps.INSTANCE, elementObj.get("replacement")).result().orElseThrow();
+                replacement = Registries.ITEM.getCodec().parse(JsonOps.INSTANCE, elementObj.get("replacement")).result().orElseThrow();
             } else {
                 replacement = null;
             }
@@ -66,7 +66,7 @@ public class ItemTransmuteMapping implements ItemMapping {
 
             Item replacement;
             if (elementObj.has("replacement")) {
-                replacement = Registry.ITEM.getCodec().parse(JsonOps.INSTANCE, elementObj.get("replacement")).result().orElseThrow();
+                replacement = Registries.ITEM.getCodec().parse(JsonOps.INSTANCE, elementObj.get("replacement")).result().orElseThrow();
             } else {
                 replacement = null;
             }

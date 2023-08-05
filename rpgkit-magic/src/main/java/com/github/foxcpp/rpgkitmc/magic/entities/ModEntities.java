@@ -5,8 +5,9 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ModEntities {
     public static final EntityType<SpellRayEntity> SPELL_RAY = FabricEntityTypeBuilder.create(SpawnGroup.MISC,
@@ -24,11 +25,11 @@ public class ModEntities {
             SpellChargeEntity::empty).build();
 
     public static void register() {
-        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "spell_ray"), SPELL_RAY);
-        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "spell_blast"), SPELL_BLAST);
-        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "spell_charge"), SPELL_CHARGE);
-        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "sound_barrier"), SOUND_BARRIER);
-        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "persistent_magic"), PERSISTENT_MAGIC);
-        Registry.register(Registry.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "forcefield"), FORCEFIELD);
+        Registry.register(Registries.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "spell_ray"), SPELL_RAY);
+        Registry.register(Registries.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "spell_blast"), SPELL_BLAST);
+        Registry.register(Registries.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "spell_charge"), SPELL_CHARGE);
+        Registry.register(Registries.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "sound_barrier"), SOUND_BARRIER);
+        Registry.register(Registries.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "persistent_magic"), PERSISTENT_MAGIC);
+        Registry.register(Registries.ENTITY_TYPE, new Identifier(RPGKitMagicMod.MOD_ID, "forcefield"), FORCEFIELD);
     }
 }

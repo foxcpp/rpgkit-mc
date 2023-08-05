@@ -22,8 +22,8 @@ import java.util.Objects;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class KillStreakMixin extends PlayerEntity {
-    public KillStreakMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile, @Nullable PlayerPublicKey publicKey) {
-        super(world, pos, yaw, gameProfile, publicKey);
+    public KillStreakMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
+        super(world, pos, yaw, gameProfile);
     }
 
     @Inject(method = "attack",

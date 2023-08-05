@@ -7,8 +7,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Objects;
 
@@ -58,8 +58,8 @@ public sealed class ItemElement implements SpellElement {
 
     @Override
     public float getBaseCost(String key) {
-        var itemId = Registry.ITEM.getId(this.item);
-        if (itemId.equals(Registry.ITEM.getDefaultId())) {
+        var itemId = Registries.ITEM.getId(this.item);
+        if (itemId.equals(Registries.ITEM.getDefaultId())) {
             return 0;
         }
 
@@ -79,7 +79,7 @@ public sealed class ItemElement implements SpellElement {
     }
 
     public String toString() {
-        return Registry.ITEM.getId(this.item).toString();
+        return Registries.ITEM.getId(this.item).toString();
     }
 
     public static ItemElement fromNbt(NbtCompound comp) {
@@ -87,13 +87,13 @@ public sealed class ItemElement implements SpellElement {
         if (id == null) {
             throw new IllegalStateException("Malformed item ID in NBT: %s".formatted(comp.getString("Id")));
         }
-        return new ItemElement(Registry.ITEM.get(id));
+        return new ItemElement(Registries.ITEM.get(id));
     }
 
     @Override
     public void writeToNbt(NbtCompound comp) {
         comp.putString("Type", "Item");
-        comp.putString("Id", Registry.ITEM.getId(this.item).toString());
+        comp.putString("Id", Registries.ITEM.getId(this.item).toString());
     }
 
     @Override

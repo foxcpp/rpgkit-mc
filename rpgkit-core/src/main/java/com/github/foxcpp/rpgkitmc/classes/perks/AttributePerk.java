@@ -5,8 +5,8 @@ import com.github.foxcpp.rpgkitmc.classes.Perk;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class AttributePerk extends Perk {
     private final EntityAttribute entityAttribute;
@@ -32,7 +32,7 @@ public class AttributePerk extends Perk {
         var attribute = this.entityAttribute;
         if (obj.has("entityAttribute")) {
             var id = new Identifier(obj.get("entityAttribute").getAsString());
-            attribute = Registry.ATTRIBUTE.get(id);
+            attribute = Registries.ATTRIBUTE.get(id);
             RPGKitMod.LOGGER.debug("AttributePerk populated with attribute {}", id);
             if (attribute == null)
             {
@@ -62,7 +62,7 @@ public class AttributePerk extends Perk {
     public JsonObject parametersToJSON() {
         var obj = new JsonObject();
         if (this.entityAttribute != null) {
-            var id = Registry.ATTRIBUTE.getId(this.entityAttribute);
+            var id = Registries.ATTRIBUTE.getId(this.entityAttribute);
             if (id == null) {
                 throw new IllegalStateException("attribute perk with unregistered effect");
             }

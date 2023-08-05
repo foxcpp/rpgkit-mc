@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BlastForm extends SpellForm implements ChanneledForm {
     public static class Reaction extends SpellReaction {
@@ -122,5 +123,10 @@ public class BlastForm extends SpellForm implements ChanneledForm {
                 blast.increaseMaxAge(5);
             }
         }
+    }
+
+    @Override
+    public @Nullable Entity getProjectile(ServerSpellCast cast, ServerWorld world) {
+        return world.getEntity(cast.customData.getUuid("BlastEntityUUID"));
     }
 }

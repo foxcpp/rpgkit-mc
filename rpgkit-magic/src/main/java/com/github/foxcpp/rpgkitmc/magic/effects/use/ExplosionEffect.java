@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.NotNull;
@@ -122,18 +123,13 @@ public class ExplosionEffect extends UseEffect {
         public @NotNull ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
             var caster = cast.getCaster(world);
 
-            DamageSource damageSource;
-            if (caster instanceof LivingEntity le) {
-                damageSource = DamageSource.explosion(le);
-            } else {
-                damageSource = DamageSource.MAGIC;
-            }
+            var dmgSource = DamageSource.explosion(cast.getProjectile(world), cast.getCaster(world));
 
             RPGKitMagicMod.LOGGER.debug("Created spell explosion at {} with power {} (break blocks = {}, blast resistance - {})",
                     pos, this.powerMultiplier, this.breakBlocks, this.blastResistanceDecrease);
 
-            world.createExplosion(caster, damageSource, new Behavior(ExplosionEffect.this.blastResistanceDecrease, this.breakBlocks),
-                    pos.getX(), pos.getY(), pos.getZ(), this.powerMultiplier, false, Explosion.DestructionType.DESTROY);
+            world.createExplosion(caster, dmgSource, new Behavior(ExplosionEffect.this.blastResistanceDecrease, this.breakBlocks),
+                    pos.getX(), pos.getY(), pos.getZ(), this.powerMultiplier, false, World.ExplosionSourceType.NONE);
             return ActionResult.SUCCESS;
         }
 
@@ -156,7 +152,7 @@ public class ExplosionEffect extends UseEffect {
     public ExplosionEffect(Identifier id) {
         super(id);
         this.blastResistanceDecrease = 0f;
-        this.dropBlocks = false;
+        this.dropBlocks = true;
         this.breakBlocks = false;
         this.powerMultiplier = 0.05f;
     }
@@ -169,7 +165,7 @@ public class ExplosionEffect extends UseEffect {
             this.blastResistanceDecrease = 0f;
         }
         this.dropBlocks = obj.has("drop_blocks") && obj.get("drop_blocks").getAsBoolean();
-        this.breakBlocks = obj.has("break_blocks") && obj.get("break_blocks").getAsBoolean();
+        this.breakBlocks = !obj.has("break_blocks") || obj.get("break_blocks").getAsBoolean();
         if (obj.has("power")) {
             this.powerMultiplier = obj.get("power").getAsFloat();
         } else {

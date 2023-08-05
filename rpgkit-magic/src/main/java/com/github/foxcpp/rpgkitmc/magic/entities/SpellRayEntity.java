@@ -151,11 +151,6 @@ public class SpellRayEntity extends Entity {
         return dimensions.height * 0.5F;
     }
 
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
-    }
-
     protected boolean canHit(Entity entity) {
         if (entity instanceof ItemEntity && this.canHitItems) {
             return true;

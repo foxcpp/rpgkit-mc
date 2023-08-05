@@ -3,8 +3,8 @@ package com.github.foxcpp.rpgkitmc.classes.perks;
 import com.github.foxcpp.rpgkitmc.classes.Perk;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class KillStreakPerk extends Perk {
@@ -43,7 +43,7 @@ public class KillStreakPerk extends Perk {
         var attribute = this.attribute;
         if (obj.has("id")) {
             var id = new Identifier(obj.get("id").getAsString());
-            attribute = Registry.ATTRIBUTE.get(id);
+            attribute = Registries.ATTRIBUTE.get(id);
             if (attribute == null) {
                 throw new IllegalStateException("unknown attribute");
             }
@@ -76,7 +76,7 @@ public class KillStreakPerk extends Perk {
     public JsonObject parametersToJSON() {
         var obj = new JsonObject();
         if (this.attribute != null) {
-            var id = Registry.ATTRIBUTE.getId(this.attribute);
+            var id = Registries.ATTRIBUTE.getId(this.attribute);
             if (id == null) {
                 throw new IllegalStateException("on kill perk with unregistered attribute");
             }

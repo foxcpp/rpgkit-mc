@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootGsons;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemSelectorMapping implements ItemMapping {
@@ -33,7 +33,7 @@ public class ItemSelectorMapping implements ItemMapping {
 
             Item item;
             if (elementObj.has("item")) {
-                item = Registry.ITEM.getCodec().parse(JsonOps.INSTANCE, elementObj.get("item")).result().orElseThrow();
+                item = Registries.ITEM.getCodec().parse(JsonOps.INSTANCE, elementObj.get("item")).result().orElseThrow();
             } else {
                 throw new IllegalArgumentException("item field is required for ItemSelectorMapping");
             }
@@ -83,7 +83,7 @@ public class ItemSelectorMapping implements ItemMapping {
         for (var ent : this.entries) {
             var entObj = new JsonObject();
             entObj.addProperty("weight", ent.weight);
-            entObj.addProperty("item", Registry.ITEM.getId(ent.item).toString());
+            entObj.addProperty("item", Registries.ITEM.getId(ent.item).toString());
             if (ent.functions != null && ent.functions.size() > 0) {
                 var gson = LootGsons.getFunctionGsonBuilder().create();
                 var funcArr = new JsonArray();

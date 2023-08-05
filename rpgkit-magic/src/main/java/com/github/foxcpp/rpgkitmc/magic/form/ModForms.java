@@ -3,8 +3,8 @@ package com.github.foxcpp.rpgkitmc.magic.form;
 import com.github.foxcpp.rpgkitmc.magic.MagicRegistries;
 import com.github.foxcpp.rpgkitmc.magic.RPGKitMagicMod;
 import com.github.foxcpp.rpgkitmc.magic.spell.SpellForm;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ModForms {
     public static final SpellForm SELF = new SelfForm();

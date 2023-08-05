@@ -10,9 +10,9 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,7 +58,7 @@ public class BlockStateTransmuteMapping implements ItemMapping, BlockStateMappin
             BlockState replacement;
             if (elementObj.has("replacement")) {
                 var blockId = new Identifier(elementObj.get("replacement").getAsString());
-                replacement = Registry.BLOCK.get(blockId).getDefaultState();
+                replacement = Registries.BLOCK.get(blockId).getDefaultState();
             } else if (elementObj.has("blockstate")) {
                 replacement = BlockState.CODEC.parse(JsonOps.INSTANCE, elementObj.get("blockstate")).result().orElseThrow();
             } else {
@@ -81,7 +81,7 @@ public class BlockStateTransmuteMapping implements ItemMapping, BlockStateMappin
             BlockState replacement;
             if (elementObj.has("block")) {
                 var blockId = new Identifier(elementObj.get("block").getAsString());
-                replacement = Registry.BLOCK.get(blockId).getDefaultState();
+                replacement = Registries.BLOCK.get(blockId).getDefaultState();
             } else if (elementObj.has("blockstate")) {
                 replacement = BlockState.CODEC.parse(JsonOps.INSTANCE, elementObj.get("blockstate")).result().orElseThrow();
             } else {

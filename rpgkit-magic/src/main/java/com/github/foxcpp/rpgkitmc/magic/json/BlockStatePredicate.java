@@ -4,9 +4,9 @@ import com.github.foxcpp.rpgkitmc.JsonHelpers;
 import com.google.gson.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +24,12 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
         if (el instanceof JsonPrimitive p) {
             var str = p.getAsString();
             if (str.startsWith("#")) {
-                var tag = TagKey.of(Registry.BLOCK_KEY, new Identifier(str.substring(1)));
+                var tag = TagKey.of(Registries.BLOCK.getKey(), new Identifier(str.substring(1)));
 
                 this.block = null;
                 this.tag = tag;
             } else {
-                this.block = Registry.BLOCK.get(new Identifier(str));
+                this.block = Registries.BLOCK.get(new Identifier(str));
                 this.tag = null;
             }
             this.or = null;
@@ -42,10 +42,10 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
             } else {
                 this.not = null;
                 if (obj.has("block")) {
-                    this.block = Registry.BLOCK.get(new Identifier(obj.get("block").getAsString()));
+                    this.block = Registries.BLOCK.get(new Identifier(obj.get("block").getAsString()));
                     this.tag = null;
                 } else if (obj.has("tag")) {
-                    var tag = TagKey.of(Registry.BLOCK_KEY, new Identifier(obj.get("tag").getAsString()));
+                    var tag = TagKey.of(Registries.BLOCK.getKey(), new Identifier(obj.get("tag").getAsString()));
 
                     this.block = null;
                     this.tag = tag;
@@ -77,7 +77,7 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
     @Override
     public @NotNull JsonElement toJson() {
         if (this.block != null) {
-            return new JsonPrimitive(Registry.BLOCK.getId(this.block).toString());
+            return new JsonPrimitive(Registries.BLOCK.getId(this.block).toString());
         } else if (this.tag != null) {
             return new JsonPrimitive("#" + this.tag.id().toString());
         } else if (this.or != null) {
@@ -123,7 +123,7 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
     @Override
     public String toString() {
         if (this.block != null) {
-            return "BlockStatePredicate[" + Registry.BLOCK.getId(this.block) + "]";
+            return "BlockStatePredicate[" + Registries.BLOCK.getId(this.block) + "]";
         }
         if (this.tag != null) {
             return "BlockStatePredicate[#" + this.tag.id() + "]";
@@ -133,7 +133,7 @@ public class BlockStatePredicate implements Predicate<BlockState>, JsonHelpers.J
             builder.append("BlockStatePredicate[");
             for (var pred : this.or) {
                 if (pred.block != null) {
-                    builder.append(Registry.BLOCK.getId(pred.block));
+                    builder.append(Registries.BLOCK.getId(pred.block));
                 } else if (pred.tag != null) {
                     builder.append("#").append(pred.tag.id());
                 } else {

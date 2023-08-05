@@ -57,7 +57,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
                 this));
         if (hitResult.getType() != HitResult.Type.MISS) {
             var unit = hitResult.getSide().getUnitVector();
-            end = hitResult.getPos().add(-unit.getX(), -unit.getY(), -unit.getZ());
+            end = hitResult.getPos().add(-unit.x, -unit.y, -unit.z);
         }
 
         var line = new Box(origin, end);
@@ -115,11 +115,6 @@ public class SpellBlastEntity extends MagicAreaEntity {
     public EntityDimensions getDimensions(EntityPose pose) {
         var box = this.getBoundingBox();
         return EntityDimensions.changing((float) box.getXLength(), (float) box.getYLength());
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
     }
 
     @Override

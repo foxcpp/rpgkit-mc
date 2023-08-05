@@ -4,17 +4,14 @@ import com.github.foxcpp.rpgkitmc.magic.RPGKitMagicMod;
 import com.github.foxcpp.rpgkitmc.magic.items.SpellItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import software.bernie.geckolib3.core.util.Color;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
+import software.bernie.geckolib.core.object.Color;
+import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 @Environment(EnvType.CLIENT)
 public class SpellItemRenderer extends GeoItemRenderer<SpellItem> {
-    public static class Model extends AnimatedGeoModel<SpellItem> {
+    public static class Model extends GeoModel<SpellItem> {
         @Override
         public Identifier getModelResource(SpellItem object) {
             return Identifier.of(RPGKitMagicMod.MOD_ID, "geo/item/spell.geo.json");
@@ -33,7 +30,7 @@ public class SpellItemRenderer extends GeoItemRenderer<SpellItem> {
     }
 
     @Override
-    public Color getRenderColor(SpellItem animatable, float partialTick, MatrixStack poseStack, VertexConsumerProvider bufferSource, VertexConsumer buffer, int packedLight) {
+    public Color getRenderColor(SpellItem animatable, float partialTick, int packedLight) {
         var nbt = this.currentItemStack.getNbt();
         if (nbt == null) {
             return Color.WHITE;

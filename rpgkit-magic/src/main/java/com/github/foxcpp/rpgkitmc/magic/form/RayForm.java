@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.RaycastContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RayForm extends SpellForm implements ChanneledForm {
     public static class Reaction extends SpellReaction {
@@ -112,5 +113,10 @@ public class RayForm extends SpellForm implements ChanneledForm {
                 ray.setMaxAge(ray.age + 5);
             }
         }
+    }
+
+    @Override
+    public @Nullable Entity getProjectile(ServerSpellCast cast, ServerWorld world) {
+        return world.getEntity(cast.customData.getUuid("RayEntityUUID"));
     }
 }

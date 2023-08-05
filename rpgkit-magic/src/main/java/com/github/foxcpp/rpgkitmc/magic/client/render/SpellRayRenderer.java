@@ -12,9 +12,9 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
@@ -30,9 +30,9 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
         matrices.push();
 
         // Align Y axis with rotation direction.
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90));
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(entity.getYaw(tickDelta)));
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion((entity.getPitch(tickDelta))));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(entity.getYaw(tickDelta)));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((entity.getPitch(tickDelta))));
 
         var buffer = vertexConsumers.getBuffer(RenderLayer.getLightning());
 
@@ -45,7 +45,7 @@ public class SpellRayRenderer extends EntityRenderer<SpellRayEntity> {
 
         argbStart |= 0xFF000000;
 
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(15));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(15));
 
         renderBeam(matrices, buffer, argbStart, argbEnd,
                 height, 0, 0, radius / 2);

@@ -3,8 +3,8 @@ package com.github.foxcpp.rpgkitmc.classes.abilities;
 import com.github.foxcpp.rpgkitmc.ModRegistries;
 import com.github.foxcpp.rpgkitmc.RPGKitMod;
 import com.github.foxcpp.rpgkitmc.classes.Ability;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ModAbilities {
     // Base abilities.

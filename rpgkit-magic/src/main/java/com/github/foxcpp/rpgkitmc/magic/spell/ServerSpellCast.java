@@ -131,4 +131,8 @@ public class ServerSpellCast extends SpellCast {
     public String toString() {
         return "ServerSpellSpell[form=%s,spell=%s,caster=%s]".formatted(this.form.toString(), this.spell.toString(), this.casterUuid.toString());
     }
+
+    public @Nullable Entity getProjectile(ServerWorld world) {
+        return this.form.getProjectile(this, world);
+    }
 }

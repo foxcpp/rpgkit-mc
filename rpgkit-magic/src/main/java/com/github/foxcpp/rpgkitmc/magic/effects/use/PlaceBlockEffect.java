@@ -8,12 +8,12 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public class PlaceBlockEffect extends SimpleUseEffect {
 
         if (obj.has("block")) {
             var blockId = new Identifier(obj.get("block").getAsString());
-            this.blockState = Registry.BLOCK.get(blockId).getDefaultState();
+            this.blockState = Registries.BLOCK.get(blockId).getDefaultState();
         } else if (obj.has("blockstate")) {
             this.blockState = BlockState.CODEC.parse(JsonOps.INSTANCE, obj.get("blockstate")).result().orElseThrow();
         } else {

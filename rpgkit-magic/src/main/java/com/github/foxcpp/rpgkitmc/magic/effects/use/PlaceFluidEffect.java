@@ -14,15 +14,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +46,7 @@ public class PlaceFluidEffect extends SimpleUseEffect {
 
         if (obj.has("fluid")) {
             var fluidId = new Identifier(obj.get("fluid").getAsString());
-            var fluid = Registry.FLUID.get(fluidId);
+            var fluid = Registries.FLUID.get(fluidId);
             if (obj.has("level")) {
                 if (!(fluid instanceof FlowableFluid ff)) {
                     throw new IllegalArgumentException("level can be set only for flowable fluid, %s is not".formatted(fluidId));

@@ -38,11 +38,6 @@ public class PersistentMagicEntity extends MagicAreaEntity {
         }
     }
 
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
-    }
-
     public void tick() {
         super.tick();
 

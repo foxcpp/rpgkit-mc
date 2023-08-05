@@ -5,8 +5,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ModAttributes {
     public static final EntityAttribute MAX_MANA = make("max_mana", 0, 0, 2000);
@@ -20,11 +22,11 @@ public class ModAttributes {
     }
 
     public static void register() {
-        Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "max_mana"), MAX_MANA);
-        Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_regen"), MANA_REGEN);
-        Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_regen_speed"), MANA_REGEN_SPEED);
-        Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_health_factor"), MANA_HEALTH_FACTOR);
-        Registry.register(Registry.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "magic_strength_bonus"), MAGIC_STRENGTH_BONUS);
+        Registry.register(Registries.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "max_mana"), MAX_MANA);
+        Registry.register(Registries.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_regen"), MANA_REGEN);
+        Registry.register(Registries.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_regen_speed"), MANA_REGEN_SPEED);
+        Registry.register(Registries.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "mana_health_factor"), MANA_HEALTH_FACTOR);
+        Registry.register(Registries.ATTRIBUTE, new Identifier(RPGKitMagicMod.MOD_ID, "magic_strength_bonus"), MAGIC_STRENGTH_BONUS);
 
         FabricDefaultAttributeRegistry.register(EntityType.PLAYER,
                 PlayerEntity.createPlayerAttributes().

@@ -4,8 +4,9 @@ import com.github.foxcpp.rpgkitmc.magic.RPGKitMagicMod;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ModStatusEffects {
     public static final StatusEffect MUTE = new MuteStatusEffect();
@@ -17,9 +18,9 @@ public class ModStatusEffects {
     );
 
     public static void register() {
-        Registry.register(Registry.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "sound_mute"), MUTE);
-        Registry.register(Registry.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "sealed"), SEALED);
-        Registry.register(Registry.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "mana_regen"), MANA_REGEN);
-        Registry.register(Registry.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "knockback_resistance"), KNOCKBACK_RESISTANCE);
+        Registry.register(Registries.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "sound_mute"), MUTE);
+        Registry.register(Registries.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "sealed"), SEALED);
+        Registry.register(Registries.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "mana_regen"), MANA_REGEN);
+        Registry.register(Registries.STATUS_EFFECT, Identifier.of(RPGKitMagicMod.MOD_ID, "knockback_resistance"), KNOCKBACK_RESISTANCE);
     }
 }

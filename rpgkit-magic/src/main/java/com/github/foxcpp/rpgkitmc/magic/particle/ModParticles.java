@@ -3,8 +3,9 @@ package com.github.foxcpp.rpgkitmc.magic.particle;
 import com.github.foxcpp.rpgkitmc.magic.RPGKitMagicMod;
 import com.mojang.serialization.Codec;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ModParticles {
     public static final ParticleType<GenericSpellParticleEffect> GENERIC_SPELL = new ParticleType<>(
@@ -17,6 +18,6 @@ public class ModParticles {
     };
 
     public static void register() {
-        Registry.register(Registry.PARTICLE_TYPE, Identifier.of(RPGKitMagicMod.MOD_ID, "generic_spell"), GENERIC_SPELL);
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(RPGKitMagicMod.MOD_ID, "generic_spell"), GENERIC_SPELL);
     }
 }

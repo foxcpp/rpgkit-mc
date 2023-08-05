@@ -8,8 +8,8 @@ import com.github.foxcpp.rpgkitmc.magic.spell.SpellForm;
 import com.github.foxcpp.rpgkitmc.magic.spell.SpellReaction;
 import com.github.foxcpp.rpgkitmc.magic.spell.SpellRecipeMap;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;

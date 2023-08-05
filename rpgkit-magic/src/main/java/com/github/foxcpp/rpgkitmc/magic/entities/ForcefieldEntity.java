@@ -26,11 +26,6 @@ public class ForcefieldEntity extends MagicAreaEntity {
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
-    }
-
-    @Override
     protected void setArea(Box area) {
         super.setArea(area);
         this.innerArea = area.contract(THICKNESS, THICKNESS, THICKNESS);

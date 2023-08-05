@@ -22,7 +22,6 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
@@ -91,17 +90,13 @@ public class ClientRPGKitMagicMod implements ClientModInitializer {
             return CatalystBagItem.isOpen(stack) ? 1f : 0f;
         }));
 
-        GeoItemRenderer.registerItemRenderer(ModItems.SPELL_ITEM, new SpellItemRenderer());
-
-        ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((((atlasTexture, registry) -> {
-            registry.register(new Identifier(RPGKitMagicMod.MOD_ID, "particle/generic_spell_0"));
-        })));
+        // XXX!
+//        ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((((atlasTexture, registry) -> {
+//            registry.register(new Identifier(RPGKitMagicMod.MOD_ID, "particle/generic_spell_0"));
+//        })));
         ParticleFactoryRegistry.getInstance().register(ModParticles.GENERIC_SPELL, GenericSpellParticle.Factory::new);
 
         HandledScreens.register(RPGKitMagicMod.CATALYST_BAG_SCREEN_HANDLER, CatalystBagScreen::new);
         RPGKitMod.DATA_SYNCER.setupClient();
-
-        //PageRegistry.registerPage(RPGKIT_PAGE, new Identifier(RPGKitMagicMod.MOD_ID, "textures/gui/icon_rpgkit.png"), Text.translatable("rpgkit.gui.page.magic.title"));
-        //PageRegistry.registerLayer(RPGKIT_PAGE, MagicPageLayer::new);
     }
 }
