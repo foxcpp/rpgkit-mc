@@ -5,6 +5,8 @@ import com.github.foxcpp.rpgkitmc.magic.components.ModComponents;
 import com.github.foxcpp.rpgkitmc.magic.ManaSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -134,5 +136,17 @@ public class ServerSpellCast extends SpellCast {
 
     public @Nullable Entity getProjectile(ServerWorld world) {
         return this.form.getProjectile(this, world);
+    }
+
+    public DamageSource damageSource(ServerWorld world) {
+        var proj = this.getProjectile(world);
+        var caster = this.getCaster(world);
+        if (proj != null) {
+            return world.getDamageSources().indirectMagic(proj, caster);
+        }
+        if (caster != null) {
+            return world.getDamageSources().create(DamageTypes.MAGIC, caster);
+        }
+        return world.getDamageSources().magic();
     }
 }

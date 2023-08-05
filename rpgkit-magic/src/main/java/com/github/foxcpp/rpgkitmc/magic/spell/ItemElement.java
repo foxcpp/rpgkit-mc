@@ -51,9 +51,11 @@ public sealed class ItemElement implements SpellElement {
     }
 
     protected final Item item;
+    protected final ItemStack defaultStack;
 
     public ItemElement(Item stack) {
         this.item = stack;
+        this.defaultStack = new ItemStack(this.item);
     }
 
     @Override
@@ -76,6 +78,10 @@ public sealed class ItemElement implements SpellElement {
 
     public Item getItem() {
         return this.item;
+    }
+
+    public ItemStack getDefaultStack() {
+        return this.defaultStack;
     }
 
     public String toString() {

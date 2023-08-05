@@ -3,8 +3,6 @@ package com.github.foxcpp.rpgkitmc.magic.entities;
 import com.github.foxcpp.rpgkitmc.magic.RPGKitMagicMod;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -46,12 +44,12 @@ public class ForcefieldEntity extends MagicAreaEntity {
 
         var floorArea = (area.maxX - area.minX) * (area.maxZ - area.minZ);
         for (int i = 0; i < floorArea / 160 || i == 0; i++) {
-            this.world.addParticle(this.particleEffect,
+            this.getWorld().addParticle(this.particleEffect,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX),
                     area.minY,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ),
                     0, 0, 0);
-            this.world.addParticle(this.particleEffect,
+            this.getWorld().addParticle(this.particleEffect,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX),
                     area.maxY,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ),
@@ -59,12 +57,12 @@ public class ForcefieldEntity extends MagicAreaEntity {
         }
         var xyArea = (area.maxX - area.minX) * (area.maxY - area.minY);
         for (int i = 0; i < xyArea / 160 || i == 0; i++) {
-            this.world.addParticle(this.particleEffect,
+            this.getWorld().addParticle(this.particleEffect,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX),
                     RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY),
                     area.minZ,
                     0, 0, 0);
-            this.world.addParticle(this.particleEffect,
+            this.getWorld().addParticle(this.particleEffect,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX),
                     RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY),
                     area.maxZ,
@@ -72,12 +70,12 @@ public class ForcefieldEntity extends MagicAreaEntity {
         }
         var zyArea = (area.maxZ - area.minZ) * (area.maxY - area.minY);
         for (int i = 0; i < zyArea / 160 || i == 0; i++) {
-            this.world.addParticle(this.particleEffect,
+            this.getWorld().addParticle(this.particleEffect,
                     area.minX,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY),
                     RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ),
                     0, 0, 0);
-            this.world.addParticle(this.particleEffect,
+            this.getWorld().addParticle(this.particleEffect,
                     area.maxX,
                     RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY),
                     RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ),
@@ -89,10 +87,10 @@ public class ForcefieldEntity extends MagicAreaEntity {
     public void tick() {
         super.tick();
 
-        if (this.world.isClient) {
+        if (this.getWorld().isClient) {
             return;
         }
-        var world = (ServerWorld) this.world;
+        var world = (ServerWorld) this.getWorld();
 
         var area = this.getArea();
 

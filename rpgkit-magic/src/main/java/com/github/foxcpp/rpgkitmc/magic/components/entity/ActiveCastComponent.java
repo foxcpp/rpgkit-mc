@@ -67,7 +67,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        if (tag.contains("ActiveCast") && !this.provider.world.isClient) {
+        if (tag.contains("ActiveCast") && !this.provider.getWorld().isClient) {
             // TODO: Properly synchronize ActiveCast to client (generic reactions are not serialized properly).
             this.activeCast = ServerSpellCast.readFromNbt(tag.getCompound("ActiveCast"));
         }
@@ -97,7 +97,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
         this.maxElements = tag.getInt("MaxElements");
 
-        if (!this.provider.world.isClient && this.hasBuilder) {
+        if (!this.provider.getWorld().isClient && this.hasBuilder) {
             this.builder = new SpellBuilder(this.provider, this.maxElements);
             // TODO: Recheck if items can still be used.
             for (var element : this.pendingElements) {
@@ -168,7 +168,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
     }
 
     public void startBuild() {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.startBuild();
             }
@@ -207,7 +207,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
     }
 
     public void cancelBuild() {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot cancel build on the client-side");
         }
 
@@ -219,7 +219,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
     }
 
     public void switchCatalystBag() {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.switchCatalystBag();
             }
@@ -260,7 +260,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (!this.hasBuilder) {
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.addElement(index);
             }
@@ -302,10 +302,10 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
         ActionResult res = ActionResult.CONSUME;
         var cast = this.builder.toServerCast(form);
-        cast.perform((ServerWorld) this.provider.world);
+        cast.perform((ServerWorld) this.provider.getWorld());
         if (form.equals(ModForms.USE)) {
             if (pos != null) {
-                res = cast.getSpell().useOnBlock(cast, (ServerWorld) this.provider.world, pos, direction);
+                res = cast.getSpell().useOnBlock(cast, (ServerWorld) this.provider.getWorld(), pos, direction);
             } else if (entity != null) {
                 res = cast.getSpell().useOnEntity(cast, entity);
             }
@@ -342,7 +342,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (!this.hasBuilder) {
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.performSelfCast();
             }
@@ -356,7 +356,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (!this.hasBuilder) {
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.performItemCast();
             }
@@ -370,7 +370,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (!this.hasBuilder) {
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.performAreaCast();
             }
@@ -384,7 +384,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (!this.hasBuilder) {
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.performCastOnBlock(pos, direction);
             }
@@ -405,7 +405,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
 
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.performCastOnEntity(target);
             }
@@ -425,7 +425,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
         if (!this.hasBuilder) {
             throw new IllegalStateException("cannot perform cast when not building a spell");
         }
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.performRangedCast();
             }
@@ -460,7 +460,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
     }
 
     public void interruptChanneling() {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             if (CLIENT_CONTROLLER != null) {
                 CLIENT_CONTROLLER.interruptChanneling();
             }
@@ -476,7 +476,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
 
     private void endCast() {
         var cast = (ServerSpellCast) this.activeCast;
-        cast.getForm().endCast(cast, (ServerWorld) this.provider.world);
+        cast.getForm().endCast(cast, (ServerWorld) this.provider.getWorld());
         this.activeCast = null;
         this.hasActiveCast = false;
         this.channelAge = 0;
@@ -522,7 +522,7 @@ public class ActiveCastComponent implements ComponentV3, AutoSyncedComponent, Cl
             this.channelAge++;
 
             if (this.channelAge > 10) {
-                var caster = cast.getCaster((ServerWorld) this.provider.world);
+                var caster = cast.getCaster((ServerWorld) this.provider.getWorld());
                 if (caster instanceof ServerPlayerEntity spe) {
                     spe.getComponent(ModComponents.MANA).spendMana(cast.getCost(SpellElement.COST_MAGICAE) / 20);
                 }

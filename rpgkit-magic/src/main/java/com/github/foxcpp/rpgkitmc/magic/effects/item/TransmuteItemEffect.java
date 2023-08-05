@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -71,9 +72,9 @@ public class TransmuteItemEffect extends ItemEffect {
             }
             var originalCount = stack.getCount();
 
-            var lcb = new LootContext.Builder(world);
+            var lcb = new LootContextParameterSet.Builder(world);
             lcb.luck(0.5f);
-            lcb.parameter(LootContextParameters.ORIGIN, cast.getOriginPos());
+            lcb.add(LootContextParameters.ORIGIN, cast.getOriginPos());
             Entity thisEntity;
             if (holder != null) {
                 thisEntity = holder;
@@ -83,8 +84,8 @@ public class TransmuteItemEffect extends ItemEffect {
                     RPGKitMagicMod.LOGGER.warn("Could not provide THIS_ENTITY for loot functions");
                 }
             }
-            lcb.parameter(LootContextParameters.THIS_ENTITY, thisEntity);
-            var context = lcb.build(LootContextTypes.SELECTOR);
+            lcb.add(LootContextParameters.THIS_ENTITY, thisEntity);
+            var context = (new LootContext.Builder(lcb.build(LootContextTypes.SELECTOR))).build(new Identifier(RPGKitMagicMod.MOD_ID, "random"));
 
             var res = TransmuteItemEffect.this.mapping.apply(stack, context);
             if (TransmuteItemEffect.this.preserveCount) {

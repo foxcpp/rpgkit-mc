@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -66,15 +67,15 @@ public class InsertItemEffect extends SimpleUseEffect {
             return ActionResult.PASS;
         }
 
-        var lcb = new LootContext.Builder(world);
+        var lcb = new LootContextParameterSet.Builder(world);
         lcb.luck(0.5f);
-        lcb.parameter(LootContextParameters.ORIGIN, cast.getOriginPos());
+        lcb.add(LootContextParameters.ORIGIN, cast.getOriginPos());
         var thisEntity = cast.getCaster(world);
         if (thisEntity == null) {
             RPGKitMagicMod.LOGGER.warn("Could not provide THIS_ENTITY for loot functions");
         }
-        lcb.parameter(LootContextParameters.THIS_ENTITY, thisEntity);
-        var context = lcb.build(LootContextTypes.SELECTOR);
+        lcb.add(LootContextParameters.THIS_ENTITY, thisEntity);
+        var context = (new LootContext.Builder(lcb.build(LootContextTypes.SELECTOR))).build(new Identifier(RPGKitMagicMod.MOD_ID, "random"));
 
         var stack = this.mapping.apply(ItemStack.EMPTY, context);
 

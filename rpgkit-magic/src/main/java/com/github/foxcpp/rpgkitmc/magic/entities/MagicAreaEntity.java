@@ -151,10 +151,10 @@ public abstract class MagicAreaEntity extends Entity {
                 var y = RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY);
                 var z = RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ);
                 var direction = vector.get().direction(new Vec3d(x, y, z), this.getPos(), Vec3d.ZERO);
-                this.world.addParticle(this.particleEffect, x, y, z,
+                this.getWorld().addParticle(this.particleEffect, x, y, z,
                         direction.x, direction.y, direction.z);
             } else {
-                this.world.addParticle(this.particleEffect,
+                this.getWorld().addParticle(this.particleEffect,
                         RPGKitMagicMod.RANDOM.nextDouble(area.minX, area.maxX),
                         RPGKitMagicMod.RANDOM.nextDouble(area.minY, area.maxY),
                         RPGKitMagicMod.RANDOM.nextDouble(area.minZ, area.maxZ),
@@ -167,12 +167,12 @@ public abstract class MagicAreaEntity extends Entity {
     public void tick() {
         super.tick();
 
-        if (!this.world.isClient && this.age > maxAge) {
+        if (!this.getWorld().isClient && this.age > maxAge) {
             this.discard();
             return;
         }
 
-        if (this.world.isClient && this.getArea() != null && !this.dataTracker.get(NO_PARTICLES)) {
+        if (this.getWorld().isClient && this.getArea() != null && !this.dataTracker.get(NO_PARTICLES)) {
             this.spawnParticles();
         }
     }

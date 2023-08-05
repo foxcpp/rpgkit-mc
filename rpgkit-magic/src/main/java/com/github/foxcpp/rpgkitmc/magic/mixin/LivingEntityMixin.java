@@ -3,6 +3,8 @@ package com.github.foxcpp.rpgkitmc.magic.mixin;
 import com.github.foxcpp.rpgkitmc.magic.statuseffects.SealedStatusEffect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,12 +29,12 @@ public class LivingEntityMixin implements SealedStatusEffect.Sealable {
 
     @Inject(at = @At("HEAD"), method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", cancellable = true)
     public void applyDamage(DamageSource source, float amount, CallbackInfo ci) {
-        if (source.isOutOfWorld() || source.isMagic()) {
+        if (source.isOf(DamageTypes.OUT_OF_WORLD) || source.isOf(DamageTypes.MAGIC)) {
             return;
         }
-        if ((source.bypassesArmor() || source.bypassesProtection()) &&
-                !source.equals(DamageSource.LAVA) && !source.equals(DamageSource.HOT_FLOOR) &&
-                !source.equals(DamageSource.IN_WALL) && !source.equals(DamageSource.STALAGMITE)) {
+        if ((source.isIn(DamageTypeTags.BYPASSES_ARMOR) || source.isIn(DamageTypeTags.BYPASSES_EFFECTS)) &&
+                !source.isOf(DamageTypes.LAVA) && !source.isOf(DamageTypes.HOT_FLOOR) &&
+                !source.isOf(DamageTypes.IN_WALL) && !source.isOf(DamageTypes.STALAGMITE)) {
             return;
         }
         if (this.sealed) {

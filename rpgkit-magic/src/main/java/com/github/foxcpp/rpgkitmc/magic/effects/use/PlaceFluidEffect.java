@@ -8,7 +8,6 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidFillable;
-import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
@@ -127,7 +126,6 @@ public class PlaceFluidEffect extends SimpleUseEffect {
         }
         BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
-        Material material = blockState.getMaterial();
         boolean canFill = blockState.isAir() ||
                 blockState.canBucketPlace(fluid) ||
                 block instanceof FluidFillable &&
@@ -145,7 +143,7 @@ public class PlaceFluidEffect extends SimpleUseEffect {
             ((FluidFillable) block).tryFillWithFluid(world, pos, blockState, this.state);
             return true;
         }
-        if (blockState.canBucketPlace(fluid) && !material.isLiquid()) {
+        if (blockState.canBucketPlace(fluid) && !blockState.isLiquid()) {
             world.breakBlock(pos, true);
         }
         return world.setBlockState(pos, this.state.getBlockState(),

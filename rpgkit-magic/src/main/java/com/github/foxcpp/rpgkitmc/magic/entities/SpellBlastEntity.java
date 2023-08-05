@@ -10,8 +10,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
@@ -51,7 +49,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
     private Box computeArea(Vec3d origin, Vec3d direction, double distance, double radius) {
         direction = direction.multiply(distance / direction.length());
         var end = origin.add(direction);
-        BlockHitResult hitResult = this.world.raycast(new RaycastContext(
+        BlockHitResult hitResult = this.getWorld().raycast(new RaycastContext(
                 origin, end,
                 RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
                 this));
@@ -137,7 +135,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
             var velocity = new Vec3d(x - pos.getX(), y - pos.getY(), z - pos.getZ());
             velocity = velocity.multiply((velocity.length() / this.maxAge * 5f) / velocity.length());
             for (int i = 0; i < volume / 80 || i == 0; i++) {
-                this.world.addParticle(this.particleEffect,
+                this.getWorld().addParticle(this.particleEffect,
                         pos.getX(), pos.getY(), pos.getZ(),
                         velocity.x, velocity.y, velocity.z);
             }
@@ -150,7 +148,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
     public void tick() {
         super.tick();
 
-        if (this.world.isClient) {
+        if (this.getWorld().isClient) {
             return;
         }
 
@@ -164,7 +162,7 @@ public class SpellBlastEntity extends MagicAreaEntity {
             return;
         }
 
-        for (var ent : this.world.getOtherEntities(this, this.getArea())) {
+        for (var ent : this.getWorld().getOtherEntities(this, this.getArea())) {
             if (cast.getCasterUuid().equals(ent.getUuid())) {
                 continue;
             }

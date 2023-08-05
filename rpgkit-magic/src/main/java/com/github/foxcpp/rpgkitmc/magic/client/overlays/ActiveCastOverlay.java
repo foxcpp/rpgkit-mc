@@ -12,11 +12,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -32,11 +33,13 @@ public class ActiveCastOverlay implements HudRenderCallback {
     public ActiveCastOverlay() {
     }
 
-    public void renderBuilder(ActiveCastComponent comp, MatrixStack matrix, float tickDelta) {
+    public void renderBuilder(ActiveCastComponent comp, DrawContext ctx, float tickDelta) {
         var client = MinecraftClient.getInstance();
 
         var width = client.getWindow().getScaledWidth();
         var height = client.getWindow().getScaledHeight();
+
+        var matrix = ctx.getMatrices();
 
         var guiStartHeight = height - 90;
         if (client.player != null && client.player.isCreative()) {
@@ -59,7 +62,7 @@ public class ActiveCastOverlay implements HudRenderCallback {
                     element = pending.get(i);
                 }
 
-                this.drawElement(matrix, x, y, element, 1);
+                this.drawElement(ctx, x, y, element, 1);
 
                 drawnAspects++;
             }
@@ -71,7 +74,7 @@ public class ActiveCastOverlay implements HudRenderCallback {
             var x = width / 2 - 18 * 3 - 2 * 18;
             var y = guiStartHeight + ELEMENT_SLOT_SIZE;
 
-            client.getItemRenderer().renderInGui(bag, x, y);
+            ctx.drawItem(client.player, bag, x, y, 42);
         }
 
         // Available aspects.
@@ -81,14 +84,14 @@ public class ActiveCastOverlay implements HudRenderCallback {
             if (elements.size() == 0) {
                 var text = Text.translatable("rpgkit.magic.no_elements");
                 var wid = client.textRenderer.getWidth(text);
-                client.textRenderer.draw(matrix, text,
-                        (float) (width / 2 - wid / 2), (float) (guiStartHeight + ELEMENT_SLOT_SIZE + 4), 0xFFFFFF);
+                ctx.drawText(client.textRenderer, text, (width / 2 - wid / 2), (guiStartHeight + ELEMENT_SLOT_SIZE + 4),
+                        0xFFFFFF, false);
             } else {
                 for (var element : elements) {
                     var x = width / 2 - elements.size() * 18 / 2 + drawnAspects * 18;
                     var y = guiStartHeight + ELEMENT_SLOT_SIZE;
 
-                    this.drawElement(matrix, x, y, element, 0.75f);
+                    this.drawElement(ctx, x, y, element, 0.75f);
                     drawnAspects++;
                 }
             }
@@ -127,8 +130,9 @@ public class ActiveCastOverlay implements HudRenderCallback {
 
     }
 
-    public void renderChannelBar(ActiveCastComponent comp, MatrixStack matrix, float tickDelta) {
+    public void renderChannelBar(ActiveCastComponent comp, DrawContext ctx, float tickDelta) {
         var client = MinecraftClient.getInstance();
+        var matrix = ctx.getMatrices();
 
         var age = comp.getChannelAge();
         var maxAge = comp.getChannelMaxAge();
@@ -139,15 +143,14 @@ public class ActiveCastOverlay implements HudRenderCallback {
         var guiStartHeight = height - 29;
 
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.setShaderTexture(0, CHANNEL_BAR_TEXTURE);
-        DrawableHelper.drawTexture(matrix, width / 2 - 91, guiStartHeight, 0, 0,
+        ctx.drawTexture(CHANNEL_BAR_TEXTURE, width / 2 - 91, guiStartHeight, 0, 0,
                 182, 5, 182, 10);
-        DrawableHelper.drawTexture(matrix, width / 2 - 91, guiStartHeight, 0, 5,
+        ctx.drawTexture(CHANNEL_BAR_TEXTURE, width / 2 - 91, guiStartHeight, 0, 5,
                 (int) (182 * factor), 5, 182, 10);
     }
 
     @Override
-    public void onHudRender(MatrixStack matrix, float tickDelta) {
+    public void onHudRender(DrawContext ctx, float tickDelta) {
         var client = MinecraftClient.getInstance();
         if (client.player == null) {
             return;
@@ -155,20 +158,20 @@ public class ActiveCastOverlay implements HudRenderCallback {
         var comp = client.player.getComponent(ModComponents.CAST);
 
         if (comp.isBuilding()) {
-            this.renderBuilder(comp, matrix, tickDelta);
+            this.renderBuilder(comp, ctx, tickDelta);
         }
 
         if (comp.isChanneling()) {
-            this.renderChannelBar(comp, matrix, tickDelta);
+            this.renderChannelBar(comp, ctx, tickDelta);
         }
     }
 
-    public void drawElement(MatrixStack matrixStack, int x, int y, @Nullable SpellElement element, float scale) {
+    public void drawElement(DrawContext ctx, int x, int y, @Nullable SpellElement element, float scale) {
+        // FIXME: possibly redundant since 1.20
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-        RenderSystem.setShaderTexture(0, FRAME_TEXTURE);
-        DrawableHelper.drawTexture(matrixStack, x, y, 0, 0,
+        ctx.drawTexture(FRAME_TEXTURE, x, y, 0, 0,
                 (int) (ELEMENT_SLOT_SIZE * scale), (int) (ELEMENT_SLOT_SIZE * scale),
                 (int) (ELEMENT_SLOT_SIZE * scale), (int) (ELEMENT_SLOT_SIZE * scale));
         var frameOffset = (ELEMENT_SLOT_SIZE - 16) / 2;
@@ -178,8 +181,7 @@ public class ActiveCastOverlay implements HudRenderCallback {
         }
 
         if (element instanceof Aspect asp) {
-            RenderSystem.setShaderTexture(0, asp.getTexturePath());
-            DrawableHelper.drawTexture(matrixStack, x + (int) (frameOffset * scale), y + (int) (frameOffset * scale), 0, 0,
+            ctx.drawTexture(asp.getTexturePath(), x + (int) (frameOffset * scale), y + (int) (frameOffset * scale), 0, 0,
                     (int) (16 * scale), (int) (16 * scale), (int) (16 * scale), (int) (16 * scale));
             return;
         }
@@ -189,11 +191,9 @@ public class ActiveCastOverlay implements HudRenderCallback {
         }
 
         if (element instanceof ItemElement.Stack ies) {
-            var renderer = MinecraftClient.getInstance().getItemRenderer();
-            renderer.renderInGui(ies.getStack(), x + (int) (frameOffset * scale), y + (int) (frameOffset * scale));
+            ctx.drawItem(ies.getStack(), x + (int) (frameOffset * scale), y + (int) (frameOffset * scale), 42);
         } else if (element instanceof ItemElement ie) {
-            var renderer = MinecraftClient.getInstance().getItemRenderer();
-            renderer.renderInGui(new ItemStack(ie.getItem()), x + (int) (frameOffset * scale), y + (int) (frameOffset * scale));
+            ctx.drawItem(ie.getDefaultStack(), x + (int) (frameOffset * scale), y + (int) (frameOffset * scale), 42);
         }
     }
 }

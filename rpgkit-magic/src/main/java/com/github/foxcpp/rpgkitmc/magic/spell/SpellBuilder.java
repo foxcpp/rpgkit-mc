@@ -157,9 +157,8 @@ public final class SpellBuilder {
 
         var costs = this.calculateFormedCosts(form);
 
-        RPGKitMagicMod.LOGGER.info("{} casting spell {} with form {} (elements: {})",
-                caster, this.spell, form, this.fullRecipe);
-        RPGKitMagicMod.LOGGER.debug("Cast costs: {}", costs);
+        RPGKitMagicMod.LOGGER.info("{} casting spell {} with form {} (costs: {})",
+                caster, this.fullRecipe, form, costs);
         return new ServerSpellCast(form, this.spell, this.caster,
                 costs, this.fullRecipe, caster.getPos(), caster.getHeadYaw(), caster.getPitch());
     }

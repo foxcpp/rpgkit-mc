@@ -6,23 +6,26 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.listener.VibrationListener;
+import net.minecraft.world.event.Vibrations;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(VibrationListener.class)
+@Mixin(Vibrations.VibrationListener.class)
 public class VibrationListenerMixin {
     @Inject(at = @At(
                 value = "INVOKE",
-                target = "Lnet/minecraft/world/event/listener/VibrationListener$Callback;accepts(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/event/listener/GameEventListener;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/event/GameEvent;Lnet/minecraft/world/event/GameEvent$Emitter;)Z"
+                target = "Lnet/minecraft/world/event/Vibrations$Callback;accepts(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/event/GameEvent;Lnet/minecraft/world/event/GameEvent$Emitter;)Z"
             ),
             method = "listen(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/event/GameEvent;Lnet/minecraft/world/event/GameEvent$Emitter;Lnet/minecraft/util/math/Vec3d;)Z",
             cancellable = true)
     public void listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos, CallbackInfoReturnable<Boolean> cir) {
-        var me = (VibrationListener) (Object) this;
-        var cb = ((VibrationListenerAccessor) me).getCallback();
+        var me = (Vibrations.VibrationListener) (Object) this;
+        var recv = ((VibrationListenerAccessor) me).getReceiver();
+        var cb = recv.getVibrationCallback();
+
+        // XXX: This is broken since 1.20 - Callback is no longer directly implemented by BlockEntity or LivingEntity.
 
         if (cb instanceof LivingEntity le) {
             if (emitter.sourceEntity() != null && !MuteEffect.shouldHear(le, emitter.sourceEntity())) {

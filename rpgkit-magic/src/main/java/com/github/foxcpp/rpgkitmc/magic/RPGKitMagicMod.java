@@ -23,6 +23,7 @@ import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class RPGKitMagicMod implements ModInitializer {
             new ServerSpellBuildHandler();
 
     public static final ScreenHandlerType<CatalystBagScreenHandler> CATALYST_BAG_SCREEN_HANDLER =
-            new ScreenHandlerType<>(CatalystBagScreenHandler::new);
+            new ScreenHandlerType<>(CatalystBagScreenHandler::new, FeatureSet.empty());
 
     @Override
     public void onInitialize() {

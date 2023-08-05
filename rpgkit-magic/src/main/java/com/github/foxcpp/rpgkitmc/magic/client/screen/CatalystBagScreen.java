@@ -5,6 +5,7 @@ import com.github.foxcpp.rpgkitmc.magic.screen.CatalystBagScreenHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,7 +19,6 @@ public class CatalystBagScreen extends HandledScreen<CatalystBagScreenHandler> {
 
     public CatalystBagScreen(CatalystBagScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.passEvents = false;
         this.backgroundHeight = 133;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
     }
@@ -30,19 +30,17 @@ public class CatalystBagScreen extends HandledScreen<CatalystBagScreenHandler> {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+    public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
+        this.renderBackground(ctx);
+        super.render(ctx, mouseX, mouseY, delta);
+        this.drawMouseoverTooltip(ctx, mouseX, mouseY);
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+    protected void drawBackground(DrawContext ctx, float delta, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        ctx.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
     }
 }

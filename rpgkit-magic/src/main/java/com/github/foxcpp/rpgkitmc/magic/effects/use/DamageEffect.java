@@ -115,7 +115,7 @@ public class DamageEffect extends UseEffect {
                 return entityResult.getResult();
             }
 
-            le.damage(DamageSource.MAGIC, entityResult.getValue());
+            le.damage(cast.damageSource((ServerWorld)entity.getWorld()), entityResult.getValue());
             return ActionResult.SUCCESS;
         }
     }

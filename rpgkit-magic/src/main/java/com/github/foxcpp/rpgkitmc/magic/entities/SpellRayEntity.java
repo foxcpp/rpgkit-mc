@@ -10,8 +10,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -160,7 +158,7 @@ public class SpellRayEntity extends Entity {
         }
 
         // Prevent first ray segment from accidentally colliding with caster.
-        Entity owner = ((ServerWorld) this.world).getEntity(this.cast.getCasterUuid());
+        Entity owner = ((ServerWorld) this.getWorld()).getEntity(this.cast.getCasterUuid());
         return !entity.equals(owner) || !owner.isConnectedThroughVehicle(entity);
     }
 
@@ -182,7 +180,7 @@ public class SpellRayEntity extends Entity {
         if (this.cast == null) {
             return false;
         }
-        var res = this.cast.getSpell().useOnBlock(this.cast, (ServerWorld) this.world, bhr.getBlockPos(), bhr.getSide());
+        var res = this.cast.getSpell().useOnBlock(this.cast, (ServerWorld) this.getWorld(), bhr.getBlockPos(), bhr.getSide());
         return !res.equals(ActionResult.CONSUME);
     }
 
@@ -228,7 +226,7 @@ public class SpellRayEntity extends Entity {
         x += i * rot.x;
         y += i * rot.y;
         z += i * rot.z;
-        this.world.addParticle(this.particleEffect,
+        this.getWorld().addParticle(this.particleEffect,
                 x, y, z, 0, 0, 0);
     }
 
@@ -236,7 +234,7 @@ public class SpellRayEntity extends Entity {
     public void tick() {
         super.tick();
 
-        if (this.world.isClient) {
+        if (this.getWorld().isClient) {
             this.spawnParticles();
             return;
         }
@@ -250,14 +248,14 @@ public class SpellRayEntity extends Entity {
         // Raycast to aim.
         var raycastStart = this.getAimOrigin().add(rotVec.x, rotVec.y, rotVec.z);
         var raycastEnd = this.getAimOrigin().add(rotVec.x * 50f, rotVec.y * 50f, rotVec.z * 50f);
-        BlockHitResult hitResult = this.world.raycast(new RaycastContext(
+        BlockHitResult hitResult = this.getWorld().raycast(new RaycastContext(
                 raycastStart, raycastEnd,
                 RaycastContext.ShapeType.COLLIDER, this.fluidHandling,
                 this));
         if (hitResult.getType() != HitResult.Type.MISS) {
             raycastEnd = hitResult.getPos().add(rotVec);
         }
-        var entHitResult = ProjectileUtil.getEntityCollision(world, this, raycastStart, raycastEnd,
+        var entHitResult = ProjectileUtil.getEntityCollision(this.getWorld(), this, raycastStart, raycastEnd,
                 new Box(raycastStart, raycastEnd), this::canHit);
         if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
             raycastEnd = entHitResult.getPos().add(this.getRotationVector());
@@ -265,14 +263,14 @@ public class SpellRayEntity extends Entity {
 
         // Raycast to hit.
         raycastStart = this.getPos().add(rotVec.x, rotVec.y, rotVec.z);
-        hitResult = this.world.raycast(new RaycastContext(
+        hitResult = this.getWorld().raycast(new RaycastContext(
                 raycastStart, raycastEnd,
                 RaycastContext.ShapeType.COLLIDER, this.fluidHandling,
                 this));
         if (hitResult.getType() != HitResult.Type.MISS) {
             raycastEnd = hitResult.getPos().add(rotVec);
         }
-        entHitResult = ProjectileUtil.getEntityCollision(world, this, raycastStart, raycastEnd,
+        entHitResult = ProjectileUtil.getEntityCollision(this.getWorld(), this, raycastStart, raycastEnd,
                 new Box(raycastStart, raycastEnd), this::canHit);
         if (entHitResult != null && entHitResult.getType() != HitResult.Type.MISS) {
             // Skip hits to make effect spam less significant.

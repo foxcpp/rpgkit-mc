@@ -41,7 +41,7 @@ public class AbilitiesComponent implements AutoSyncedComponent, ComponentV3 {
     }
 
     public void setAbilityValue(Identifier id, int value) {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot modify abilities client-side");
         }
 
@@ -50,7 +50,7 @@ public class AbilitiesComponent implements AutoSyncedComponent, ComponentV3 {
     }
 
     public void setProficiency(Identifier abilityId, boolean proficient) {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot modify abilities client-side");
         }
 
@@ -63,7 +63,7 @@ public class AbilitiesComponent implements AutoSyncedComponent, ComponentV3 {
     }
 
     public void setProficiencyModifier(int newValue) {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot modify abilities client-side");
         }
 

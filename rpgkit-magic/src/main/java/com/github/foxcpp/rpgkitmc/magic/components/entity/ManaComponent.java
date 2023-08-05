@@ -75,7 +75,7 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
             damage = 10;
             ok = false;
         }
-        this.provider.damage(DamageSource.MAGIC, damage);
+        this.provider.damage(this.provider.getDamageSources().magic(), damage);
 
         return ok;
     }
@@ -97,8 +97,8 @@ public class ManaComponent implements AutoSyncedComponent, ServerTickingComponen
                     var restoredMana = Math.min(durability, -this.value);
                     manaItem.getRight().damage((int) restoredMana, this.provider, ent ->
                             TrinketsApi.onTrinketBroken(manaItem.getRight(), manaItem.getLeft(), ent));
-                    if (this.provider.damage(DamageSource.MAGIC, 1)) {
-                        this.provider.world.playSoundFromEntity(null, this.provider,
+                    if (this.provider.damage(this.provider.getDamageSources().magic(), 1)) {
+                        this.provider.getWorld().playSoundFromEntity(null, this.provider,
                                 Registries.SOUND_EVENT.getEntry(SoundEvents.BLOCK_AMETHYST_CLUSTER_BREAK), SoundCategory.PLAYERS,
                                 1f, 0.4f, 1);
                     }

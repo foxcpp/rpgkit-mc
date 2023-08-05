@@ -3,7 +3,7 @@
     "playerex:constitution": {
       "rpgkitmagic:max_mana": {
         "behaviour": "ADDITION",
-        "value": 20
+        "value": 5
       }
     },
     "playerex:intelligence": {

@@ -1,11 +1,13 @@
 package com.github.foxcpp.rpgkitmc.magic.mixin;
 
 import com.github.foxcpp.rpgkitmc.magic.effects.use.special.MuteEffect;
-import net.minecraft.network.Packet;
+import net.minecraft.network.PacketCallbacks;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin {
-    @Inject(at = @At("HEAD"), method = "sendPacket(Lnet/minecraft/network/Packet;)V", cancellable = true)
-    public void sendPacket(Packet<?> packet, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "sendPacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V", cancellable = true)
+    public void sendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
         var player = ((ServerPlayNetworkHandler) (Object) this).getPlayer();
 
         if (packet instanceof PlaySoundS2CPacket ps) {

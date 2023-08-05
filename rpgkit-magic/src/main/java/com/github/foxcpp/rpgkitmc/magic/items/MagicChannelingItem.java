@@ -63,7 +63,7 @@ public abstract class MagicChannelingItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (user.world.isClient) {
+        if (user.getWorld().isClient) {
             user.setCurrentHand(hand);
             return ActionResult.SUCCESS;
         }

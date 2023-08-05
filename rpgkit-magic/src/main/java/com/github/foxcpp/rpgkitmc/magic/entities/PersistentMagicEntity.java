@@ -3,8 +3,6 @@ package com.github.foxcpp.rpgkitmc.magic.entities;
 import com.github.foxcpp.rpgkitmc.magic.effects.AreaEffect;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -41,8 +39,8 @@ public class PersistentMagicEntity extends MagicAreaEntity {
     public void tick() {
         super.tick();
 
-        if (!this.world.isClient && (this.effectInterval == 0 || this.age % this.effectInterval == 0)) {
-            this.cast.getSpell().useOnArea(this.cast, (ServerWorld) world,
+        if (!this.getWorld().isClient && (this.effectInterval == 0 || this.age % this.effectInterval == 0)) {
+            this.cast.getSpell().useOnArea(this.cast, (ServerWorld) getWorld(),
                     this.getArea(), this.getPos(), AreaEffect.AreaCollider.cube(this.getArea()));
         }
     }

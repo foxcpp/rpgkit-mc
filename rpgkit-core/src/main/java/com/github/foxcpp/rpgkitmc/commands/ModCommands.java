@@ -93,7 +93,7 @@ public class ModCommands {
     public static int expQuery(ServerCommandSource source, PlayerEntity entity) throws CommandSyntaxException {
         final var classes = entity.getComponent(ModComponents.CLASS);
 
-        source.sendFeedback(Text.translatable("command.rpgkit.exp.query",
+        source.sendFeedback(() -> Text.translatable("command.rpgkit.exp.query",
                 classes.getCurrentLevel(), classes.getUndistributedLevels(), classes.getCurrentLevelExp()), false);
 
         return classes.getCurrentLevel();
@@ -105,11 +105,11 @@ public class ModCommands {
         }
 
         if (targets.size() == 1) {
-            source.sendFeedback(Text.translatable("commands.rpgkit.exp.add.success_single",
+            source.sendFeedback(() -> Text.translatable("commands.rpgkit.exp.add.success_single",
                     amount, targets.stream().iterator().next().getName()
             ), true);
         } else {
-            source.sendFeedback(Text.translatable("commands.rpgkit.exp.add.success_multiple",
+            source.sendFeedback(() -> Text.translatable("commands.rpgkit.exp.add.success_multiple",
                     amount, targets.size()
             ), true);
         }
@@ -123,11 +123,11 @@ public class ModCommands {
         }
 
         if (targets.size() == 1) {
-            source.sendFeedback(Text.translatable("commands.rpgkit.exp.reset.success_single",
+            source.sendFeedback(() -> Text.translatable("commands.rpgkit.exp.reset.success_single",
                     targets.stream().iterator().next().getName()
             ), true);
         } else {
-            source.sendFeedback(Text.translatable("commands.rpgkit.exp.reset.success_multiple",
+            source.sendFeedback(() -> Text.translatable("commands.rpgkit.exp.reset.success_multiple",
                     targets.size()
             ), true);
         }
@@ -137,12 +137,14 @@ public class ModCommands {
 
     public static int classQuery(ServerCommandSource source, PlayerEntity target) throws CommandSyntaxException {
         final var classes = target.getComponent(ModComponents.CLASS);
-        source.sendFeedback(Text.translatable("commands.rpgkit.class.list"), false);
+        source.sendFeedback(() -> Text.translatable("commands.rpgkit.class.list"), false);
         for (var klass : classes.classes()) {
-            var line = Text.literal(" - ");
-            line.append(Text.translatable(klass.translationKey()));
-            line.append(" (%d)".formatted(classes.getClassLevel(klass.id)));
-            source.sendFeedback(line, false);
+            source.sendFeedback(() -> {
+                var line = Text.literal(" - ");
+                line.append(Text.translatable(klass.translationKey()));
+                line.append(" (%d)".formatted(classes.getClassLevel(klass.id)));
+                return line;
+            }, false);
         }
 
         return 1;
@@ -154,14 +156,16 @@ public class ModCommands {
         try {
             classes.levelUp(characterClass.id);
 
-            var line = target.getDisplayName().copy();
-            line.append(" ");
-            line.append(Text.translatable(characterClass.translationKey()));
-            line.append(Text.translatable("commands.rpgkit.class.levelup.success", classes.getClassLevel(characterClass.id)));
-            source.sendFeedback(line, true);
+            source.sendFeedback(() -> {
+                var line = target.getDisplayName().copy();
+                line.append(" ");
+                line.append(Text.translatable(characterClass.translationKey()));
+                line.append(Text.translatable("commands.rpgkit.class.levelup.success", classes.getClassLevel(characterClass.id)));
+                return line;
+            }, true);
             return classes.getClassLevel(characterClass.id);
         } catch (IllegalStateException ex) {
-            source.sendFeedback(Text.translatable("commands.rpgkit.class.levelup.not_enough_levels"), false);
+            source.sendFeedback(() -> Text.translatable("commands.rpgkit.class.levelup.not_enough_levels"), false);
             return 0;
         }
     }
@@ -170,7 +174,7 @@ public class ModCommands {
         final var classes = target.getComponent(ModComponents.CLASS);
 
         classes.resetClasses();
-        source.sendFeedback(Text.translatable("commands.rpgkit.class.reset.success", target.getDisplayName()), true);
+        source.sendFeedback(() -> Text.translatable("commands.rpgkit.class.reset.success", target.getDisplayName()), true);
         return 1;
     }
 }

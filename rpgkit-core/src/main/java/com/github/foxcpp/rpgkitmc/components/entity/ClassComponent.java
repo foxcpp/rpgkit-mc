@@ -147,7 +147,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
     }
 
     public void resetClasses() {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot reset classes client-side");
         }
 
@@ -160,7 +160,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
     }
 
     public void resetExp() {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot reset exp client-side");
         }
 
@@ -173,7 +173,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
     }
 
     public void levelUp(Identifier classId) {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot level-up client-side");
         }
 
@@ -195,7 +195,7 @@ public class ClassComponent implements AutoSyncedComponent, ComponentV3, ServerT
     }
 
     public void addExp(int value) {
-        if (this.provider.world.isClient) {
+        if (this.provider.getWorld().isClient) {
             throw new IllegalStateException("cannot add experience client-side");
         }
 

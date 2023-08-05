@@ -64,7 +64,7 @@ public class CookItemEffect extends ItemEffect {
             if (result.isEmpty()) {
                 return TypedActionResult.pass(stack);
             }
-            var resStack = result.get().craft(new SimpleInventory(stack));
+            var resStack = result.get().craft(new SimpleInventory(stack), world.getRegistryManager());
             return TypedActionResult.success(resStack);
         }
     }

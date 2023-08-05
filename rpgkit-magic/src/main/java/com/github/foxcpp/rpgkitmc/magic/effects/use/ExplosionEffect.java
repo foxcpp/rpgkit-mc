@@ -123,12 +123,10 @@ public class ExplosionEffect extends UseEffect {
         public @NotNull ActionResult useOnBlock(ServerSpellCast cast, ServerWorld world, BlockPos pos, Direction direction) {
             var caster = cast.getCaster(world);
 
-            var dmgSource = DamageSource.explosion(cast.getProjectile(world), cast.getCaster(world));
-
             RPGKitMagicMod.LOGGER.debug("Created spell explosion at {} with power {} (break blocks = {}, blast resistance - {})",
                     pos, this.powerMultiplier, this.breakBlocks, this.blastResistanceDecrease);
 
-            world.createExplosion(caster, dmgSource, new Behavior(ExplosionEffect.this.blastResistanceDecrease, this.breakBlocks),
+            world.createExplosion(caster, cast.damageSource(world), new Behavior(ExplosionEffect.this.blastResistanceDecrease, this.breakBlocks),
                     pos.getX(), pos.getY(), pos.getZ(), this.powerMultiplier, false, World.ExplosionSourceType.NONE);
             return ActionResult.SUCCESS;
         }

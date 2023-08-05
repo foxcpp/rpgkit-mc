@@ -32,7 +32,7 @@ public class SealedStatusEffect extends StatusEffect {
         ((Sealable) entity).setSealed(true);
         // Air is updated in LivingEntityMixin.
         if (entity.getAir() == 0) {
-            entity.damage(DamageSource.IN_WALL, 2.0f);
+            entity.damage(entity.getDamageSources().inWall(), 2.0f);
         }
         super.applyUpdateEffect(entity, amplifier);
     }

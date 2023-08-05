@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -29,7 +29,7 @@ public class ManaHudOverlay implements HudRenderCallback {
     private static final Identifier TEN_MANA = new Identifier(RPGKitMagicMod.MOD_ID, "textures/hud/mana/mana_10.png");
 
     @Override
-    public void onHudRender(MatrixStack matrixStack, float tickDelta) {
+    public void onHudRender(DrawContext ctx, float tickDelta) {
         var x = 0;
         var y = 0;
         var client = MinecraftClient.getInstance();
@@ -42,7 +42,6 @@ public class ManaHudOverlay implements HudRenderCallback {
             return;
         }
 
-
         if (client.interactionManager.getCurrentGameMode().equals(GameMode.SURVIVAL) ||
                 client.interactionManager.getCurrentGameMode().equals(GameMode.ADVENTURE)) {
 
@@ -51,30 +50,31 @@ public class ManaHudOverlay implements HudRenderCallback {
             x = width / 2;
             y = height;
 
+            // FIXME: possibly redundant since 1.20
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             RenderSystem.setShaderTexture(0, EMPTY_MANA);
-            DrawableHelper.drawTexture(matrixStack, x - 118, y - 60, 0, 0, 32, 64,
+            ctx.drawTexture(EMPTY_MANA, x - 118, y - 60, 0, 0, 32, 64,
                     32, 64);
 
+            Identifier segmentTexture;
             switch ((int) ((float) manaComponent.getValue() / manaComponent.getMaxValue() * 10)) {
-                case 0 -> RenderSystem.setShaderTexture(0, ZERO_MANA);
-                case 1 -> RenderSystem.setShaderTexture(0, ONE_MANA);
-                case 2 -> RenderSystem.setShaderTexture(0, TWO_MANA);
-                case 3 -> RenderSystem.setShaderTexture(0, THREE_MANA);
-                case 4 -> RenderSystem.setShaderTexture(0, FOUR_MANA);
-                case 5 -> RenderSystem.setShaderTexture(0, FIVE_MANA);
-                case 6 -> RenderSystem.setShaderTexture(0, SIX_MANA);
-                case 7 -> RenderSystem.setShaderTexture(0, SEVEN_MANA);
-                case 8 -> RenderSystem.setShaderTexture(0, EIGHT_MANA);
-                case 9 -> RenderSystem.setShaderTexture(0, NINE_MANA);
-                case 10 -> RenderSystem.setShaderTexture(0, TEN_MANA);
+                case 0 -> segmentTexture = ZERO_MANA;
+                case 1 -> segmentTexture = ONE_MANA;
+                case 2 -> segmentTexture = TWO_MANA;
+                case 3 -> segmentTexture = THREE_MANA;
+                case 4 -> segmentTexture = FOUR_MANA;
+                case 5 -> segmentTexture = FIVE_MANA;
+                case 6 -> segmentTexture = SIX_MANA;
+                case 7 -> segmentTexture = SEVEN_MANA;
+                case 8 -> segmentTexture = EIGHT_MANA;
+                case 9 -> segmentTexture = NINE_MANA;
+                case 10 -> segmentTexture = TEN_MANA;
+                default -> segmentTexture = EMPTY_MANA;
             }
 
-            if (manaComponent.getValue() == 0)
-                RenderSystem.setShaderTexture(0, EMPTY_MANA);
-            DrawableHelper.drawTexture(matrixStack, x - 118, y - 60, 0, 0, 32, 64,
+            ctx.drawTexture(segmentTexture, x - 118, y - 60, 0, 0, 32, 64,
                     32, 64);
         }
     }

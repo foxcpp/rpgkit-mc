@@ -108,7 +108,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult ehr) {
-        if (this.world.isClient) {
+        if (this.getWorld().isClient) {
             return;
         }
 
@@ -133,11 +133,11 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
     @Override
     protected void onBlockHit(BlockHitResult bhr) {
         this.calculateDimensions();
-        if (this.world.isClient) {
+        if (this.getWorld().isClient) {
             return;
         }
 
-        var result = this.cast.getSpell().useOnBlock(this.cast, (ServerWorld) this.world, bhr.getBlockPos(), bhr.getSide());
+        var result = this.cast.getSpell().useOnBlock(this.cast, (ServerWorld) this.getWorld(), bhr.getBlockPos(), bhr.getSide());
         if (result.equals(ActionResult.CONSUME)) {
             this.setVelocity(bounceDirection(bhr).multiply(this.bounceFactor));
             if (this.getVelocity().lengthSquared() >= 0.01f) {
@@ -152,7 +152,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
         if (this.particleEffect == null) {
             return; // not initialized yet
         }
-        this.world.addParticle(this.particleEffect,
+        this.getWorld().addParticle(this.particleEffect,
                 this.getX(), this.getY(), this.getZ(),
                 0, 0, 0);
     }
@@ -161,7 +161,7 @@ public class SpellChargeEntity extends PersistentProjectileEntity {
     public void tick() {
         super.tick();
 
-        if (this.world.isClient && !this.inGround) {
+        if (this.getWorld().isClient && !this.inGround) {
             this.spawnParticles();
         }
 

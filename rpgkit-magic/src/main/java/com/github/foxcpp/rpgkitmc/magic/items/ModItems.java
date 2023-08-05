@@ -11,6 +11,9 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ModItems {
@@ -121,9 +124,7 @@ public class ModItems {
             140, 10, 0.002f
     );
 
-    public static final ItemGroup MAGIC_TOOLING_GROUP = FabricItemGroup.builder(new Identifier(RPGKitMagicMod.MOD_ID, "magic_tooling"))
-            .icon(() -> new ItemStack(COPPER_AMETHYST_AMULET))
-            .build();
+    public static final RegistryKey<ItemGroup> MAGIC_TOOLING_GROUP = RegistryKey.of(RegistryKeys.ITEM_GROUP, new Identifier(RPGKitMagicMod.MOD_ID, "magic_tooling"));
 
     public static void register() {
         Registry.register(Registries.ITEM, new Identifier(RPGKitMagicMod.MOD_ID, "spell"), SPELL_ITEM);
@@ -157,6 +158,10 @@ public class ModItems {
 
         FuelRegistry.INSTANCE.add(MAGIC_FUEL, 2400 /* same as blaze rod */);
 
+        Registry.register(Registries.ITEM_GROUP, MAGIC_TOOLING_GROUP, FabricItemGroup.builder()
+                .icon(() -> new ItemStack(COPPER_AMETHYST_AMULET))
+                .displayName(Text.translatable("itemGroup.rpgkitmagic.magic_tooling"))
+                .build());
         ItemGroupEvents.modifyEntriesEvent(MAGIC_TOOLING_GROUP).register(content -> {
             content.add(new ItemStack(CATALYST_BAG));
             content.add(MagicChargeableItem.getChargedStack(COPPER_LAPIS_AMULET, 11f));
